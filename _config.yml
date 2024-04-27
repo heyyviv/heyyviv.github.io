@@ -18,19 +18,20 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Your awesome title
-email: your-email@example.com
+title: Vivek Das's Blog
+email: vivek.das@kgpian.iitkgp.ac.in
 description: >- # this means to ignore newlines until "baseurl:"
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
+  Welcome to Data Science Stories! Founded by Vivek Das, 
+  this GitHub blog is your go-to destination for all things ML, DL, and data science. 
+  Dive into insightful articles, tutorials, and project showcases crafted to demystify complex concepts
+  and empower enthusiasts of all levels. Join us on this journey where every line of code tells a tale,
+  and every dataset has a story to share.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: jekyllrb
-github_username:  jekyll
+github_username:  heyyviv
 
 # Build settings
-theme: minima
+theme: minimal-mistakes-jekyll
 plugins:
   - jekyll-feed
 
