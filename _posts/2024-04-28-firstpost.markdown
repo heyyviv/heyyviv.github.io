@@ -1,8 +1,8 @@
 ---
 layout: post
 title: "hello jekyll"
-date: 2024-04-28 01:43:18 -0000
-categories: jekyll
+date: 2024-04-28 01:43:18 +0530
+categories: food
 ---
 
 Hello world! 🌍✨
