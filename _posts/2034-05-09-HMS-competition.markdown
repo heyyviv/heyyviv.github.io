@@ -38,5 +38,69 @@ the number of labeled samples available for model training and evaluation.
 
 ![EEG](/assets/HMS1.jpg)
 
+Not only was the test data filtered by having more than 9 votes, but also the data has been augmented by using the same labels but shifting the eeg data. This means that the given 106k training rows are highly redundant and can/ should be filtered.
+
+{% highlight python %}
+from mne.filter import filter_data, notch_filter
+def eeg_16C(eeg_path,plot=False):
+    data = pd.read_parquet(eeg_path).values
+    sample = data.T[[0,4,5,6, 11,15,16,17, 0,1,2,3, 11,12,13,14]]\
+             - data.T[[4,5,6,7, 15,16,17,18, 1,2,3,7, 12,13,14,18]]
+    sample = notch_filter(sample.astype('float64'), 200, 60, n_jobs=32, verbose='ERROR')
+    #200 is sampling rate ,quality factor=60
+    #Removing power-line noise can be done with a Notch filter, directly on the Raw object
+    sample = filter_data(sample.astype('float64'), 200, 0.5, 40, n_jobs=32, verbose='ERROR') 
+    sample = np.clip(sample,-500,500)
+    #Given an interval, values outside the interval are clipped to the interval edges
+    sample = np.nan_to_num(sample, nan=0)
+    
+    if plot:
+        plt.figure(figsize=(20,10))
+        d=0
+        for i in range(16):
+            plt.plot(np.arange(10_000),sample[i,]+d)
+            d+=np.max(sample[i,])
+        plt.title("16 montage banana")
+        plt.show()
+                     
+{% endhighlight %}
+![Double banana](/assets/HMS2.jpg)
+![16 montage banana plot](/assets/hms3.jpg)
+
+preparing data
+removing weak data and redundant data 
+
+{% highlight python %}
+train_csv = pd.read_csv("/kaggle/input/hms-harmful-brain-activity-classification/train.csv")
+print(len(train_csv))
+target =['seizure_vote','lpd_vote','gpd_vote','lrda_vote','grda_vote','other_vote']
+train_csv['list_sum'] = train_csv[target].sum(axis=1)
+train_csv = train_csv[train_csv['list_sum']>9]
+train_csv = train_csv.drop(columns = ['list_sum'])
+print(len(train_csv))
+train_df = train_csv.groupby('eeg_id')[['spectrogram_id','spectrogram_label_offset_seconds']].agg({
+                                'spectrogram_id' : 'first',
+                                'spectrogram_label_offset_seconds' : 'min'
+                                })
+train_df.columns = ['spectrogram_id','min']
+
+aux = train_csv.groupby('eeg_id')[['spectrogram_label_offset_seconds']].agg({
+    'spectrogram_label_offset_seconds' : 'max'
+})
+train_df['max']=aux
+aux = train_csv.groupby('eeg_id')[['patient_id']].agg('first')
+train_df['patient_id'] = aux
+aux = train_csv.groupby('eeg_id')[target].agg('sum')
+for label in target:
+    train_df[label]=aux[label].values
+y_data = train_df[target].values
+y_data = y_data/y_data.sum(axis=1,keepdims=True)
+train_df[target]=y_data
+aux = train_csv.groupby('eeg_id')[['expert_consensus']].agg('first')
+train_df['target']=aux
+train = train_df.reset_index()
+print(len(train))
+train.head()
+{% endhighlight %}
 
 
