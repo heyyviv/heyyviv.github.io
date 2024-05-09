@@ -18,14 +18,10 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Vivek's Blog
+title: Viv
 email: vivek.das@kgpian.iitkgp.ac.in
 description: >- # this means to ignore newlines until "baseurl:"
-  Welcome to Data Science Stories! Founded by Vivek Das, 
-  this GitHub blog is your go-to destination for all things ML, DL, and data science. 
-  Dive into insightful articles, tutorials, and project showcases crafted to demystify complex concepts
-  and empower enthusiasts of all levels. Join us on this journey where every line of code tells a tale,
-  and every dataset has a story to share.
+  My home where i write anything
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  heyyviv
