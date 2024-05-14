@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "HMS Competition"
+title: "Detecting seizure from eeg and spectrogram part 1"
 date: 2024-05-09 01:43:18 +0530
 categories: Deep Learning,Kaggle
 ---
