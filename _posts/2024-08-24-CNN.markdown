@@ -130,6 +130,20 @@ when the next layer is fully connected and based on matrix multiplication) this
 reduction in the input size can also result in improved statistical efficiency and
 reduced memory requirements for storing the parameters.
 
+Max Pooling– It’s the most popular pooling layer because it uses the input feature map’s pooling regions to get the values that are the highest overall. With the help of max pooling, we may minimize the amount of input without losing the most crucial details.
+
+Max Pooling is advantageous because it adds translation invariance. There are following types of it
+- Shift Invariance(Invariance in Position)
+- Rotational Invariance(Invariance in Rotation)
+- Scale Invariance(Invariance in Scale(small or big))
+
+Max pooling selects the brighter pixels from the image. It is useful when the background of the image is dark and we are interested in only the lighter pixels of the image.
+
+
+Average Pooling– The average value from each pooling area in the input feature map is used for this operation. When input characteristics are noisy, average pooling may assist in smoothing them out.
+
+Average pooling method smooths out the image and hence the sharp features may not be identified when this pooling method is used.
+
 ![CNN](/assets/CNN_11.jpg)
 
 Need a simple network that will fire regardless of the location of “Welcome”  and not fire when there is none
