@@ -185,6 +185,7 @@ Pros
 - Networks become more robust to initialization
 - Acts as regularization during training
 - Zero overhead at test-time: can be fused with conv!
+
 Cons
 - Not well-understood theoretically (yet)
 - Behaves differently during training and testing: this is a very common source of bugs!
