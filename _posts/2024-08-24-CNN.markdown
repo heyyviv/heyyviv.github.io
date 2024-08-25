@@ -205,9 +205,18 @@ Cons
 - Behaves differently during training and testing: this is a very common source of bugs!
 
 
+Generalized Mean Pooling
+Generalized Mean Pooling (GeM) is a mathematical operation used in deep learning to compute the generalized mean of each channel in a 
+tensor. It is a generalization of the average pooling, which is commonly used in classification networks, and of spatial max-pooling 
+layer. By applying GeM, it is possible to increase the contrast of the pooled feature map and focus on the salient features of the image.
 
+![CNN](/assets/CNN_20.jpg)
 
+![CNN](/assets/CNN_21.jpg)
 
+Features of GeM
+The parameter p can be learned during the training process, which allows the model to adapt the pooling mechanism to better suit the dataset and task at hand. This adaptability can lead to improvements in model performance because the pooling layer can learn to focus on the most informative features.
+By the way, GeM will be max pooling when  p→∞, and will be average pooling when p=1
 
 
 
