@@ -5,42 +5,47 @@ date: 2024-08-27 01:43:18 +0530
 categories: Deep Learning
 ---
 
-Set of Data is collection of observed values representing one or more characteristics of some objects or unit.
 
-Population is entire dataset representing the entire entities of interest.
-Example all TV viewer in a country/world.
-Sample is a data set consisting of a population. Subset of Population.
-Students in a school is population and student in class 12 is sample.
-Statistics is a quantity calculated from data that describe a characteristic of sample.
-Statistical inference is a process of using sample statistics to make decision about population.
+* Random Variable * 
+A random variable is a function that associates a real number with each element in the sample space.
+a probability distribution is the mathematical function that gives the probabilities of occurrence of possible outcomes for an experiment
 
-Data Summarization is used
-- to identify typical characteristics of data( to have an overall picture)
-- to idetify which data should be treated as noise or outlier
+* Discrete Probability Distribution *
 
-*Measures of Location*
-measuring of central tendency
+Binomial Distribution
 
-Distributive measure
-The distributive measure can be computed for a given set of data by partitioning the data into smaller subsets, computing the measures for each subset and then merging the results in order to arrive at the measure's value for the entire data
-example -> sum,count
+The binomial distribution is a discrete probability distribution that describes the number of successes in a fixed number of independent and identically distributed Bernoulli trials.
+A Bernoulli trial is a random experiment where there are only two possible outcomes
+- Success( with probability p)
+- Failure (with probability 1-p)
+![DA](/assets/da_p1.jpg)
+mean = np
+variance = npq
 
-Algebraic measire
-It is a measure that can be computed by applying an algebric function to one or more distributive measures
+Hypergeometric Distribution
 
-average -> sum()/count()
+Necessary condition for binomial distribution is all events are independent of each other but in hypergeometric distribution it does not require to be independent and is based sampling without replacement
+If we randomly select n items without replacement from a set of  N items of which m of the item are of one type and N - m of the items are of a second type then the probability mass function of the discrete random variable  X is called the hypergeometric distribution and is of the form:
 
-Holistic measure
-It is a measure that must be applied to entire dataset as whole
-example -> meadian
+![DA](/assets/da_p2.jpg)
+where the support S is the collection of nonnegative integers x that satisfies the inequalities: x<=n , x<=m , n-x<= N-m
 
-*Types of  Mean*
-Arithmetic Mean -> 1/n(x1+x2+ .. xn)
-Weighted Mean  -> each sample value xi is associated with a weight wi for i=1,2,3...n
-WM = (w1x1+w2x2 ..+wnxn)/(w1+w2+..wn)
-Trimmed mean -> if there is extreme values in a sample , mean is infuenced heavily by those values.So in this mean is obtained after chopping off values at the high and low extremes.
+mean = nk/N
+variance = nk(N-k)(N-n)/(N^2 * (N-1))
+
+Poison Distribution 
+
+When you have a large number of events with a small probability of occurrence, then the distribution of number of events that occur in a fixed time interval approximately follows a Poisson distribution.
+Mathematically speaking, when n tends to infinity (n→ infinity) and the probability p tends to zero (p→ 0) the Binomial distribution can approximated to the Poisson distribution.
+![DA](/assets/da_p3.jpg)
+ " λ  " represents lambda, which is the expected number of possible occurrences. It is also sometimes called the rate parameter or event rate, and is calculated as follows: events/time * time period.
+ mean = λ*t
+ variance = λ*t
+
+Discrete uniform distribution
+discrete uniform distribution is a symmetric probability distribution wherein a finite number of values are equally likely to be observed; every one of n values has equal probability 1/n. 
+
+mean = (b+a)/2
+variance = ((b-a+1)^2 -1) /12
 
 
-set = {x1,x2}
-arithmetic mean = (x1+x2)/2
-Harmonic mean = 2/(1/x1+1/x2)
