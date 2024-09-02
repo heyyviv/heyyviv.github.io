@@ -5,47 +5,148 @@ date: 2024-08-27 01:43:18 +0530
 categories: Deep Learning
 ---
 
+Data comes from many sources: sensor measurements, events, text, images, and videos.
+Clickstreams are sequences of actions by a user interacting with an app or web page
 
-* Random Variable * 
-A random variable is a function that associates a real number with each element in the sample space.
-a probability distribution is the mathematical function that gives the probabilities of occurrence of possible outcomes for an experiment
+A sample is a subset of data from a larger data set; statisticians call this larger data set the population
+Sample A subset from a larger data set.
+Population The larger data set or idea of a data set.
+N (n) The size of the population (sample).
+Random sampling Drawing elements into a sample at random.
+Stratified sampling Dividing the population into strata and randomly sampling from each strata.
+Simple random sample -> The sample that results from random sampling without stratifying the population.
+Sample bias -> A sample that misrepresents the population.
 
-* Discrete Probability Distribution *
+Random sampling is a process in which each available member of the population being sampled has an equal chance of being chosen for the sample at each draw.
+The sample that results is called a simple random sample. 
+Sampling can be done with replacement, in which observations are put back in the population after each
+draw for possible future reselection. Or it can be done without replacement, in which case observations, once selected, are unavailable for future draws.
 
-Binomial Distribution
 
-The binomial distribution is a discrete probability distribution that describes the number of successes in a fixed number of independent and identically distributed Bernoulli trials.
-A Bernoulli trial is a random experiment where there are only two possible outcomes
-- Success( with probability p)
-- Failure (with probability 1-p)
-![DA](/assets/da_p1.jpg)
-mean = np
-variance = npq
+Example The reviews of restaurants, hotels, cafes, and so on that you read on social media sites like Yelp
+are prone to bias because the people submitting them are not randomly selected; rather, they
+themselves have taken the initiative to write. This leads to self-selection bias — the people
+motivated to write reviews may be those who had poor experiences, may have an association
+with the establishment, or may simply be a different type of person from those who do not write
+reviews. Note that while self-selection samples can be unreliable indicators of the true state of
+affairs, they may be more reliable in simply comparing one establishment to a similar one; the
+same self-selection bias might apply to each
 
-Hypergeometric Distribution
+Statistical bias refers to measurement or sampling errors that are systematic and produced by the measurement or sampling process. 
+Random sampling is not always easy. Proper definition of an accessible population is key.
+Suppose we want to generate a representative profile of
+customers and we need to conduct a pilot customer survey. The survey needs to be
+representative but is labor intensive.
+First we need to define who a customer is. We might select all customer records
+where purchase amount > 0. Do we include all past customers? Do we include
+refunds? Internal test purchases? Resellers? Both billing agent and customer?
+Next we need to specify a sampling procedure. It might be “select 100 customers
+at random.” Where a sampling from a flow is involved (e.g., real-time customer
+transactions or web visitors), timing considerations may be important (e.g., a web
+visitor at 10 a.m. on a weekday may be different from a web visitor at 10 p.m. on
+a weekend).
 
-Necessary condition for binomial distribution is all events are independent of each other but in hypergeometric distribution it does not require to be independent and is based sampling without replacement
-If we randomly select n items without replacement from a set of  N items of which m of the item are of one type and N - m of the items are of a second type then the probability mass function of the discrete random variable  X is called the hypergeometric distribution and is of the form:
+In stratified sampling, the population is divided up into strata, and random
+samples are taken from each stratum. Political pollsters might seek to learn the
+electoral preferences of whites, blacks, and Hispanics.A simple random sample taken from the population would yield too few blacks and Hispanics, so those strata could be overweighted in stratified sampling to yield equivalent sample
+sizes
 
-![DA](/assets/da_p2.jpg)
-where the support S is the collection of nonnegative integers x that satisfies the inequalities: x<=n , x<=m , n-x<= N-m
+ Time and effort spent on random sampling not only reduce bias, but also allow greater
+attention to data exploration and data quality.For example, missing data and
+outliers may contain useful information. 
 
-mean = nk/N
-variance = nk(N-k)(N-n)/(N^2 * (N-1))
+So when are massive amounts of data needed?
+The classic scenario for the value of big data is when the data is not only big, but
+sparse as well. Consider the search queries received by Google, where columns
+are terms, rows are individual search queries, and cell values are either 0 or 1,
+depending on whether a query contains a term. The goal is to determine the best
+predicted search destination for a given query. There are over 150,000 words in
+the English language, and Google processes over 1 trillion queries per year. This
+yields a huge matrix, the vast majority of whose entries are "0"
+This is a true big data problem — only when such enormous quantities of data are
+accumulated can effective search results be returned for most queries. And the
+more data accumulates, the better the results.
 
-Poison Distribution 
+Data quality is often more important than data quantity, and random sampling can reduce bias and
+facilitate quality improvement that would be prohibitively expensive.
+The term sampling distribution of a statistic refers to the distribution of some
+sample statistic, over many samples drawn from the same population
 
-When you have a large number of events with a small probability of occurrence, then the distribution of number of events that occur in a fixed time interval approximately follows a Poisson distribution.
-Mathematically speaking, when n tends to infinity (n→ infinity) and the probability p tends to zero (p→ 0) the Binomial distribution can approximated to the Poisson distribution.
-![DA](/assets/da_p3.jpg)
- " λ  " represents lambda, which is the expected number of possible occurrences. It is also sometimes called the rate parameter or event rate, and is calculated as follows: events/time * time period.
- mean = λ*t
- variance = λ*t
+* Sampling distribution *
 
-Discrete uniform distribution
-discrete uniform distribution is a symmetric probability distribution wherein a finite number of values are equally likely to be observed; every one of n values has equal probability 1/n. 
+Sample statistic -> A metric calculated for a sample of data drawn from a larger population.
+Data distribution -> The frequency distribution of individual values in a data set.
+Sampling distribution -> The frequency distribution of a sample statistic over many samples or resamples.
+Central limit theorem -> The tendency of the sampling distribution to take on a normal shape as sample size rises.
+Standard error -> The variability (standard deviation) of a sample statistic over many samples (not to be confused with standard deviation, which, by itself, refers to variability of individual data values)
 
-mean = (b+a)/2
-variance = ((b-a+1)^2 -1) /12
+The distribution of a sample statistic such as the mean is likely to be more regular
+and bell-shaped than the distribution of the data itself. The larger the sample that
+the statistic is based on, the more this is true. Also, the larger the sample, the
+narrower the distribution of the sample statistic.
+Theorem on Sampling distribution 
+
+* Central Limit Theorem * 
+It says that the means drawn
+from multiple samples will resemble the familiar bell-shaped normal curve (see “Normal Distribution”), even if the source population is not normally distributed, provided that the sample size is large enough and the departure of the data from normality is not too great
+
+If original distribution of data from sample are taken have mean -> u and variance-> sigma
+then sample(sample size = n) mean -> x will have a normal distribution of mean -> u and variance sigma/n.
+
+The practice of studying random phenomena shows that the results of individual observations, even those made under the same conditions, may differ. But the average results for a sufficiently large number of observations are stable and only slightly fluctuate depending on the results of individual observations. The theoretical basis for this remarkable property of random phenomena is the Central Limit Theorem(aka law of large numbers).
+
+The average value of the data sample, according to the Central Limit Theorem, will be closer to the average of the whole population and will be approximately normal as the sample size increases. The significance of this theorem follows from the fact that this is true regardless of population distribution.
+
+* Standard error
+The standard error is a single metric that sums up the variability in the sampling
+distribution for a statistic. The standard error can be estimated using a statistic
+based on the standard deviation s of the sample values, and the sample size n:
+
+Standard error = S/root(n)
+
+As the sample size increases, the standard error decreases, corresponding to what
+was observed in Figure 2-6. The relationship between standard error and sample
+size is sometimes referred to as the square-root of n rule: in order to reduce the
+standard error by a factor of 2, the sample size must be increased by a factor of 4.
+
+* The Bootstrap
+One easy and effective way to estimate the sampling distribution of a statistic, or
+of model parameters, is to draw additional samples, with replacement, from the
+sample itself and recalculate the statistic or model for each resample. This
+procedure is called the bootstrap, and it does not necessarily involve any
+assumptions about the data or the sample statistic being normally distributed
+
+Bootstrap sample -> A sample taken with replacement from an observed data set.
+Resampling -> The process of taking repeated samples from observed data; includes both bootstrap and
+permutation (shuffling) procedures.
+
+Conceptually, you can imagine the bootstrap as replicating the original sample
+thousands or millions of times so that you have a hypothetical population that
+embodies all the knowledge from your original sample (it’s just larger). You can
+then draw samples from this hypothetical population for the purpose of estimating
+a sampling distribution.
+
+![Boostrap](/assets/da_s1.jpg)
+
+* Chi-Square Distribution
+A chi-square (Χ2) distribution is a continuous probability distribution that is used in many hypothesis tests.
+The shape of a chi-square distribution is determined by the parameter k. The graph below shows examples of chi-square distributions with different values of k.
+![DA](/assets/da_s2.jpg)
+
+The shape of a chi-square distribution is determined by the parameter k, which represents the degrees of freedom.
+The main purpose of chi-square distributions is hypothesis testing, not describing real-world distributions.
+
+Imagine taking a random sample of a standard normal distribution (Z). If you squared all the values in the sample, you would have the chi-square distribution with k = 1.
+
+Χ21 = (Z)2
+
+Now imagine taking samples from two standard normal distributions (Z1 and Z2). If each time you sampled a pair of values, you squared them and added them together, you would have the chi-square distribution with k = 2.
+
+Χ22 = (Z1)2 + (Z2)2
+
+More generally, if you sample from k independent standard normal distributions and then square and sum the values, you’ll produce a chi-square distribution with k degrees of freedom. 
+
+Χ2k = (Z1)2 + (Z2)2 + … + (Zk)2
+
 
 
