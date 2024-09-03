@@ -72,7 +72,7 @@ facilitate quality improvement that would be prohibitively expensive.
 The term sampling distribution of a statistic refers to the distribution of some
 sample statistic, over many samples drawn from the same population
 
-* Sampling distribution *
+# Sampling distribution *
 
 Sample statistic -> A metric calculated for a sample of data drawn from a larger population.
 Data distribution -> The frequency distribution of individual values in a data set.
@@ -86,7 +86,7 @@ the statistic is based on, the more this is true. Also, the larger the sample, t
 narrower the distribution of the sample statistic.
 Theorem on Sampling distribution 
 
-* Central Limit Theorem * 
+# Central Limit Theorem * 
 It says that the means drawn
 from multiple samples will resemble the familiar bell-shaped normal curve (see “Normal Distribution”), even if the source population is not normally distributed, provided that the sample size is large enough and the departure of the data from normality is not too great
 
@@ -97,7 +97,7 @@ The practice of studying random phenomena shows that the results of individual o
 
 The average value of the data sample, according to the Central Limit Theorem, will be closer to the average of the whole population and will be approximately normal as the sample size increases. The significance of this theorem follows from the fact that this is true regardless of population distribution.
 
-* Standard error
+# Standard error
 The standard error is a single metric that sums up the variability in the sampling
 distribution for a statistic. The standard error can be estimated using a statistic
 based on the standard deviation s of the sample values, and the sample size n:
@@ -109,7 +109,7 @@ was observed in Figure 2-6. The relationship between standard error and sample
 size is sometimes referred to as the square-root of n rule: in order to reduce the
 standard error by a factor of 2, the sample size must be increased by a factor of 4.
 
-* The Bootstrap
+# The Bootstrap
 One easy and effective way to estimate the sampling distribution of a statistic, or
 of model parameters, is to draw additional samples, with replacement, from the
 sample itself and recalculate the statistic or model for each resample. This
@@ -128,7 +128,7 @@ a sampling distribution.
 
 ![Boostrap](/assets/da_s1.jpg)
 
-* Chi-Square Distribution
+# Chi-Square Distribution
 A chi-square (Χ2) distribution is a continuous probability distribution that is used in many hypothesis tests.
 The shape of a chi-square distribution is determined by the parameter k. The graph below shows examples of chi-square distributions with different values of k.
 ![DA](/assets/da_s2.jpg)
@@ -147,6 +147,42 @@ Now imagine taking samples from two standard normal distributions (Z1 and Z2). I
 More generally, if you sample from k independent standard normal distributions and then square and sum the values, you’ll produce a chi-square distribution with k degrees of freedom. 
 
 Χ2k = (Z1)2 + (Z2)2 + … + (Zk)2
+
+# Hypothesis Tests
+When we refer to Hypothesis Testing, it means using a systematic procedure to decide whether data and research study can support our particular theory which applies to a population. 
+
+We do this by using two mutually exclusive hypotheses about a population, and evaluating these statements to decide if the statements are supported by the sample data.
+
+When performing Hypothesis Testing, firstly, a hypothesis must be formulated. An example of a hypothesis is “there is a correlation between height and gender in a population,” or “there is a difference between two groups of a population.”
+
+Usually, the thesis to be demonstrated is called the Alternative Hypothesis (HA), and its opposite is the Null Hypothesis (H0). In practice, the Null Hypothesis states that there is nothing new happening in the population.
+
+The objective of Hypothesis Testing is to verify if the Null Hypothesis can be rejected or not. In general, rejecting the Null Hypothesis does not automatically mean that the alternative hypothesis is accepted. However, in some cases, rejecting the Null Hypothesis can imply that the Alternative Hypothesis can be accepted.
+
+When performing a Hypothesis Test, two types of errors could occur:
+* Type-I Error: reject the Null Hypothesis when it is actually true.
+* Type-II Error: accept the Null Hypothesis when it is actually false.
+
+Null Hypothesis
+There is no relation between statistical variables and refer to this type of testing as null hypothesis testing. A null hypothesis is represented as H0. 
+
+ 
+Alternative Hypothesis
+There is a relationship between two variables, proving that they have a statistical bond. An alternative hypothesis is represented as H1 or HA. The alternative hypothesis can be split into:
+
+One-tailed. This is when you are testing in one direction and disregarding the possibility of a relationship with another variable in another direction. The sample mean would be higher or lower than the population mean, but not both.
+Two-tailed. This is when you are testing in both directions and shows whether the sample mean is higher than or less than the mean of a population.
+
+Types of Hypothesis Testing
+- Parametric tests  are used when the samples have a normal distribution. In general, samples with a mean of 0 and a variance of 1 follow a normal distribution
+- Non-Parametric tests  If the samples do not follow a normal distribution, non-parametric tests are used.
+
+Two types of Hypothesis Testing can be created depending on the number of samples to be compared:
+- One Sample  If there is only one sample that must be compared to a specific value, it is called a single sample.
+- Two Samples  if you’re comparing two or more samples. Correlation and sample difference are two tests that could be used in this situation. Samples can be paired or not in both circumstances. Dependent samples are sometimes known as paired samples, while independent samples are known as unpaired samples. Natural or matched couplings occur in paired samples.
+
+
+
 
 
 
