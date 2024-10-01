@@ -92,77 +92,9 @@ Better Metrics: You can use precision-recall curves or confusion matrices to get
 | TPR    | $$\frac{TP}{TP + FN}$$ |
 | FPR    | $$\frac{FP}{FP + TN}$$ |
 
-# Precision-Recall Curve
 
-## Introduction
 
-The **Precision-Recall (PR) curve** is an essential evaluation tool for **binary classification problems**, particularly when dealing with **imbalanced datasets**. It illustrates the trade-off between two critical metrics: **precision** and **recall**, helping assess the performance of a model, especially in scenarios where the positive class is rare.
-
-### Key Metrics
-
-1. **Precision (Positive Predictive Value)**: Measures the proportion of true positive predictions among all positive predictions.
-   \[
-   \text{Precision} = \frac{\text{True Positives (TP)}}{\text{True Positives (TP)} + \text{False Positives (FP)}}
-   \]
-   - A high precision score indicates a low number of false positives.
-
-2. **Recall (Sensitivity or True Positive Rate)**: Reflects the proportion of actual positive instances that are correctly identified.
-   \[
-   \text{Recall} = \frac{\text{True Positives (TP)}}{\text{True Positives (TP)} + \text{False Negatives (FN)}}
-   \]
-   - A high recall means that most positive cases are detected by the model.
-
-### Trade-off Between Precision and Recall
-
-- **Precision and recall** typically have an inverse relationship:
-  - Increasing the threshold for classifying a positive sample often results in higher precision but lower recall (fewer false positives but also fewer true positives).
-  - Lowering the threshold increases recall but may reduce precision, as more false positives are included.
-- **Threshold tuning** is crucial to balance these metrics based on the specific goals of the model.
-
-### PR Curve Plot
-
-The **Precision-Recall curve** visualizes how precision and recall vary at different classification thresholds:
-- **X-axis**: Recall (ranging from 0 to 1).
-- **Y-axis**: Precision (ranging from 0 to 1).
-
-In the ideal case, precision remains high as recall increases, reflecting a strong model.
-
-### Example PR Curve
-
-Here's an example code to generate a Precision-Recall curve using Python:
-
-```python
-import numpy as np
-from sklearn.metrics import precision_recall_curve
-import matplotlib.pyplot as plt
-
-# Simulated true labels and predicted probabilities
-y_true = np.array([0, 0, 1, 1, 1, 0, 0, 1, 1, 0])
-y_scores = np.array([0.1, 0.4, 0.35, 0.8, 0.7, 0.5, 0.3, 0.9, 0.65, 0.2])
-
-# Calculate precision, recall, and thresholds
-precision, recall, _ = precision_recall_curve(y_true, y_scores)
-
-# Plot the precision-recall curve
-plt.plot(recall, precision, marker='.')
-plt.xlabel('Recall')
-plt.ylabel('Precision')
-plt.title('Precision-Recall Curve')
-plt.show()
-```
-
-### Interpretation
-
-- **Upper-right region**: Indicates both high precision and high recall, showing good performance.
-- **Lower-left region**: Indicates low precision and recall, representing poor model performance.
-- A curve closer to the upper-right corner represents a more effective model.
-
-### Applications of PR Curve
-
-- **Imbalanced Datasets**: The PR curve is particularly valuable for evaluating models in situations where the positive class is underrepresented, such as fraud detection or medical diagnosis.
-- **Threshold Selection**: By analyzing the PR curve, one can choose a classification threshold that best balances precision and recall according to the problem at hand.
-
----
+![table](/assets/isic_1.jpg)
 
 ## Precision-Recall Curve
 
@@ -388,4 +320,9 @@ The **Partial AUC (pAUC)** measures the area under the ROC curve within a specif
 This structured format, with code blocks enclosed by triple backticks and
 
  mathematical expressions wrapped in single or double dollar signs, ensures that Jekyll can properly parse and render the content.
+
+
+
+
+
 
