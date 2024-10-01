@@ -179,7 +179,7 @@ Types of Hypothesis Testing
 
 Two types of Hypothesis Testing can be created depending on the number of samples to be compared:
 - One Sample  If there is only one sample that must be compared to a specific value, it is called a single sample.
-- Two Samples  if you’re comparing two or more samples. Correlation and sample difference are two tests that could be used in this situation. Samples can be paired or not in both circumstances. Dependent samples are sometimes known as paired samples, while independent samples are known as unpaired samples. Natural or matched couplings occur in paired samples.
+- Two Samples  if you're comparing two or more samples. Correlation and sample difference are two tests that could be used in this situation. Samples can be paired or not in both circumstances. Dependent samples are sometimes known as paired samples, while independent samples are known as unpaired samples. Natural or matched couplings occur in paired samples.
 
 
 
