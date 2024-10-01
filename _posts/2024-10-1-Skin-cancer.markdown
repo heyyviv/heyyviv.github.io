@@ -96,137 +96,93 @@ Better Metrics: You can use precision-recall curves or confusion matrices to get
 
 ## Introduction
 
-The **Precision-Recall (PR) curve** is an evaluation metric for binary classification problems, especially useful when dealing with **imbalanced datasets**. It provides insights into the trade-off between two key performance metrics: **precision** and **recall**.
+The **Precision-Recall (PR) curve** is an essential evaluation tool for **binary classification problems**, particularly when dealing with **imbalanced datasets**. It illustrates the trade-off between two critical metrics: **precision** and **recall**, helping assess the performance of a model, especially in scenarios where the positive class is rare.
 
 ### Key Metrics
 
-1. **Precision (Positive Predictive Value)**: The fraction of relevant instances among the retrieved instances.
+1. **Precision (Positive Predictive Value)**: Measures the proportion of true positive predictions among all positive predictions.
    \[
    \text{Precision} = \frac{\text{True Positives (TP)}}{\text{True Positives (TP)} + \text{False Positives (FP)}}
    \]
-   - High precision means fewer false positives.
+   - A high precision score indicates a low number of false positives.
 
-2. **Recall (Sensitivity or True Positive Rate)**: The fraction of relevant instances that were retrieved.
+2. **Recall (Sensitivity or True Positive Rate)**: Reflects the proportion of actual positive instances that are correctly identified.
    \[
    \text{Recall} = \frac{\text{True Positives (TP)}}{\text{True Positives (TP)} + \text{False Negatives (FN)}}
    \]
-   - High recall means fewer false negatives.
+   - A high recall means that most positive cases are detected by the model.
 
 ### Trade-off Between Precision and Recall
 
-- **Precision and recall** are typically inversely related. Increasing recall often reduces precision and vice versa.
-- **Threshold tuning** plays a key role in this balance:
-  - A **higher threshold** increases precision but decreases recall.
-  - A **lower threshold** increases recall but decreases precision.
+- **Precision and recall** typically have an inverse relationship:
+  - Increasing the threshold for classifying a positive sample often results in higher precision but lower recall (fewer false positives but also fewer true positives).
+  - Lowering the threshold increases recall but may reduce precision, as more false positives are included.
+- **Threshold tuning** is crucial to balance these metrics based on the specific goals of the model.
 
 ### PR Curve Plot
 
-The **Precision-Recall curve** is plotted with:
-- **X-axis**: Recall (ranging from 0 to 1)
-- **Y-axis**: Precision (ranging from 0 to 1)
+The **Precision-Recall curve** visualizes how precision and recall vary at different classification thresholds:
+- **X-axis**: Recall (ranging from 0 to 1).
+- **Y-axis**: Precision (ranging from 0 to 1).
+
+In the ideal case, precision remains high as recall increases, reflecting a strong model.
 
 ### Example PR Curve
 
-Below is an example of how precision and recall change with different thresholds:
+Here's an example code to generate a Precision-Recall curve using Python:
 
-{% raw %}
+```python
 import numpy as np
-from sklearn.metrics import precision_recall_curve, auc
+from sklearn.metrics import precision_recall_curve
 import matplotlib.pyplot as plt
 
-# Simulated true labels and model predicted probabilities
+# Simulated true labels and predicted probabilities
 y_true = np.array([0, 0, 1, 1, 1, 0, 0, 1, 1, 0])
 y_scores = np.array([0.1, 0.4, 0.35, 0.8, 0.7, 0.5, 0.3, 0.9, 0.65, 0.2])
 
 # Calculate precision, recall, and thresholds
-precision, recall, thresholds = precision_recall_curve(y_true, y_scores)
+precision, recall, _ = precision_recall_curve(y_true, y_scores)
 
 # Plot the precision-recall curve
-plt.figure(figsize=(8, 6))
-plt.plot(recall, precision, marker='.', label='Precision-Recall Curve')
-
-# Labeling the axes
+plt.plot(recall, precision, marker='.')
 plt.xlabel('Recall')
 plt.ylabel('Precision')
 plt.title('Precision-Recall Curve')
-
-# Show the plot
-plt.legend()
 plt.show()
-{% endraw %}
+```
 
-Interpretation
-Upper-right region: Represents models with both high precision and high recall, indicating good performance.
-Lower-left region: Represents poor performance, with low precision and recall.
-A high precision-recall curve means that the model maintains good precision as recall increases.
+### Interpretation
 
-Applications of PR Curve
-Imbalanced Data: PR curves are particularly valuable for datasets with skewed class distributions (e.g., fraud detection, medical diagnosis) where accuracy alone is not sufficient to evaluate the model's performance.
-Threshold Selection: By analyzing the PR curve, you can select the best classification threshold that balances precision and recall.
-Area Under the Precision-Recall Curve (AUC-PR)
-The AUC-PR is another metric derived from the PR curve, which measures the area under the curve. A higher area under the curve signifies better overall performance. Unlike the ROC curve, the PR curve focuses more on the performance of the positive class.
+- **Upper-right region**: Indicates both high precision and high recall, showing good performance.
+- **Lower-left region**: Indicates low precision and recall, representing poor model performance.
+- A curve closer to the upper-right corner represents a more effective model.
 
-ROC vs. Precision-Recall Curve
-ROC Curve: Plots True Positive Rate (Recall) vs False Positive Rate and is more suitable when classes are balanced.
-PR Curve: Focuses on the relationship between precision and recall, making it better for imbalanced datasets.
+### Applications of PR Curve
 
+- **Imbalanced Datasets**: The PR curve is particularly valuable for evaluating models in situations where the positive class is underrepresented, such as fraud detection or medical diagnosis.
+- **Threshold Selection**: By analyzing the PR curve, one can choose a classification threshold that best balances precision and recall according to the problem at hand.
 
-![Graph](/assets/isic_1.jpg)
+### Area Under the Precision-Recall Curve (AUC-PR)
 
-# ROC AUC Curve Explained
+The **AUC-PR** (Area Under the Precision-Recall Curve) is a single-value metric derived from the PR curve. It provides an overall measure of the model's performance:
+- A **higher AUC-PR** value indicates a better ability to maintain precision as recall increases.
 
-The ROC (Receiver Operating Characteristic) curve and AUC (Area Under the Curve) are essential tools in evaluating the performance of binary classification models. They provide insights into how well a model distinguishes between two classes, typically referred to as positive and negative.
+### ROC vs. Precision-Recall Curve
 
-## ROC Curve
+- **ROC Curve**: Focuses on the **True Positive Rate** vs **False Positive Rate**, and is better suited when class distributions are relatively balanced.
+- **PR Curve**: Focuses on the trade-off between precision and recall, making it more appropriate for **imbalanced datasets**.
 
-- **Definition**: The ROC curve is a graphical representation that illustrates the performance of a binary classifier across various threshold settings. It plots the True Positive Rate (TPR) against the False Positive Rate (FPR).
-
-- **Axes**:
-  - **X-axis**: False Positive Rate (FPR), calculated as:
-    $$
-    \text{FPR} = \frac{FP}{FP + TN}
-    $$
-  - **Y-axis**: True Positive Rate (TPR), also known as Sensitivity or Recall, calculated as:
-    $$
-    \text{TPR} = \frac{TP}{TP + FN}
-    $$
-
-- The ROC curve is generated by calculating TPR and FPR at various threshold levels. As the classification threshold changes, different pairs of TPR and FPR values are obtained. Lowering the threshold means more items are classified as positive, which increases both TPR and FPR.
--  A curve that hugs the top left corner indicates a high-performing model with a high TPR and low FPR.
-- **Interpretation**: Each point on the ROC curve represents a different threshold for classifying instances. A model that perfectly distinguishes between classes will have a point at (0, 1), indicating zero false positives and 100% true positives. Conversely, a model that performs no better than random guessing will lie along the diagonal line from (0, 0) to (1, 1).
-
-## AUC (Area Under the Curve)
-
-- **Definition**: The AUC quantifies the overall performance of the model by measuring the area under the ROC curve.
-
-- **Value Range**:
-  - **AUC = 1**: Perfect model; it ranks all positive instances higher than negative ones.
-  - **AUC = 0.5**: Model performs no better than random guessing.
-  - **AUC < 0.5**: Indicates a model that is worse than random guessing.
-
-- **Interpretation**: A higher AUC value indicates better model performance. For example, an AUC of 0.8 suggests that there is an 80% chance that the model will correctly rank a randomly chosen positive instance higher than a randomly chosen negative instance.
-
-## Practical Applications
-
-1. **Model Comparison**: AUC is particularly useful for comparing different models. The model with the higher AUC is generally considered superior.
-  
-2. **Threshold Selection**: The ROC curve helps in selecting an optimal threshold based on the trade-off between TPR and FPR, depending on the specific requirements of the application.
-
-3. **Imbalanced Datasets**: While ROC and AUC are effective for balanced datasets, they can be misleading in imbalanced scenarios. In such cases, precision-recall curves may provide better insights.
-
-## Summary
-
-The ROC curve and AUC are powerful metrics for evaluating binary classifiers. They provide a comprehensive view of a model's ability to distinguish between classes across various thresholds, making them invaluable tools in machine learning and statistical analysis. By analyzing these metrics, practitioners can make informed decisions about model selection and threshold optimization to meet specific objectives in their classification tasks.
+---
 
 # Partial ROC Curve
 
 ## Introduction
 
-The **Receiver Operating Characteristic (ROC) Curve** is a widely-used tool to evaluate the performance of binary classification models by plotting the trade-off between **True Positive Rate (Recall)** and **False Positive Rate**. However, in many real-world scenarios, we are interested in a specific region of the ROC curve, particularly when the **false positive rate** is constrained to low values. This is where the **Partial ROC Curve (pROC)** comes into play.
+The **Partial ROC (pROC) curve** focuses on evaluating the performance of a binary classification model in a specific region of the **ROC curve**, particularly when the **False Positive Rate (FPR)** is constrained to low values. This is especially useful in domains where controlling the false positive rate is crucial, such as medical diagnosis or fraud detection.
 
 ### ROC Curve Overview
 
-- **True Positive Rate (TPR)**, also known as **Recall**:
+- **True Positive Rate (TPR)**, or **Recall**:
   \[
   TPR = \frac{\text{True Positives (TP)}}{\text{True Positives (TP)} + \text{False Negatives (FN)}}
   \]
@@ -236,43 +192,33 @@ The **Receiver Operating Characteristic (ROC) Curve** is a widely-used tool to e
   FPR = \frac{\text{False Positives (FP)}}{\text{False Positives (FP)} + \text{True Negatives (TN)}}
   \]
 
-- The **ROC Curve** plots TPR against FPR at various classification thresholds. The curve shows how the model’s sensitivity and false positive rate change as the decision threshold is varied.
+The **ROC curve** plots TPR vs FPR at different classification thresholds. A good model has a curve that hugs the top-left corner (high TPR, low FPR).
 
-### Why Partial ROC Curve?
+### Why Partial ROC?
 
-In many applications, it is not practical to examine the entire ROC curve. For example, in medical diagnosis or fraud detection, a high **False Positive Rate** is undesirable, and we may only be interested in how the model performs within a low FPR range.
+In certain applications, we are only concerned with the model's performance at **low FPR**. For instance:
+- **Medical Diagnosis**: A low FPR is critical to avoid unnecessary and costly treatments.
+- **Fraud Detection**: Minimizing false positives is important to reduce false alarms and investigations.
 
-The **Partial ROC Curve** (pROC) focuses on a **subset** of the ROC curve, typically when the FPR is below a certain threshold, say 0.1 (i.e., 10%). This allows for better evaluation of the model’s performance in the region that matters most.
-
-### Applications of Partial ROC
-
-- **Medical Diagnosis**: In situations where false positives lead to costly or harmful interventions, we may want to analyze the model performance only at very low FPR values (e.g., less than 5%).
-  
-- **Fraud Detection**: A high number of false positives can result in unnecessary investigations, so it is critical to examine model performance at low false positive rates.
-
-- **Anomaly Detection**: Many anomaly detection systems are designed to operate at low FPRs to minimize the rate of false alarms.
+The **Partial ROC Curve** focuses on a subset of the ROC curve, usually up to a predefined FPR threshold (e.g., 0.1 or 0.2).
 
 ### Plotting the Partial ROC Curve
 
-The process of generating a partial ROC curve is similar to the full ROC curve, except we restrict the x-axis to a lower range of FPR values (e.g., between 0 and 0.1).
+Here’s how to compute and plot a **Partial ROC Curve** in Python:
 
-### Example Python Code for Partial ROC Curve
-
-Here’s an example of how to compute and plot a **Partial ROC Curve** in Python using `scikit-learn`:
-
-{% raw %}
+```python
 import numpy as np
 from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
 
-# Simulated true labels and model predicted probabilities
+# Simulated true labels and predicted probabilities
 y_true = np.array([0, 0, 1, 1, 1, 0, 0, 1, 1, 0])
 y_scores = np.array([0.1, 0.4, 0.35, 0.8, 0.7, 0.5, 0.3, 0.9, 0.65, 0.2])
 
-# Compute ROC curve and area under the curve
+# Compute ROC curve
 fpr, tpr, thresholds = roc_curve(y_true, y_scores)
 
-# Define the range of FPR we are interested in (partial)
+# Define the maximum FPR for the partial ROC
 max_fpr = 0.1
 partial_fpr = fpr[fpr <= max_fpr]
 partial_tpr = tpr[:len(partial_fpr)]
@@ -281,34 +227,30 @@ partial_tpr = tpr[:len(partial_fpr)]
 partial_auc = auc(partial_fpr, partial_tpr)
 
 # Plot the partial ROC curve
-plt.figure(figsize=(8, 6))
 plt.plot(partial_fpr, partial_tpr, marker='.', label=f'Partial ROC (AUC = {partial_auc:.2f})')
-
-# Labeling the axes
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.title('Partial ROC Curve')
-
-# Show the plot
 plt.legend()
 plt.show()
-{% endraw %}
-Partial Area Under the ROC Curve (pAUC)
-Similar to the full Area Under the ROC Curve (AUC-ROC), we can compute the Partial AUC (pAUC), which measures the area under the partial ROC curve. The pAUC is particularly important when evaluating models in a restricted FPR range, as it summarizes the model’s performance in that region.
+```
 
-For example, if we are only concerned with an FPR range from 0 to 0.1, the pAUC will provide a more relevant metric than the full AUC-ROC.
+### Partial Area Under the ROC Curve (pAUC)
 
-Advantages of Partial ROC Curve
-Focus on Relevant Performance: The full ROC curve often includes regions that are not of practical interest, especially when FPR values are high. The pROC curve allows for targeted evaluation within specific FPR ranges that are critical for the application.
+Just like the full AUC, the **Partial AUC (pAUC)** is the area under the partial ROC curve. It summarizes the model's performance within the restricted FPR range, providing a more focused evaluation.
 
-Better Comparison: In domains like medical diagnosis, comparing models based on their pROC performance (e.g., within FPR < 0.1) gives a more meaningful insight than considering the full ROC curve.
+### Advantages of Partial ROC
 
-Improved Decision-Making: By focusing on a limited FPR range, stakeholders can make better decisions about which model to deploy in critical, high-stakes environments.
+1. **Relevance**: The partial ROC curve allows for targeted evaluation within specific **FPR ranges**, which are often critical in applications like healthcare or security.
+2. **Better Decision-Making**: By focusing on low FPR values, stakeholders can select models that reduce the risks of costly false positives.
 
-Limitations
-Choice of FPR Threshold: The choice of the maximum FPR value for the partial ROC curve can be somewhat arbitrary and may need to be tuned based on the specific domain or use case.
+### Limitations
 
-Loss of Full Picture: By focusing on a partial region of the ROC curve, we may lose valuable insights into the model’s performance at other FPR values.
+- **Choice of FPR Threshold**: Selecting the maximum FPR value for the partial ROC curve may be somewhat arbitrary and needs to be aligned with the specific application.
+- **Loss of Global Insight**: Focusing on a small region of the ROC curve might lead to missing insights about the model's performance in other FPR regions.
 
-Summary
-The Partial ROC Curve provides a focused view of a classifier’s performance in the region of interest, where controlling the False Positive Rate is critical. This tool is valuable in scenarios where only a low false positive rate is acceptable, allowing for better model evaluation and selection in high-stakes applications like medical diagnosis, fraud detection, and anomaly detection.
+---
+
+## Summary
+
+Both the **Precision-Recall Curve** and the **Partial ROC Curve** are powerful tools for evaluating classifiers, particularly in domains where **class imbalance** or **false positive control** is critical. Each provides a focused view of model performance, allowing for better decision-making and model selection in high-stakes environments.
