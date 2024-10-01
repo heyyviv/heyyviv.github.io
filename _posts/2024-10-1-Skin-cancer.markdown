@@ -129,7 +129,7 @@ The **Precision-Recall curve** is plotted with:
 
 Below is an example of how precision and recall change with different thresholds:
 
-```python
+{% raw %}
 import numpy as np
 from sklearn.metrics import precision_recall_curve, auc
 import matplotlib.pyplot as plt
@@ -153,6 +153,7 @@ plt.title('Precision-Recall Curve')
 # Show the plot
 plt.legend()
 plt.show()
+{% endraw %}
 
 Interpretation
 Upper-right region: Represents models with both high precision and high recall, indicating good performance.
@@ -259,7 +260,7 @@ The process of generating a partial ROC curve is similar to the full ROC curve, 
 
 Here’s an example of how to compute and plot a **Partial ROC Curve** in Python using `scikit-learn`:
 
-```python
+{% raw %}
 import numpy as np
 from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
@@ -290,7 +291,8 @@ plt.title('Partial ROC Curve')
 
 # Show the plot
 plt.legend()
-plt.show()```
+plt.show()
+{% endraw %}
 Partial Area Under the ROC Curve (pAUC)
 Similar to the full Area Under the ROC Curve (AUC-ROC), we can compute the Partial AUC (pAUC), which measures the area under the partial ROC curve. The pAUC is particularly important when evaluating models in a restricted FPR range, as it summarizes the model’s performance in that region.
 
