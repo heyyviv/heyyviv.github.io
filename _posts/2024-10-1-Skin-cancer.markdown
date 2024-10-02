@@ -14,6 +14,8 @@ By building this project, I sought to extend the benefits of AI-based skin cance
 
 In this competition, we  develop image-based algorithms to identify histologically confirmed skin cancer cases with single-lesion crops from 3D total body photos (TBP). The image quality resembles close-up smartphone photos, which are regularly submitted for telehealth purposes. Our binary classification algorithm could be used in settings without access to specialized care and improve triage for early skin cancer detection.
 
+Dermatoscope images reveal morphologic features not visible to the naked eye, but these images are typically only captured in dermatology clinics. Algorithms that benefit people in primary care or non-clinical settings must be adept to evaluating lower quality images. This competition leverages 3D TBP to present a novel dataset of every single lesion from thousands of patients across three continents with images resembling cell phone photos.
+
 # Evaluation 
 
 ![table](/assets/isic_2.jpg)
@@ -410,9 +412,206 @@ def score(solution: pd.DataFrame, submission: pd.DataFrame, row_id_column_name: 
 
 ```
 
+# Data 
+
+Binary class {0: benign, 1: malignant}.
+Benign : not harmful in effect.
+Malignant : cancerous tumor
+
+The dataset consists of diagnostically labelled images with additional metadata. The images are JPEGs. The associated .csv file contains a binary diagnostic label (target), potential input variables (e.g. age_approx, sex, anatom_site_general, etc.), and additional attributes (e.g. image source and precise diagnosis).
+
+In this challenge we are differentiating benign from malignant cases. For each image (isic_id) you are assigning the probability (target) ranging [0, 1] that the case is malignant.
+
+The SLICE-3D dataset - skin lesion image crops extracted from 3D TBP for skin cancer detection
+To mimic non-dermoscopic images, this competition uses standardized cropped lesion-images of lesions from 3D Total Body Photography (TBP). Vectra WB360, a 3D TBP product from Canfield Scientific, captures the complete visible cutaneous surface area in one macro-quality resolution tomographic image. An AI-based software then identifies individual lesions on a given 3D capture. This allows for the image capture and identification of all lesions on a patient, which are exported as individual 15x15 mm field-of-view cropped photos. The dataset contains every lesion from a subset of thousands of patients seen between the years 2015 and 2024 across nine institutions and three continents.
+
+The following are examples from the training set. 'Strongly-labelled tiles' are those whose labels were derived through histopathology assessment. 'Weak-labelled tiles' are those who were not biopsied and were considered 'benign' by a doctor.
+![table](/assets/isic_3.jpg)
+
+
+# Feature Engineering
 
 
 
 
+### New Feature Descriptions for ISIC 2024 Challenge
 
+1. **Lesion Size Ratio**: The ratio of the minor axis length to the longest diameter of the lesion.
+   ```python
+   df["lesion_size_ratio"] = df["tbp_lv_minorAxisMM"] / df["clin_size_long_diam_mm"]
+   ```
 
+2. **Lesion Shape Index**: The area-to-perimeter ratio that gives insights into the shape complexity.
+   ```python
+   df["lesion_shape_index"] = df["tbp_lv_areaMM2"] / (df["tbp_lv_perimeterMM"] ** 2)
+   ```
+
+3. **Hue Contrast**: The absolute difference in hue values between the lesion and its surroundings.
+   ```python
+   df["hue_contrast"] = (df["tbp_lv_H"] - df["tbp_lv_Hext"]).abs()
+   ```
+
+4. **Luminance Contrast**: The absolute difference in luminance between the lesion and surrounding skin.
+   ```python
+   df["luminance_contrast"] = (df["tbp_lv_L"] - df["tbp_lv_Lext"]).abs()
+   ```
+
+5. **Lesion Color Difference**: The Euclidean distance in the color space, indicating variation in color.
+   ```python
+   df["lesion_color_difference"] = np.sqrt(df["tbp_lv_deltaA"] ** 2 + df["tbp_lv_deltaB"] ** 2 + df["tbp_lv_deltaL"] ** 2)
+   ```
+
+6. **Border Complexity**: A combination of normalized border and symmetry metrics to describe irregularity.
+   ```python
+   df["border_complexity"] = df["tbp_lv_norm_border"] + df["tbp_lv_symm_2axis"]
+   ```
+
+7. **Color Uniformity**: The ratio of color standard deviation to the radial color variation, assessing uniformity.
+   ```python
+   df["color_uniformity"] = df["tbp_lv_color_std_mean"] / df["tbp_lv_radial_color_std_max"]
+   ```
+
+8. **3D Position Distance**: The spatial distance in the 3D plane.
+   ```python
+   df["3d_position_distance"] = np.sqrt(df["tbp_lv_x"] ** 2 + df["tbp_lv_y"] ** 2 + df["tbp_lv_z"] ** 2)
+   ```
+
+9. **Perimeter-to-Area Ratio**: Measures lesion compactness by comparing perimeter to area.
+   ```python
+   df["perimeter_to_area_ratio"] = df["tbp_lv_perimeterMM"] / df["tbp_lv_areaMM2"]
+   ```
+
+10. **Lesion Visibility Score**: A combination of lesion contrast and color attributes for visibility assessment.
+    ```python
+    df["lesion_visibility_score"] = df["tbp_lv_deltaLBnorm"] + df["tbp_lv_norm_color"]
+    ```
+
+11. **Combined Anatomical Site**: Concatenates anatomical site information and lesion location.
+    ```python
+    df["combined_anatomical_site"] = df["anatom_site_general"] + "_" + df["tbp_lv_location"]
+    ```
+
+12. **Symmetry-Border Consistency**: The interaction between symmetry and border characteristics.
+    ```python
+    df["symmetry_border_consistency"] = df["tbp_lv_symm_2axis"] * df["tbp_lv_norm_border"]
+    ```
+
+13. **Color Consistency**: Evaluates how consistent the lesion's internal and external colors are.
+    ```python
+    df["color_consistency"] = df["tbp_lv_stdL"] / df["tbp_lv_Lext"]
+    ```
+
+14. **Size-Age Interaction**: Combines lesion size and patient age for demographic insights.
+    ```python
+    df["size_age_interaction"] = df["clin_size_long_diam_mm"] * df["age_approx"]
+    ```
+
+15. **Hue-Color Standard Interaction**: Interactions between hue and color standard deviation to analyze color complexity.
+    ```python
+    df["hue_color_std_interaction"] = df["tbp_lv_H"] * df["tbp_lv_color_std_mean"]
+    ```
+
+16. **Lesion Severity Index**: Combines border, color, and eccentricity metrics to represent lesion severity.
+    ```python
+    df["lesion_severity_index"] = (df["tbp_lv_norm_border"] + df["tbp_lv_norm_color"] + df["tbp_lv_eccentricity"]) / 3
+    ```
+
+17. **Shape Complexity Index**: Summarizes border complexity and lesion shape attributes for complexity analysis.
+    ```python
+    df["shape_complexity_index"] = df["border_complexity"] + df["lesion_shape_index"]
+    ```
+
+18. **Color Contrast Index**: Sum of the differences in color attributes for measuring contrast.
+    ```python
+    df["color_contrast_index"] = df["tbp_lv_deltaA"] + df["tbp_lv_deltaB"] + df["tbp_lv_deltaL"] + df["tbp_lv_deltaLBnorm"]
+    ```
+
+19. **Log Lesion Area**: The logarithmic transformation of lesion area to reduce skewness in data.
+    ```python
+    df["log_lesion_area"] = np.log(df["tbp_lv_areaMM2"] + 1)
+    ```
+
+20. **Normalized Lesion Size**: Lesion size normalized by patient age for a balanced size metric.
+    ```python
+    df["normalized_lesion_size"] = df["clin_size_long_diam_mm"] / df["age_approx"]
+    ```
+
+21. **Mean Hue Difference**: The average of hue values between the lesion and surroundings.
+    ```python
+    df["mean_hue_difference"] = (df["tbp_lv_H"] + df["tbp_lv_Hext"]) / 2
+    ```
+
+22. **Standard Deviation Contrast**: The standard deviation of color differences to capture variability in color contrast.
+    ```python
+    df["std_dev_contrast"] = np.sqrt((df["tbp_lv_deltaA"] ** 2 + df["tbp_lv_deltaB"] ** 2 + df["tbp_lv_deltaL"] ** 2) / 3)
+    ```
+
+23. **Color-Shape Composite Index**: A composite score that blends color, shape, and symmetry factors.
+    ```python
+    df["color_shape_composite_index"] = (df["tbp_lv_color_std_mean"] + df["tbp_lv_area_perim_ratio"] + df["tbp_lv_symm_2axis"]) / 3
+    ```
+
+24. **3D Lesion Orientation**: The angle of the lesion in 3D space.
+    ```python
+    df["3d_lesion_orientation"] = np.arctan2(df_train["tbp_lv_y"], df_train["tbp_lv_x"])
+    ```
+
+25. **Overall Color Difference**: The average of color differences across multiple channels.
+    ```python
+    df["overall_color_difference"] = (df["tbp_lv_deltaA"] + df["tbp_lv_deltaB"] + df["tbp_lv_deltaL"]) / 3
+    ```
+
+26. **Symmetry-Perimeter Interaction**: The interaction between symmetry and perimeter for irregularity assessment.
+    ```python
+    df["symmetry_perimeter_interaction"] = df["tbp_lv_symm_2axis"] * df["tbp_lv_perimeterMM"]
+    ```
+
+27. **Comprehensive Lesion Index**: A composite index summarizing lesion area, perimeter, color, and symmetry.
+    ```python
+    df["comprehensive_lesion_index"] = (df["tbp_lv_area_perim_ratio"] + df["tbp_lv_eccentricity"] + df["tbp_lv_norm_color"] + df["tbp_lv_symm_2axis"]) / 4
+    ```
+
+ I produced them using ChatGPT. I provided the feature descriptions and tried to brainstorm ideas.
+
+ Encoding is a required pre-processing step when working with categorical data for machine learning algorithms.
+ Numerical data, as its name suggests, involves features that are only composed of numbers, such as integers or floating-point values.
+Categorical data are variables that contain label values rather than numeric values.
+The number of possible values is often limited to a fixed set.
+Nominal Variable (Categorical). Variable comprises a finite set of discrete values with no relationship between values.
+Ordinal Variable. Variable comprises a finite set of discrete values with a ranked ordering between values.
+
+In ordinal encoding, each unique category value is assigned an integer value.
+
+For example, “red” is 1, “green” is 2, and “blue” is 3.
+
+This is called an ordinal encoding or an integer encoding and is easily reversible. Often, integer values starting at zero are used.
+
+For some variables, an ordinal encoding may be enough. The integer values have a natural ordered relationship between each other and machine learning algorithms may be able to understand and harness this relationship.
+
+It is a natural encoding for ordinal variables. For categorical variables, it imposes an ordinal relationship where no such relationship may exist. This can cause problems and a one-hot encoding may be used instead.
+
+This ordinal encoding transform is available in the scikit-learn Python machine learning library via the OrdinalEncoder class.
+
+By default, it will assign integers to labels in the order that is observed in the data. If a specific order is desired, it can be specified via the “categories” argument as a list with the rank order of all expected labels.
+
+We can demonstrate the usage of this class by converting colors categories “red”, “green” and “blue” into integers. First the categories are sorted then numbers are applied. For strings, this means the labels are sorted alphabetically and that blue=0, green=1 and red=2.
+One-Hot Encoding
+For categorical variables where no ordinal relationship exists, the integer encoding may not be enough, at best, or misleading to the model at worst.
+
+Forcing an ordinal relationship via an ordinal encoding and allowing the model to assume a natural ordering between categories may result in poor performance or unexpected results (predictions halfway between categories).
+
+In this case, a one-hot encoding can be applied to the ordinal representation. This is where the integer encoded variable is removed and one new binary variable is added for each unique integer value in the variable.
+
+categorical_columns = ["sex", "tbp_tile_type", "tbp_lv_location", "tbp_lv_location_simple","combined_anatomical_site"]
+
+category_encoder = OrdinalEncoder(
+    categories='auto',
+    dtype=int,
+    handle_unknown='use_encoded_value',
+    unknown_value=-2,
+    encoded_missing_value=-1,
+)
+
+```python
+X_cat = category_encoder.fit_transform(new_train[categorical_columns])
+```
