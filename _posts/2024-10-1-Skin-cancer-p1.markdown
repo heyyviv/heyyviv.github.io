@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Skin Cancer"
+title: "Skin Cancer Part 1"
 date: 2024-10-01 01:43:18 +0530
 categories: kaggle
 ---
