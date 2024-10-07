@@ -957,3 +957,219 @@ car1.printDetails()
 car1.accelerate()
 car1.sunroof()
 ```
+
+# Solid Principle
+
+##  Single Responsibility Principle (SRP)
+Definition: A class should have only one reason to change, meaning it should have only one job or responsibility.
+
+Motivation: By ensuring that a class focuses on a single task, SRP promotes high cohesion and low coupling. This makes the system easier to understand, maintain, and extend.
+
+## Open/Closed Principle (OCP)
+Definition: Software entities (classes, modules, functions, etc.) should be open for extension but closed for modification.
+
+Motivation: OCP encourages designing systems that can be extended with new functionality without altering existing code, thus reducing the risk of introducing bugs.
+
+## Liskov Substitution Principle (LSP)
+Definition: Objects of a superclass should be replaceable with objects of its subclasses without affecting the correctness of the program.
+
+Motivation: LSP ensures that a subclass can stand in for its superclass, promoting polymorphism and substitutability without unexpected behaviors.
+
+## Interface Segregation Principle (ISP)
+Definition: Clients should not be forced to depend on interfaces they do not use. Instead of one fat interface, many smaller, specific interfaces are preferred.
+
+Motivation: ISP promotes creating fine-grained interfaces tailored to specific client needs, reducing unnecessary dependencies and enhancing modularity.
+
+## Dependency Inversion Principle (DIP)
+Definition: High-level modules should not depend on low-level modules. Both should depend on abstractions.
+Abstractions should not depend on details. Details should depend on abstractions.
+Motivation: DIP reduces tight coupling between modules, making the system more modular, flexible, and easier to maintain or extend.
+
+# Design Patterns
+
+## 1. Creational Patterns
+
+## Singleton Pattern
+The Singleton Pattern is a creational design pattern that ensures a class has only one instance throughout an application, providing a global point of access to that instance. This pattern is particularly useful when managing shared resources or maintaining a single point of control, such as in logging systems, database connections, or configuration managers.
+
+Benefits:
+
+Controlled access to a single instance.
+Reduces memory footprint by preventing multiple instances.
+
+## Factory Pattern
+The Factory Pattern is a creational design pattern that defines an interface for creating objects, but allows the subclasses or derived classes to decide which concrete class to instantiate. This promotes loose coupling by abstracting the object creation process, making the code more flexible and easier to maintain.
+Use-Cases:
+When a class can't anticipate the class of objects it needs to create.
+Managing and maintaining a set of related objects.
+
+```python
+from abc import ABC, abstractmethod
+
+class Button(ABC):
+    @abstractmethod
+    def render(self):
+        pass
+
+class WindowsButton(Button):
+    def render(self):
+        print("Rendering Windows button")
+
+class MacOSButton(Button):
+    def render(self):
+        print("Rendering MacOS button")
+
+class ButtonFactory:
+    @staticmethod
+    def create_button(os_type):
+        if os_type == "Windows":
+            return WindowsButton()
+        elif os_type == "MacOS":
+            return MacOSButton()
+        else:
+            raise ValueError("Unknown OS type")
+
+# Usage
+button = ButtonFactory.create_button("Windows")
+button.render()  # Output: Rendering Windows button
+```
+## Builder Pattern
+The Builder Pattern is a creational design pattern that separates the construction of a complex object from its representation. This allows the same construction process to create different representations of the object. It is useful when an object has numerous configurable options, making it difficult to manage all the possible combinations through constructors.
+Use-Cases:
+When creating an object requires numerous steps.
+When you need to create different representations of a complex object.
+
+```
+class Car:
+    def __init__(self):
+        self.parts = []
+
+    def add_part(self, part):
+        self.parts.append(part)
+
+    def list_parts(self):
+        print(f"Car parts: {', '.join(self.parts)}")
+
+class CarBuilder:
+    def __init__(self):
+        self.car = Car()
+
+    def add_engine(self):
+        self.car.add_part("Engine")
+        return self
+
+    def add_wheels(self):
+        self.car.add_part("Wheels")
+        return self
+
+    def add_body(self):
+        self.car.add_part("Body")
+        return self
+
+    def build(self):
+        return self.car
+
+# Usage
+builder = CarBuilder()
+car = builder.add_engine().add_wheels().add_body().build()
+car.list_parts()  # Output: Car parts: Engine, Wheels, Body
+```
+
+# Structural Patterns
+
+## Adapter Pattern
+Definition: Allows incompatible interfaces to work together by converting the interface of one class into another expected by the clients.
+
+Use-Cases:
+Integrating legacy systems with new systems.
+Using third-party libraries with incompatible interfaces.
+
+## Decorator Pattern
+Definition: Attaches additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality.
+
+Use-Cases:
+Adding features to objects without altering their structure.
+When extending functionality through multiple independent extensions.
+
+``` python
+from abc import ABC, abstractmethod
+
+class Coffee(ABC):
+    @abstractmethod
+    def cost(self):
+        pass
+
+class SimpleCoffee(Coffee):
+    def cost(self):
+        return 2
+
+class CoffeeDecorator(Coffee):
+    def __init__(self, coffee):
+        self.coffee = coffee
+
+    def cost(self):
+        return self.coffee.cost()
+
+class MilkDecorator(CoffeeDecorator):
+    def cost(self):
+        return self.coffee.cost() + 0.5
+
+class SugarDecorator(CoffeeDecorator):
+    def cost(self):
+        return self.coffee.cost() + 0.2
+
+# Usage
+coffee = SimpleCoffee()
+coffee = MilkDecorator(coffee)
+coffee = SugarDecorator(coffee)
+print(f"Total cost: {coffee.cost()}")  # Output: Total cost: 2.7
+```
+
+## Composite Pattern
+Definition: Composes objects into tree structures to represent part-whole hierarchies. It allows clients to treat individual objects and compositions uniformly.
+
+Use-Cases:
+Building hierarchical structures like file systems, organizational charts.
+When clients need to treat individual objects and compositions uniformly.
+
+```python 
+from abc import ABC, abstractmethod
+
+class Component(ABC):
+    @abstractmethod
+    def display(self, depth):
+        pass
+
+class Leaf(Component):
+    def __init__(self, name):
+        self.name = name
+
+    def display(self, depth):
+        print("-" * depth + self.name)
+
+class Composite(Component):
+    def __init__(self, name):
+        self.name = name
+        self.children = []
+
+    def add(self, component):
+        self.children.append(component)
+
+    def remove(self, component):
+        self.children.remove(component)
+
+    def display(self, depth):
+        print("-" * depth + self.name)
+        for child in self.children:
+            child.display(depth + 2)
+
+# Usage
+root = Composite("Root")
+child1 = Composite("Child1")
+child2 = Leaf("Child2")
+child1.add(Leaf("Grandchild1"))
+child1.add(Leaf("Grandchild2"))
+root.add(child1)
+root.add(child2)
+root.display(0)
+```
