@@ -1,3 +1,12 @@
+
+---
+layout: post
+title: "Topics"
+date: 2024-10-07 01:43:18 +0530
+categories: machine-learning,deep-learning
+---
+
+
 Here's a comprehensive guide for preparing for a deep learning job, structured in a Google Docs-friendly format. This guide covers essential topics in Machine Learning, Data Analysis, Deep Learning, Natural Language Processing (NLP), and other relevant areas crucial for online assessments and interviews.
 
 # Comprehensive Guide to Preparing for a Deep Learning Job
