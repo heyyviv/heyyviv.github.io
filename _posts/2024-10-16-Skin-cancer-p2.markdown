@@ -280,52 +280,52 @@ min_lr = 1e-6
 Cosine Annealing is a strategy that gradually decreases the learning rate following a cosine curve without restarting. The learning rate starts at an initial value, decreases to a minimum value, and follows a smooth, cosine-shaped curve. This approach helps the optimizer to explore the loss landscape more effectively and can escape local minima, leading to better convergence.
 Certainly! Here's the formula for **`CosineAnnealingLR`** written in Markdown using LaTeX syntax:
 
-\[
-\eta_t = \eta_{\text{min}} + \frac{1}{2} \left( \eta_{\text{initial}} - \eta_{\text{min}} \right) \left( 1 + \cos \left( \frac{T_{\text{cur}}}{T_{\text{max}}} \pi \right) \right)
-\]
+# Cosine Annealing Learning Rate Schedule
 
-### **Explanation of the Formula Components**
+## Formula
 
-- **\(\eta_t\)**: **Learning rate at epoch \(t\)**. This is the adjusted learning rate after applying the cosine annealing schedule.
+The learning rate at epoch t is given by:
 
-- **\(\eta_{\text{initial}}\)**: **Initial learning rate**. The starting learning rate before any adjustments.
+```
+η_t = η_min + 0.5 * (η_initial - η_min) * (1 + cos(T_cur / T_max * π))
+```
 
-- **\(\eta_{\text{min}}\)**: **Minimum learning rate**. The lowest learning rate that the scheduler will anneal to.
+## Explanation of the Formula Components
 
-- **\(T_{\text{cur}}\)**: **Current epoch number** since the last restart (if using restarts).
+- **η_t**: Learning rate at epoch t. This is the adjusted learning rate after applying the cosine annealing schedule.
+- **η_initial**: Initial learning rate. The starting learning rate before any adjustments.
+- **η_min**: Minimum learning rate. The lowest learning rate that the scheduler will anneal to.
+- **T_cur**: Current epoch number since the last restart (if using restarts).
+- **T_max**: Maximum number of epochs for one complete cosine cycle.
 
-- **\(T_{\text{max}}\)**: **Maximum number of epochs** for one complete cosine cycle.
+## Detailed Breakdown
 
-### **Detailed Breakdown**
-
-1. **Cosine Decay Component**:
-   
-   \[
-   \cos \left( \frac{T_{\text{cur}}}{T_{\text{max}}} \pi \right)
-   \]
-   
+1. **Cosine Decay Component**: `cos(T_cur / T_max * π)`
    - **Purpose**: Modulates the learning rate following a cosine curve.
-   - **Behavior**: 
-     - At \(T_{\text{cur}} = 0\), \(\cos(0) = 1\), so the learning rate starts at \(\eta_{\text{initial}}\).
-     - At \(T_{\text{cur}} = T_{\text{max}}\), \(\cos(\pi) = -1\), reducing the learning rate to \(\eta_{\text{min}}\).
-     - The learning rate decreases smoothly from \(\eta_{\text{initial}}\) to \(\eta_{\text{min}}\) over \(T_{\text{max}}\) epochs.
+   - **Behavior**:
+     - At T_cur = 0, cos(0) = 1, so the learning rate starts at η_initial.
+     - At T_cur = T_max, cos(π) = -1, reducing the learning rate to η_min.
+     - The learning rate decreases smoothly from η_initial to η_min over T_max epochs.
 
-2. **Scaling and Shifting**:
-   
-   \[
-   \frac{1}{2} \left( \eta_{\text{initial}} - \eta_{\text{min}} \right) \left( 1 + \cos \left( \frac{T_{\text{cur}}}{T_{\text{max}}} \pi \right) \right)
-   \]
-   
-   - **Scaling**: The difference \(\eta_{\text{initial}} - \eta_{\text{min}}\) determines the range over which the learning rate will oscillate.
-   - **Shifting**: Adding 1 inside the cosine term ensures that the cosine function shifts from \([-1, 1]\) to \([0, 2]\), allowing the learning rate to oscillate between \(\eta_{\text{min}}\) and \(\eta_{\text{initial}}\).
+2. **Scaling and Shifting**: `0.5 * (η_initial - η_min) * (1 + cos(T_cur / T_max * π))`
+   - **Scaling**: The difference (η_initial - η_min) determines the range over which the learning rate will oscillate.
+   - **Shifting**: Adding 1 inside the cosine term ensures that the cosine function shifts from [-1, 1] to [0, 2], allowing the learning rate to oscillate between η_min and η_initial.
 
-3. **Final Adjustment**:
-   
-   \[
-   \eta_t = \eta_{\text{min}} + \text{Scaled Cosine Term}
-   \]
-   
-   - **Purpose**: Ensures that the learning rate never falls below \(\eta_{\text{min}}\), providing a lower bound.
+3. **Final Adjustment**: `η_t = η_min + Scaled Cosine Term`
+   - **Purpose**: Ensures that the learning rate never falls below η_min, providing a lower bound.
+
+## Warm Restarts and Model Divergence
+
+Warm restarts usually cause the model to diverge intentionally. This controlled divergence allows the model to work around local minima in the task's cost surface, potentially finding a better global minimum. It's analogous to finding a valley, climbing a nearby hill, and discovering an even deeper valley in another region.
+
+### Visual Summary
+
+Imagine two scenarios:
+
+1. A learner that converges slowly along a low-gradient path.
+2. A learner that uses warm restarts to fall into and climb out of a sequence of local minima.
+
+Both learners may converge to the same global minimum, but the second approach often finds it faster due to following a path with a much higher overall gradient.
 
 ![Graph](/assets/isic_4.jpg)
 Warm restarts usually actually cause the model to diverge. This is done on purpose. It turns out that adding some controlled divergence allows the model to work around local minima in the task’s cost surface, allowing it to find an even better global minima instead. This is akin to finding a valley, then climbing a nearby hill, and discovering an even deeper valley one region over. Here’s a visual summary:
