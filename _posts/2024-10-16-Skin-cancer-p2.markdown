@@ -280,6 +280,8 @@ min_lr = 1e-6
 Cosine Annealing is a strategy that gradually decreases the learning rate following a cosine curve without restarting. The learning rate starts at an initial value, decreases to a minimum value, and follows a smooth, cosine-shaped curve. This approach helps the optimizer to explore the loss landscape more effectively and can escape local minima, leading to better convergence.
 Certainly! Here's the formula for **`CosineAnnealingLR`** written in Markdown using LaTeX syntax:
 
+Here's the content rewritten in a Markdown-friendly way:
+
 # Cosine Annealing Learning Rate Schedule
 
 ## Formula
@@ -328,6 +330,10 @@ Imagine two scenarios:
 Both learners may converge to the same global minimum, but the second approach often finds it faster due to following a path with a much higher overall gradient.
 
 ![Graph](/assets/isic_4.jpg)
-Warm restarts usually actually cause the model to diverge. This is done on purpose. It turns out that adding some controlled divergence allows the model to work around local minima in the task’s cost surface, allowing it to find an even better global minima instead. This is akin to finding a valley, then climbing a nearby hill, and discovering an even deeper valley one region over. Here’s a visual summary:
+
+Warm restarts usually actually cause the model to diverge. This is done on purpose. It turns out that adding some controlled divergence allows the model to work around local minima in the task's cost surface, allowing it to find an even better global minima instead. This is akin to finding a valley, then climbing a nearby hill, and discovering an even deeper valley one region over. Here's a visual summary:
+
 ![Graph](/assets/isic_5.jpg)
+
 Both of these learners converge to the same global minima. However, on the left, the learner trundles slowly along a low-gradient path. On the right, the learner falls into a sequence of local minima (valleys), then uses warm restarts to climb over them (hills). In the process it finds the same global minima faster, because the path it follows has a much higher gradient overall.
+
