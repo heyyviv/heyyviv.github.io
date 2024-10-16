@@ -573,8 +573,8 @@ The following are examples from the training set. 'Strongly-labelled tiles' are 
 
  I produced them using ChatGPT. I provided the feature descriptions and tried to brainstorm ideas.
 
- Encoding is a required pre-processing step when working with categorical data for machine learning algorithms.
- Numerical data, as its name suggests, involves features that are only composed of numbers, such as integers or floating-point values.
+Encoding is a required pre-processing step when working with categorical data for machine learning algorithms.
+Numerical data, as its name suggests, involves features that are only composed of numbers, such as integers or floating-point values.
 Categorical data are variables that contain label values rather than numeric values.
 The number of possible values is often limited to a fixed set.
 Nominal Variable (Categorical). Variable comprises a finite set of discrete values with no relationship between values.
@@ -582,25 +582,15 @@ Ordinal Variable. Variable comprises a finite set of discrete values with a rank
 
 In ordinal encoding, each unique category value is assigned an integer value.
 
-For example, “red” is 1, “green” is 2, and “blue” is 3.
+OrdinalEncoder assigns each unique category in a feature to a unique integer based on the order they appear or a specified order. By default, it assigns integers in lexicographical order, but we can customize the ordering if needed.
+1. Identify Unique Categories: For each categorical feature, identify all unique categories.
+2. Assign Integers: Assign an integer to each category. The default is in lexicographical order, but this can be customized.
+3. Transform Data: Replace each category in the dataset with its corresponding integer.
+If the categorical data has an inherent order that isn't lexicographical, we can specify the order using the categories parameter.
 
-This is called an ordinal encoding or an integer encoding and is easily reversible. Often, integer values starting at zero are used.
-
-For some variables, an ordinal encoding may be enough. The integer values have a natural ordered relationship between each other and machine learning algorithms may be able to understand and harness this relationship.
-
-It is a natural encoding for ordinal variables. For categorical variables, it imposes an ordinal relationship where no such relationship may exist. This can cause problems and a one-hot encoding may be used instead.
-
-This ordinal encoding transform is available in the scikit-learn Python machine learning library via the OrdinalEncoder class.
-
-By default, it will assign integers to labels in the order that is observed in the data. If a specific order is desired, it can be specified via the “categories” argument as a list with the rank order of all expected labels.
-
-We can demonstrate the usage of this class by converting colors categories “red”, “green” and “blue” into integers. First the categories are sorted then numbers are applied. For strings, this means the labels are sorted alphabetically and that blue=0, green=1 and red=2.
-One-Hot Encoding
-For categorical variables where no ordinal relationship exists, the integer encoding may not be enough, at best, or misleading to the model at worst.
-
-Forcing an ordinal relationship via an ordinal encoding and allowing the model to assume a natural ordering between categories may result in poor performance or unexpected results (predictions halfway between categories).
-
-In this case, a one-hot encoding can be applied to the ordinal representation. This is where the integer encoded variable is removed and one new binary variable is added for each unique integer value in the variable.
+When to Use OrdinalEncoder?
+- Ordinal Categorical Features: When the categorical feature has a meaningful order (e.g., rating scales like "Poor", "Fair", "Good", "Very Good", "Excellent").
+- Algorithms Sensitive to Integer Encoding: Some algorithms (e.g., tree-based models like Decision Trees, Random Forests) can handle integer-encoded categorical features without assuming a specific order.
 
 categorical_columns = ["sex", "tbp_tile_type", "tbp_lv_location", "tbp_lv_location_simple","combined_anatomical_site"]
 
