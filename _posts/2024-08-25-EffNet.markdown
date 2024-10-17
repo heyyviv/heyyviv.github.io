@@ -72,10 +72,90 @@ Squeeze-and-Excitation (SE) simply allows the model to emphasize useful features
 
 ![EffNet](/assets/effnet_5.jpg)
 
+# Squeeze-and-Excitation (SE) Block
+
+A **Squeeze-and-Excitation (SE)** block helps neural networks recalibrate channel-wise feature responses, focusing on the most informative parts of the feature map.
+
+## Steps of the SE Block
+
+1. **Input Feature Map**  
+   - The input feature map has dimensions \( H \times W \times C \), where:
+     - \( H \) = height
+     - \( W \) = width
+     - \( C \) = number of channels
+
+2. **Squeeze Step (Global Average Pooling)**  
+   - Apply **global average pooling** on each channel, reducing the spatial dimensions \( H \times W \) to \( 1 \times 1 \times C \). This generates a vector summarizing each channel’s information across the spatial dimensions.
+
+   \[
+   z_c = \frac{1}{H \times W} \sum_{i=1}^{H} \sum_{j=1}^{W} x_{ijc}
+   \]
+   Where \( z_c \) is the pooled value for channel \( c \).
+
+3. **Excitation Step (Fully Connected Layers)**  
+   - The pooled vector passes through two fully connected (FC) layers:
+     - **First FC Layer**: Reduces dimensionality to \( 1 \times 1 \times \frac{C}{r} \) (using a reduction ratio \( r \)).
+     - **Second FC Layer**: Restores dimensionality back to \( 1 \times 1 \times C \).
+   - Apply a **ReLU** activation between the two layers and a **sigmoid** activation after the second FC layer to produce a vector of weights.
+
+   \[
+   s = \sigma(W_2 \cdot \text{ReLU}(W_1 \cdot z))
+   \]
+
+4. **Recalibration (Channel-wise Scaling)**  
+   - Multiply the original input feature map by the learned weights from the Excitation step. Each channel of the feature map is scaled by its corresponding weight:
+
+   \[
+   \hat{x}_{ijc} = s_c \cdot x_{ijc}
+   \]
+
+5. **Final Output**  
+   - The recalibrated feature map has the same dimensions \( H \times W \times C \) as the input, but important channels are enhanced while less important ones are suppressed.
+
+
 This process allows the network to emphasize more relevant features and diminish less important ones, dynamically adjusting the feature maps based on the learned content of the input images.
 
-Moreover, EfficientNet also incorporates the Swish activation function as part of its design to improve accuracy and efficiency.
+# Activation Functions in EfficientNet
 
-Swish is a smooth continuous function, unlike Rectified Linear Unit (ReLU) which is a piecewise linear function. Swish allows a small number of negative weights to be propagated through, while ReLU thresholds all negative weights to zero.
-![EffNet](/assets/effnet_6.jpg)
+EfficientNet primarily uses two activation functions: **Swish** and **Sigmoid**, each playing a role in different parts of the architecture.
+
+## 1. Swish Activation
+
+- **Formula**: 
+  \[
+  \text{Swish}(x) = x \cdot \sigma(x) = \frac{x}{1 + e^{-x}}
+  \]
+  where \( \sigma(x) \) is the sigmoid function.
+  
+- **Where it's used**:  
+  Swish is applied after the convolutional layers in the **MBConv blocks** (Mobile Inverted Bottleneck Convolution layers). It helps with better gradient flow and performance compared to traditional activations like ReLU.
+
+- **Why Swish?**  
+  - **Smooth gradient**: Swish has a smooth, non-monotonic curve, allowing for better gradient flow during training.
+  - **Performance**: It has been empirically shown to improve accuracy on tasks like ImageNet classification.
+
+---
+
+## 2. Sigmoid Activation
+
+- **Formula**: 
+  \[
+  \sigma(x) = \frac{1}{1 + e^{-x}}
+  \]
+
+- **Where it's used**:  
+  Sigmoid is used within the **Squeeze-and-Excitation (SE) block**. After the excitation step (fully connected layers), the sigmoid function generates channel-wise weights that are used to scale the input feature maps.
+
+- **Why Sigmoid?**  
+  - **Channel recalibration**: The sigmoid function outputs values between 0 and 1, which are ideal for scaling each channel in the SE block, helping the model focus on the most important features.
+
+---
+
+## Summary of Activations in EfficientNet:
+- **Swish**: Used after most convolutional layers (primarily in MBConv blocks).
+- **Sigmoid**: Used in the SE block for recalibrating the feature map channels.
+
+These activations contribute to EfficientNet's ability to balance computational efficiency and high accuracy.
+
+![EffNet](/assets/effnet_7.jpg)
 
