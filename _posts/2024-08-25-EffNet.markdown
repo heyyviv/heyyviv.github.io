@@ -86,28 +86,32 @@ A **Squeeze-and-Excitation (SE)** block helps neural networks recalibrate channe
 
 2. **Squeeze Step (Global Average Pooling)**  
    - Apply **global average pooling** on each channel, reducing the spatial dimensions \( H \times W \) to \( 1 \times 1 \times C \). This generates a vector summarizing each channel’s information across the spatial dimensions.
-
+    $$
    \[
    z_c = \frac{1}{H \times W} \sum_{i=1}^{H} \sum_{j=1}^{W} x_{ijc}
    \]
    Where \( z_c \) is the pooled value for channel \( c \).
+   $$
 
 3. **Excitation Step (Fully Connected Layers)**  
    - The pooled vector passes through two fully connected (FC) layers:
      - **First FC Layer**: Reduces dimensionality to \( 1 \times 1 \times \frac{C}{r} \) (using a reduction ratio \( r \)).
      - **Second FC Layer**: Restores dimensionality back to \( 1 \times 1 \times C \).
    - Apply a **ReLU** activation between the two layers and a **sigmoid** activation after the second FC layer to produce a vector of weights.
+   $$
 
    \[
    s = \sigma(W_2 \cdot \text{ReLU}(W_1 \cdot z))
    \]
+   $$
 
 4. **Recalibration (Channel-wise Scaling)**  
    - Multiply the original input feature map by the learned weights from the Excitation step. Each channel of the feature map is scaled by its corresponding weight:
-
+    $$
    \[
    \hat{x}_{ijc} = s_c \cdot x_{ijc}
    \]
+   $$
 
 5. **Final Output**  
    - The recalibrated feature map has the same dimensions \( H \times W \times C \) as the input, but important channels are enhanced while less important ones are suppressed.
@@ -122,11 +126,12 @@ EfficientNet primarily uses two activation functions: **Swish** and **Sigmoid**,
 ## 1. Swish Activation
 
 - **Formula**: 
+$$
   \[
   \text{Swish}(x) = x \cdot \sigma(x) = \frac{x}{1 + e^{-x}}
   \]
   where \( \sigma(x) \) is the sigmoid function.
-  
+$$
 - **Where it's used**:  
   Swish is applied after the convolutional layers in the **MBConv blocks** (Mobile Inverted Bottleneck Convolution layers). It helps with better gradient flow and performance compared to traditional activations like ReLU.
 
@@ -137,11 +142,12 @@ EfficientNet primarily uses two activation functions: **Swish** and **Sigmoid**,
 ---
 
 ## 2. Sigmoid Activation
-
+$$
 - **Formula**: 
   \[
   \sigma(x) = \frac{1}{1 + e^{-x}}
   \]
+$$
 
 - **Where it's used**:  
   Sigmoid is used within the **Squeeze-and-Excitation (SE) block**. After the excitation step (fully connected layers), the sigmoid function generates channel-wise weights that are used to scale the input feature maps.
