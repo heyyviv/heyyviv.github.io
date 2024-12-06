@@ -66,3 +66,7 @@ For the language model example, since it just saw a subject, it might want to ou
 ![RNN](/assets/rnn_13.jpg)
 LSTM doesn’t guarantee that there is no vanishing/exploding gradient, but it does
 provide an easier way for the model to learn long-distance dependencies
+
+While quantitative comparisons are useful, they only provide partial insight into the how a recurrent unit memorizes. A model can, for example, achieve high accuracy and cross entropy loss by just providing highly accurate predictions in cases that only require short-term memorization, while being inaccurate at predictions that require long-term memorization. For example, when autocompleting words in a sentence, a model with only short-term understanding could still exhibit high accuracy completing the ends of words once most of the characters are present. However, without longer term contextual understanding it won’t be able to predict words when only a few characters are known.
+
+![RNN](/assets/rnn_15.jpg)
