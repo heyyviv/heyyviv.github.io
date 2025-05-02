@@ -4,8 +4,17 @@ title: About
 permalink: /about/
 ---
 
-Welcome to my personal site! I'm Vivek Das, an incoming advanced developer at Samsung R&D Bangalore, starting July 2025. I have a strong foundation in machine learning, computer vision, and systems, with a passion for solving real-world problems through impactful tech.
+# Vivek Das
 
+## Education
+- **B.Tech:** Government College of Engineering & Textile Technology, Berhampore (GCETTB)
+- **M.Tech:** Indian Institute of Technology Kharagpur (IIT KGP)
 
+## Professional
+- **Incoming Advanced Developer** at Samsung Research Institute Bangalore (SRIB)
 
+## About Me
+I’m passionate about building products that people love and use every day. My goal is to create impactful solutions that reach and delight a wide audience.
 
+## Contact
+- **X (formerly Twitter):** [@kanna_180512](https://x.com/kanna_180512)

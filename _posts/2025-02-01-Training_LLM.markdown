@@ -2,7 +2,7 @@
 layout: post
 title: "Training LLM"
 date: 2024-10-16 01:43:18 +0530
-categories: HuggingFace
+categories: LLM
 ---
 
 
