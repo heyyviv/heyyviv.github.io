@@ -21,9 +21,7 @@ permalink: /life/
 -->
 
 ## Tawang Trip
-
-    ![Lake](/assets/events/tawang.JPEG)
-    *Panorama picture of frozen lake in Sela pass*
-
+![Lake](/assets/events/tawang.JPEG)
+*Panorama picture of frozen lake in Sela pass*
 ---
 
