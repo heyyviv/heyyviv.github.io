@@ -20,8 +20,8 @@ permalink: /life/
 
 -->
 
-## Tawang Trip 16 March 2025
+### Tawang Trip 16 March 2025
 ![Lake](/assets/events/tawang.JPEG)
-* Panorama picture of frozen lake in Sela pass 
+*Panorama picture of frozen lake in Sela pass* 
 ---
 

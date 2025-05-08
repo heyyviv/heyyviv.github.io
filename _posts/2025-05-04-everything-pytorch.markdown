@@ -293,6 +293,7 @@ In this manner, bias terms are isolated from non-bias terms, and a weight_decay 
 Weight decay is typically set to 0 for bias terms in neural networks for several key reasons:
 - Overfitting usually occurs when the model becomes too sensitive to small changes in input data. The bias parameters don't contribute to the curvature of the model, so regularizing them provides little benefit in preventing overfitting
 - While weights determine the slopes of activation functions, biases only affect the position of activation functions in space. Their optimal values depend on the weights and should be adjusted without regularization
+
 All optimizers implement a step() method, that updates the parameters
 ```python
 for input, target in dataset:
@@ -302,6 +303,7 @@ for input, target in dataset:
     loss.backward()
     optimizer.step()
 ```
+
 
 # Save and Load the Model
 PyTorch models store the learned parameters in an internal state dictionary, called state_dict. These can be persisted via the torch.save method:
