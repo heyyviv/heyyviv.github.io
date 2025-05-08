@@ -200,3 +200,123 @@ with torch.no_grad():
 There are reasons you might want to disable gradient tracking:
 - To mark some parameters in your neural network as frozen parameters.
 - To speed up computations when you are only doing forward pass, because computations on tensors that do not track gradients would be more efficient.
+
+# Optimizing Model Parameters 
+Hyperparameters are adjustable parameters that let you control the model optimization process. Different hyperparameter values can impact model training and convergence rates.
+We define the following hyperparameters for training:
+- Number of Epochs - the number of times to iterate over the dataset
+- Batch Size - the number of data samples propagated through the network before the parameters are updated
+- Learning Rate - how much to update models parameters at each batch/epoch. Smaller values yield slow learning speed, while large values may result in unpredictable behavior during training.
+
+Inside the training loop, optimization happens in three steps:
+- Call optimizer.zero_grad() to reset the gradients of model parameters. Gradients by default add up; to prevent double-counting, we explicitly zero them at each iteration.
+- Backpropagate the prediction loss with a call to loss.backward(). PyTorch deposits the gradients of the loss w.r.t. each parameter.
+- Once we have our gradients, we call optimizer.step() to adjust the parameters by the gradients collected in the backward pass.
+
+Implementation
+```python
+def train_loop(dataloader, model, loss_fn, optimizer):
+    size = len(dataloader.dataset)
+    # Set the model to training mode - important for batch normalization and dropout layers
+    # Unnecessary in this situation but added for best practices
+    model.train()
+    for batch, (X, y) in enumerate(dataloader):
+        # Compute prediction and loss
+        pred = model(X)
+        loss = loss_fn(pred, y)
+
+        # Backpropagation
+        loss.backward()
+        optimizer.step()
+        optimizer.zero_grad()
+
+        if batch % 100 == 0:
+            loss, current = loss.item(), batch * batch_size + len(X)
+            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+
+
+def test_loop(dataloader, model, loss_fn):
+    # Set the model to evaluation mode - important for batch normalization and dropout layers
+    # Unnecessary in this situation but added for best practices
+    model.eval()
+    size = len(dataloader.dataset)
+    num_batches = len(dataloader)
+    test_loss, correct = 0, 0
+
+    # Evaluating the model with torch.no_grad() ensures that no gradients are computed during test mode
+    # also serves to reduce unnecessary gradient computations and memory usage for tensors with requires_grad=True
+    with torch.no_grad():
+        for X, y in dataloader:
+            pred = model(X)
+            test_loss += loss_fn(pred, y).item()
+            correct += (pred.argmax(1) == y).type(torch.float).sum().item()
+
+    test_loss /= num_batches
+    correct /= size
+    print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+```
+
+To use torch.optim you have to construct an optimizer object that will hold the current state and will update the parameters based on the computed gradients.
+To construct an Optimizer you have to give it an iterable containing the parameters (all should be Parameter s) or named parameters (tuples of (str, Parameter)) to optimize. Then, you can specify optimizer-specific options such as the learning rate, weight decay, etc.
+```python
+optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
+```
+*               or
+```python
+optimizer = optim.SGD(model.named_parameters(), lr=0.01, momentum=0.9)
+```
+Optimizer s also support specifying per-parameter options.
+```python
+optim.SGD([
+                {'params': model.base.parameters(), 'lr': 1e-2},
+                {'params': model.classifier.parameters()}
+            ], lr=1e-3, momentum=0.9)
+
+optim.SGD([
+                {'params': model.base.named_parameters(), 'lr': 1e-2},
+                {'params': model.classifier.named_parameters()}
+            ], lr=1e-3, momentum=0.9)
+```
+This means that model.base’s parameters will use a learning rate of 1e-2, whereas model.classifier’s parameters will stick to the default learning rate of 1e-3. Finally a momentum of 0.9 will be used for all parameters.
+
+Also consider the following example related to the distinct penalization of parameters. Remember that parameters() returns an iterable that contains all learnable parameters, including biases and other parameters that may prefer distinct penalization. To address this, one can specify individual penalization weights for each parameter group:
+```python
+bias_params = [p for name, p in self.named_parameters() if 'bias' in name]
+others = [p for name, p in self.named_parameters() if 'bias' not in name]
+
+optim.SGD([
+                {'params': others},
+                {'params': bias_params, 'weight_decay': 0}
+            ], weight_decay=1e-2, lr=1e-2)
+```
+In this manner, bias terms are isolated from non-bias terms, and a weight_decay of 0 is set specifically for the bias terms, as to avoid any penalization for this group.
+Weight decay is typically set to 0 for bias terms in neural networks for several key reasons:
+- Overfitting usually occurs when the model becomes too sensitive to small changes in input data. The bias parameters don't contribute to the curvature of the model, so regularizing them provides little benefit in preventing overfitting
+- While weights determine the slopes of activation functions, biases only affect the position of activation functions in space. Their optimal values depend on the weights and should be adjusted without regularization
+All optimizers implement a step() method, that updates the parameters
+```python
+for input, target in dataset:
+    optimizer.zero_grad()
+    output = model(input)
+    loss = loss_fn(output, target)
+    loss.backward()
+    optimizer.step()
+```
+
+# Save and Load the Model
+PyTorch models store the learned parameters in an internal state dictionary, called state_dict. These can be persisted via the torch.save method:
+```python
+model = models.vgg16(weights='IMAGENET1K_V1')
+torch.save(model.state_dict(), 'model_weights.pth')
+```
+To load model weights, you need to create an instance of the same model first, and then load the parameters using load_state_dict() method.
+
+```python
+model = models.vgg16() # we do not specify ``weights``, i.e. create untrained model
+model.load_state_dict(torch.load('model_weights.pth', weights_only=True))
+model.eval()
+```
+When loading model weights, we needed to instantiate the model class first, because the class defines the structure of a network. We might want to save the structure of this class together with the model, in which case we can pass model (and not model.state_dict()) to the saving function:
+torch.save(model, 'model.pth')
+As described in Saving and loading torch.nn.Modules, saving state_dict is considered the best practice. However, below we use weights_only=False because this involves loading the model, which is a legacy use case for torch.save.
+model = torch.load('model.pth', weights_only=False),
