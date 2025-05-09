@@ -98,6 +98,45 @@ element wise multiplication
 z1 = tensor * tensor
 z2 = tensor.mul(tensor)
 Tensors on the CPU and NumPy arrays can share their underlying memory locations, and changing one will change the other.
+## Tensor Memory Storage
+
+### Continuous Storage
+Tensors are stored in memory in a continuous manner, just like arrays. The elements occupy sequential memory locations for efficient access.
+
+### Tensor Slicing and Views
+When we create a slice of a tensor, such as:
+
+```python
+t2 = t1[2, :]  # Extract row 2 with all columns from an m×n tensor
+```
+
+The new tensor `t2` doesn't receive its own separate memory allocation. Instead:
+
+- `t2` creates an abstract view of the original data
+- It references the same memory as the original tensor
+- It uses a stride-based access pattern
+
+## Stride-Based Memory Access
+For the row slice example:
+- The system calculates an offset from the base address to reach row 2
+- It sets a stride value of `m` (the row length of the original tensor)
+- When accessing elements sequentially in `t2`, the system jumps by the stride value
+- Each element access follows: base_address + initial_offset + (index × stride)
+
+This approach is memory-efficient since it avoids copying data, making tensor operations faster and reducing overall memory usage.
+
+
+There may be multiple tensors which share the same storage. Storage defines the dtype and physical size of the tensor, while each tensor records the sizes, strides and offset, defining the logical interpretation of the physical memory.
+when we  call torch.mm, two dispatches happen:
+- The first dispatch is based on the device type and layout of a tensor: e.g., whether or not it is a CPU tensor or a CUDA tensor (and also, e.g., whether or not it is a strided tensor or a sparse one). This is a dynamic dispatch: it's a virtual function call.It should make sense that we need to do a dispatch here: the implementation of CPU matrix multiply is quite different from a CUDA implementation. It is a dynamic dispatch because these kernels may live in separate libraries.if we want to get into a library that we don't have a direct dependency on, we have to dynamic dispatch your way there.
+- The second dispatch is a dispatch on the dtype in question. This dispatch is just a simple switch-statement for whatever dtypes a kernel chooses to support. Upon reflection, it should also make sense that we need to a dispatch here: the CPU code (or CUDA code, as it may) that implements multiplication on float is different from the code for int. It stands to reason you need separate kernels for each dtype
+
+There is the trinity three parameters which uniquely determine what a tensor is:
+- The device, the description of where the tensor's physical memory is actually stored, e.g., on a CPU, on an NVIDIA GPU (cuda), or perhaps on an AMD GPU (hip) or a TPU (xla). The distinguishing characteristic of a device is that it has its own allocator, that doesn't work with any other device.
+- The layout, which describes how we logically interpret this physical memory. The most common layout is a strided tensor, but sparse tensors have a different layout involving a pair of tensors, one for indices, and one for data; MKL-DNN tensors may have even more exotic layout, like blocked layout, which can't be represented using merely strides.
+- The dtype, which describes what it is that is actually stored in each element of the tensor. This could be floats or integers, or it could be, for example, quantized integers.
+
+
 
 # Datasets & DataLoaders
 Dataset stores the samples and their corresponding labels, and DataLoader wraps an iterable around the Dataset to enable easy access to the samples.
@@ -322,3 +361,13 @@ When loading model weights, we needed to instantiate the model class first, beca
 torch.save(model, 'model.pth')
 As described in Saving and loading torch.nn.Modules, saving state_dict is considered the best practice. However, below we use weights_only=False because this involves loading the model, which is a legacy use case for torch.save.
 model = torch.load('model.pth', weights_only=False),
+
+there are only four directories you really need to know about:
+- First, torch/ contains what you are most familiar with: the actual Python modules that you import and use. This stuff is Python code and easy to hack on (just make a change and see what happens). However, lurking not too deep below the surface is...
+- torch/csrc/, the C++ code that implements what you might call the frontend of PyTorch. In more descriptive terms, it implements the binding code that translates between the Python and C++ universe, and also some pretty important pieces of PyTorch, like the autograd engine and the JIT compiler. It also contains the C++ frontend code.
+- aten/, short for "A Tensor Library" (coined by Zachary DeVito), is a C++ library that implements the operations of Tensors. If you're looking for where some kernel code lives, chances are it's in ATen. ATen itself bifurcates into two neighborhoods of operators: the "native" operators, which are modern, C++ implementations of operators, and the "legacy" operators (TH, THC, THNN, THCUNN), which are legacy, C implementations. The legacy operators are the bad part of town; try not to spend too much time there if you can.
+- c10/, which is a pun on Caffe2 and A"Ten" (get it? Caffe 10) contains the core abstractions of PyTorch, including the actual implementations of the Tensor and Storage data structures.
+
+# Reference
+- https://blog.ezyang.com/2019/05/pytorch-internals/
+- https://pytorch.org/
