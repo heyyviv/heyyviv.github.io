@@ -10,7 +10,7 @@ caches:
 params:
   enableRobotsTXT: true
   homeInfoParams:
-    Title: Hi there wave
+    Title: Hi there 👋🏽
     Content: "I'm Vivek, a curious engineer navigating the world of code, systems, and ideas. This blog is my notebook for experiments, learnings, and technical deep dives."
 
   socialIcons: # optional
