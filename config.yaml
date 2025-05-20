@@ -3,6 +3,9 @@ url : 'https://heyyviv.github.io'
 languageCode: 'en-us'
 title: "Vivek's Field Notes"
 theme: 'PaperMod'
+caches:
+  images:
+    dir: :cacheDir/images
 
 params:
   enableRobotsTXT: true
