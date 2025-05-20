@@ -1,4 +1,5 @@
-baseURL: 'https://heyyviv.github.io/'
+baseURL: ""
+url : 'https://heyyviv.github.io'
 languageCode: 'en-us'
 title: "Vivek's Field Notes"
 theme: 'PaperMod'
