@@ -1,0 +1,38 @@
+baseURL = ''
+languageCode = 'en-us'
+title = "Kanna's Field Notes"
+theme = 'hugo-bearblog-neo'
+author = "Kanna"
+enableRobotsTXT = true
+
+# Generate "Bearblog"-like URLs !only!, see https://bearblog.dev/.
+disableKinds = ["taxonomy"]
+ignoreErrors = ["error-disable-taxonomy"]
+[permalinks]
+  blog = "/:slug/"
+  tags = "/blog/:slug"
+
+[params]
+    # The "description" of your website. This is used in the meta data of your generated html.
+    description = "A quiet corner of the web where thoughts wander, pixels settle into place, and small ideas take root. 'Kanna's Field Notes' is a personal blog and digital sketchbook—a place to share reflections, experiments, and discoveries in technology, creativity, and life. Whether it's a snippet of code, a captured moment, or a late-night thought, this is where it lives, gently archived for the curious passerby."
+    title = "Hugo ʕ•ᴥ•ʔ Bear"
+    postSearch = true
+    upvote = true
+    upvoteURL = "The domain name of the Worker that was just deployed/" 
+    groupByYear = true
+    toc = true
+
+
+
+[markup]
+  [markup.highlight]
+    style = 'friendly'
+    lineNos = true
+    lineNumbersInTable = false
+    codeFences = true
+
+[menu]
+  [[menu.main]]
+    name = "Feed"
+    url = "/feed/"
+    weight = 1
