@@ -1,3 +1,6 @@
 [submodule "hugo-bearblog-neo"]
 	path = hugo-bearblog-neo
 	url = https://github.com/rokcso/hugo-bearblog-neo.git
+[submodule "themes/hugo-bearblog-neo"]
+	path = themes/hugo-bearblog-neo
+	url = https://github.com/rokcso/hugo-bearblog-neo.git
