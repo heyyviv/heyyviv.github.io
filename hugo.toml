@@ -37,6 +37,6 @@ ignoreErrors = ["error-disable-taxonomy"]
     url = "/feed/"
     weight = 1
 
-caches:
-  images:
-    dir: :cacheDir/images
+[caches]
+  [caches.images]
+    dir = ":cacheDir/images"
