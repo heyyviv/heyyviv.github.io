@@ -14,6 +14,5 @@ Feel free to connect with me:
 
 - [X (formerly Twitter)](https://x.com/kanna_180512)
 - [GitHub](https://github.com/heyyviv)
-- [LinkedIn](https://www.linkedin.com/feed/)
 
 Let's embark on this journey together!
