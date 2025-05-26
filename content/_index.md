@@ -1,10 +1,10 @@
 +++
-title = "Welcome to Kanna's Field Notes"
+title = "Welcome to Vivek's Field Notes"
 +++
 
-# Welcome to Kanna's Field Notes
+# Welcome to Vivek's Field Notes
 
-I'm Kanna—a curious mind exploring the intersections of technology, creativity, and personal growth. This blog serves as my digital garden, where I share:
+I'm Vivek—a curious mind exploring the intersections of technology, creativity, and personal growth. This blog serves as my digital garden, where I share:
 
 - **Technical explorations**: Insights into coding projects, development tips, and tech experiments.
 - **Creative musings**: Reflections on design, art, and the creative process.

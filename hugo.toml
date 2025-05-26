@@ -1,8 +1,8 @@
 baseURL = ''
 languageCode = 'en-us'
-title = "Kanna's Field Notes"
+title = "Vivek's Field Notes"
 theme = 'hugo-bearblog-neo'
-author = "Kanna"
+author = "Vivek"
 enableRobotsTXT = true
 
 # Generate "Bearblog"-like URLs !only!, see https://bearblog.dev/.
