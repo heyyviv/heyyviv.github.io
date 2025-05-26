@@ -6,7 +6,7 @@ date = "2025-05-23T15:12:55+05:30"
 #
 # description = "An optional description for SEO. If not provided, an automatically created summary will be used."
 
-tags = ["blog","training","LLM]
+tags = ["blog","training","LLM"]
 +++
 
 # Training on One GPU
