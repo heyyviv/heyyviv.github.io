@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CodeForces Round 1028 (Div. 2) | Vivek&#39;s Field Notes</title>
+<meta name="title" content="CodeForces Round 1028 (Div. 2)" />
+<meta name="description" content="🧮 C. Gellyfish and Flaming Peony
+Time limit per test: 2 seconds
+Memory limit per test: 512 megabytes
+Gellyfish hates math problems, but she has to finish her math homework:
+Gellyfish is given an array of n positive integers a₁, a₂, ..., aₙ.
+She needs to do the following two-step operation until all elements of a are equal:
+
+Select two indices i, j such that 1 ≤ i, j ≤ n and i ≠ j.
+Replace a[i] with gcd(a[i], a[j]).
+
+Gellyfish asks you: What is the minimum number of operations required to make all elements equal?" />
+<meta name="keywords" content="codeforces," />
+
+<link rel="canonical" href="//localhost:1313/cp/codeforces-round-1028-div.-2/">
+
+
+<meta property="og:url" content="//localhost:1313/cp/codeforces-round-1028-div.-2/">
+  <meta property="og:site_name" content="Vivek&#39;s Field Notes">
+  <meta property="og:title" content="CodeForces Round 1028 (Div. 2)">
+  <meta property="og:description" content="🧮 C. Gellyfish and Flaming Peony Time limit per test: 2 seconds
+Memory limit per test: 512 megabytes
+Gellyfish hates math problems, but she has to finish her math homework:
+Gellyfish is given an array of n positive integers a₁, a₂, ..., aₙ.
+She needs to do the following two-step operation until all elements of a are equal:
+Select two indices i, j such that 1 ≤ i, j ≤ n and i ≠ j. Replace a[i] with gcd(a[i], a[j]). Gellyfish asks you: What is the minimum number of operations required to make all elements equal?">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="cp">
+    <meta property="article:published_time" content="2025-06-13T17:05:05+05:30">
+    <meta property="article:modified_time" content="2025-06-13T17:05:05+05:30">
+    <meta property="article:tag" content="Codeforces">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CodeForces Round 1028 (Div. 2)">
+  <meta name="twitter:description" content="🧮 C. Gellyfish and Flaming Peony Time limit per test: 2 seconds
+Memory limit per test: 512 megabytes
+Gellyfish hates math problems, but she has to finish her math homework:
+Gellyfish is given an array of n positive integers a₁, a₂, ..., aₙ.
+She needs to do the following two-step operation until all elements of a are equal:
+Select two indices i, j such that 1 ≤ i, j ≤ n and i ≠ j. Replace a[i] with gcd(a[i], a[j]). Gellyfish asks you: What is the minimum number of operations required to make all elements equal?">
+
+
+
+
+  <meta itemprop="name" content="CodeForces Round 1028 (Div. 2)">
+  <meta itemprop="description" content="🧮 C. Gellyfish and Flaming Peony Time limit per test: 2 seconds
+Memory limit per test: 512 megabytes
+Gellyfish hates math problems, but she has to finish her math homework:
+Gellyfish is given an array of n positive integers a₁, a₂, ..., aₙ.
+She needs to do the following two-step operation until all elements of a are equal:
+Select two indices i, j such that 1 ≤ i, j ≤ n and i ≠ j. Replace a[i] with gcd(a[i], a[j]). Gellyfish asks you: What is the minimum number of operations required to make all elements equal?">
+  <meta itemprop="datePublished" content="2025-06-13T17:05:05+05:30">
+  <meta itemprop="dateModified" content="2025-06-13T17:05:05+05:30">
+  <meta itemprop="wordCount" content="712">
+  <meta itemprop="keywords" content="Codeforces">
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+   
+  :root {
+    --width-max: 720px;
+    --font-primary: Verdana, sans-serif;
+    --font-secondary: monospace;
+    --font-size-primary: 1em;
+    --font-size-secondary: 0.8em;
+    --body-bg-color: #fcfcfc;
+    --bold-text-color: #222;
+    --body-text-color: #444;
+    --link-color: #3273dc;
+    --link-visited-color: #8b6fcb;
+    --table-border-color: #f2f2f2;
+    --table-th-bg-color: #f2f2f2;
+    --img-border-color: #f2f2f2;
+    --code-bg-color: #f2f2f2;
+    --code-text-color: #222;
+    --blockquote-border-color: #666;
+    --blockquote-text-color: #666;
+    --upvoted-color: #FA8072;
+  }
+
+  @media (prefers-color-scheme: dark) {
+     
+    :root {
+      --body-bg-color: #1c1c1c;
+      --bold-text-color: #eee;
+      --body-text-color: #ddd;
+      --link-color: #8cc2dd;
+      --link-visited-color: #c3b1ee;
+      --table-border-color: #999;
+      --table-th-bg-color: #999;
+      --img-border-color: #999;
+      --code-bg-color: #555;
+      --code-text-color: #ddd;
+      --blockquote-border-color: #ccc;
+      --blockquote-text-color: #ccc;
+    }
+  }
+
+  body {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-primary);
+    margin: auto;
+    padding: 20px;
+    max-width: var(--width-max);
+    text-align: left;
+    background-color: var(--body-bg-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: var(--body-text-color);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: var(--bold-text-color);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 16px 0;
+  }
+
+  a {
+    color: var(--link-color);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title:hover {
+    text-decoration: none;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 8px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 14px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--table-border-color);
+    border-radius: 4px;
+  }
+
+  th,
+  td {
+    border: 1px solid var(--table-border-color);
+    padding: 4px;
+  }
+
+  th {
+    background-color: var(--table-th-bg-color);
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px dashed;
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid var(--img-border-color);
+    border-radius: 4px;
+    content-visibility: auto;
+    loading: lazy;
+  }
+
+  img[src*="#minipic"] {
+    max-width: 50%;
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  i {
+    font-style: normal;
+  }
+
+  time {
+    font-family: var(--font-secondary);
+    font-size: 15px;
+  }
+
+  code {
+    font-family: var(--font-secondary);
+    background-color: var(--code-bg-color);
+    color: var(--code-text-color);
+    padding: 2px;
+    border-radius: 4px;
+  }
+
+  pre code {
+    display: block;
+    padding: 16px;
+    white-space: pre-wrap;
+    overflow-x: auto;
+  }
+
+  div.highlight pre {
+    border-radius: 4px;
+  }
+
+  div.highlight code {
+    background-color: var(--code-bg-color);
+    color: var(--code-text-color);
+  }
+
+  blockquote {
+    border-left: 2px solid var(--blockquote-border-color);
+    color: var(--blockquote-text-color);
+    margin: 0;
+    padding-left: 16px;
+    font-style: normal;
+  }
+
+  blockquote p {
+    margin: 0;
+  }
+
+  footer {
+    padding: 25px 0;
+    text-align: center;
+    font-size: var(--font-size-secondary);
+  }
+
+  ul li:has(input) {
+    list-style-type: none;
+    margin-left: -25.5px;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li span.grouped {
+    flex: 0 0 80px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: var(--link-visited-color);
+  }
+
+   
+  div.toc {
+    position: fixed;
+    top: 50%;
+    left: calc((100vw + var(--width-max)) / 2);
+    transform: translateY(-50%);
+    width: calc((90vw - var(--width-max)) / 2);
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 20px 8px;
+    z-index: 99;
+
+     
+    &::-webkit-scrollbar {
+        display: none;  
+    }
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+  }
+
+  div.toc ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  div.toc ul li {
+    margin: 8px 0;
+  }
+
+  div.toc ul li a {
+    text-decoration: none;
+    color: var(--blockquote-text-color);
+  }
+
+  div.toc ul li a:hover {
+    color: var(--link-color);
+  }
+
+   
+  button.upvote-btn {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--body-text-color);
+  }
+
+  button.upvoted {
+    color: var(--upvoted-color);
+  }
+
+  span.upvote-count {
+    margin-top: -4px;
+    font-size: smaller;
+  }
+
+  @media (max-width: 500px) {
+    img[src*="#minipic"] {
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    div.toc {
+      display: none;
+    }
+  }
+</style>
+
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h1>Vivek&#39;s Field Notes</h1>
+</a>
+<nav><a href="/">Home</a>
+
+<a href="/feed/">Feed</a>
+
+<a href="/cp/">CP</a>
+
+
+<a href="/blog/">Blog</a>
+
+</nav>
+</header>
+  <main>
+ 
+
+<content> <h2 id="-c-gellyfish-and-flaming-peony">🧮 C. Gellyfish and Flaming Peony</h2>
+<p><strong>Time limit per test</strong>: 2 seconds<br>
+<strong>Memory limit per test</strong>: 512 megabytes</p>
+<p>Gellyfish hates math problems, but she has to finish her math homework:</p>
+<p>Gellyfish is given an array of <code>n</code> positive integers <code>a₁, a₂, ..., aₙ</code>.</p>
+<p>She needs to do the following <strong>two-step operation</strong> until <strong>all elements of <code>a</code> are equal</strong>:</p>
+<ol>
+<li>Select two indices <code>i</code>, <code>j</code> such that <code>1 ≤ i, j ≤ n</code> and <code>i ≠ j</code>.</li>
+<li>Replace <code>a[i]</code> with <code>gcd(a[i], a[j])</code>.</li>
+</ol>
+<p>Gellyfish asks you: What is the <strong>minimum number of operations</strong> required to make all elements equal?</p>
+<blockquote>
+<p><strong>Note</strong>: It can be proven that it&rsquo;s always possible to make all elements equal using the allowed operations.</p></blockquote>
+<hr>
+<h3 id="-input">📥 Input</h3>
+<p>Each test contains multiple test cases.</p>
+<ul>
+<li>The first line contains a single integer <code>t</code> — the number of test cases (<code>1 ≤ t ≤ 5000</code>).</li>
+<li>For each test case:
+<ul>
+<li>The first line contains an integer <code>n</code> (<code>1 ≤ n ≤ 5000</code>) — the size of the array.</li>
+<li>The second line contains <code>n</code> integers <code>a₁, a₂, ..., aₙ</code> (<code>1 ≤ aᵢ ≤ 5000</code>).</li>
+</ul>
+</li>
+</ul>
+<p>It is guaranteed that the <strong>sum of <code>n</code> over all test cases does not exceed 5000</strong>.</p>
+<hr>
+<h3 id="-output">📤 Output</h3>
+<p>For each test case, output a single integer — the <strong>minimum number of operations</strong> to make all elements equal.</p>
+<hr>
+<h3 id="-example">💡 Example</h3>
+<h4 id="input">Input</h4>
+<p>3
+3
+12 20 30
+6
+1 9 1 9 8 1
+3
+6 14 15</p>
+<h4 id="output">Output</h4>
+<p>4
+3
+3</p>
+<h2 id="solution">Solution</h2>
+<p>First we need to find gcd in the array. if any element is equal to gcd than we can simply pick a gcd element and non-gcd element and convert the non-gcd element to gcd element. answer will be number of non-gcd element in array. but problem arrise when there is no gcd element in array. In this case we need to create a gcd element in minimum operation.So wen need to find minimum steps to find gcd using smallest number of operation. We could do a bfs on gcd.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="color:#007020;font-weight:bold">const</span> <span style="color:#902000">int</span> N <span style="color:#666">=</span> <span style="color:#40a070">5000</span> <span style="color:#666">+</span> <span style="color:#40a070">5</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#902000">int</span> g[N][N];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span><span style="color:#007020;font-weight:bold">inline</span> <span style="color:#902000">void</span> <span style="color:#06287e">precompute_gcd</span>() {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span>    <span style="color:#007020;font-weight:bold">for</span>(<span style="color:#902000">int</span> x <span style="color:#666">=</span> <span style="color:#40a070">0</span>; x <span style="color:#666">&lt;</span> N; x<span style="color:#666">++</span>) 
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>        g[x][<span style="color:#40a070">0</span>] <span style="color:#666">=</span> g[<span style="color:#40a070">0</span>][x] <span style="color:#666">=</span> g[x][x] <span style="color:#666">=</span> x;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>    <span style="color:#007020;font-weight:bold">for</span>(<span style="color:#902000">int</span> x <span style="color:#666">=</span> <span style="color:#40a070">1</span>; x <span style="color:#666">&lt;</span> N; x<span style="color:#666">++</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>        <span style="color:#007020;font-weight:bold">for</span>(<span style="color:#902000">int</span> y <span style="color:#666">=</span> <span style="color:#40a070">1</span>; y <span style="color:#666">&lt;</span> x; y<span style="color:#666">++</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>            g[x][y] <span style="color:#666">=</span> g[y][x] <span style="color:#666">=</span> g[y][x <span style="color:#666">%</span> y];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>}
+</span></span></code></pre></div><p>Purpose: Quickly get gcd(x, y) for any x, y in [5000].
+Why? To speed up repeated GCD calculations.
+eucledian algorithm gcd(x,y)=gcd(y,x%y)</p>
+<p>we need to find gcd of entire array.
+Then we will gcd from every element in array. so that new gcd of array become 1. we can easily find steps to get gcd 1 in arrays.</p>
+<p>If array contain gcd as one of the element we can easily get answer</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#007020;font-weight:bold">if</span>(has_gcd) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span>    <span style="color:#902000">int</span> cnt <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span>    <span style="color:#007020;font-weight:bold">for</span>(<span style="color:#902000">int</span> i <span style="color:#666">=</span> <span style="color:#40a070">1</span>; i <span style="color:#666">&lt;=</span> n; i<span style="color:#666">++</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span>        cnt <span style="color:#666">+=</span> (a[i] <span style="color:#666">!=</span> <span style="color:#40a070">1</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span>    printf(<span style="color:#4070a0">&#34;%d</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, cnt);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span>    <span style="color:#007020;font-weight:bold">return</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span>}
+</span></span></code></pre></div><p>If any element is already at the GCD, each other element can be reduced to GCD in one operation.
+So, answer is the number of elements not yet at GCD</p>
+<p>When No element is gcd</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span>memset(f, <span style="color:#40a070">0x3f</span>, <span style="color:#007020;font-weight:bold">sizeof</span>(f));
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#007020;font-weight:bold">for</span>(<span style="color:#902000">int</span> i <span style="color:#666">=</span> <span style="color:#40a070">1</span>; i <span style="color:#666">&lt;=</span> n; i<span style="color:#666">++</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span>    f[a[i]] <span style="color:#666">=</span> <span style="color:#40a070">0</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span><span style="color:#007020;font-weight:bold">for</span>(<span style="color:#902000">int</span> x <span style="color:#666">=</span> m; x <span style="color:#666">&gt;=</span> <span style="color:#40a070">1</span>; x<span style="color:#666">--</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span>    <span style="color:#007020;font-weight:bold">for</span>(<span style="color:#902000">int</span> i <span style="color:#666">=</span> <span style="color:#40a070">1</span>; i <span style="color:#666">&lt;=</span> n; i<span style="color:#666">++</span>) {
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span>        <span style="color:#902000">int</span> y <span style="color:#666">=</span> a[i];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span>        <span style="color:#902000">int</span> gcd_xy <span style="color:#666">=</span> g[x][y];
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span>        <span style="color:#007020;font-weight:bold">if</span>(f[x] <span style="color:#666">+</span> <span style="color:#40a070">1</span> <span style="color:#666">&lt;</span> f[gcd_xy])
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span>            f[gcd_xy] <span style="color:#666">=</span> f[x] <span style="color:#666">+</span> <span style="color:#40a070">1</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span>    }
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span>
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span><span style="color:#902000">int</span> ans <span style="color:#666">=</span> max(f[<span style="color:#40a070">1</span>] <span style="color:#666">-</span> <span style="color:#40a070">1</span>, <span style="color:#40a070">0</span>);
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span><span style="color:#007020;font-weight:bold">for</span>(<span style="color:#902000">int</span> i <span style="color:#666">=</span> <span style="color:#40a070">1</span>; i <span style="color:#666">&lt;=</span> n; i<span style="color:#666">++</span>)
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span>    <span style="color:#007020;font-weight:bold">if</span>(a[i] <span style="color:#666">&gt;</span> <span style="color:#40a070">1</span>) ans<span style="color:#666">++</span>;
+</span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16</span><span>printf(<span style="color:#4070a0">&#34;%d</span><span style="color:#4070a0;font-weight:bold">\n</span><span style="color:#4070a0">&#34;</span>, ans);
+</span></span></code></pre></div><p>F[x] = minimum steps to reduce some number to x.
+Initialize f[a[i]] = 0 (starting points). As we can get elements in array in 0 Operations.
+All other f[x] are set to a large value (infinity).
+For each possible value x, try to combine with each a[i] to get gcd(x, a[i]), and update the minimum steps.
+The answer is the minimum steps to get to 1 (since after normalization, GCD is 1), adjusted for the number of elements.
+Here m is maximum element in array. after Nomalizing entire array.
+If we can reach x in f[x] steps, then we can reach gcd(x, y) in f[x] + 1 steps (one more operation).</p>
+ </content>
+
+<p>
+  
+  <a href="//localhost:1313/tags/codeforces/">#Codeforces</a>
+  
+</p>
+
+
+
+<div class="upvote-container">
+<small class="upvote">
+  <button class="upvote-btn" id="upvote-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+    <polyline points="17 11 12 6 7 11"></polyline>
+    <polyline points="17 18 12 13 7 18"></polyline>
+    </svg>
+    <span class="upvote-count" id="upvote-count">0</span>
+  </button>
+</small>
+</div>
+
+<script>
+  let hasUpvoted = false;
+  let upvoteBtn;
+  let upvoteCount;
+
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    const slug = '';
+    upvoteBtn = document.getElementById('upvote-btn');
+    upvoteCount = document.getElementById('upvote-count');
+    getCount(slug);
+
+    
+    upvoteBtn.addEventListener('click', handleUpvote);
+  });
+
+  
+  async function handleUpvote() {
+    if (hasUpvoted) {
+      console.log('You have already upvoted this post!');
+      return;
+    }
+    const slug = '';
+
+    
+    upvoteBtn.disabled = true;
+    
+    upvoteBtn.classList.add('upvoted');
+    
+    upvoteCount.innerText = parseInt(upvoteCount.innerText) + 1;
+
+    try {
+      const response = await fetch('The domain name of the Worker that was just deployed\/upvote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ postId: slug, diff: 1 }),
+      });
+
+      if (response.ok) {
+        console.log('Upvote successful!');
+        hasUpvoted = true;
+        await getCount(slug, 3);
+      } else {
+        console.log('Upvote failed!');
+      }
+    } catch (error) {
+      console.error('Error: ', error);
+    } finally {
+      upvoteBtn.disabled = false;
+    }
+  }
+
+  
+  async function getCount(slug, retryCount = 0) {
+    try {
+      const response = await fetch('The domain name of the Worker that was just deployed\/count?post=' + slug, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.code === 0) {
+        const count = data.data.count;
+        upvoteCount.innerText = count;
+        hasUpvoted = data.data.hasUpvoted;
+        if (hasUpvoted) {
+          upvoteBtn.classList.add('upvoted');
+        } else {
+          upvoteBtn.classList.remove('upvoted');
+        }
+      } else {
+        console.error('Failed to get upvote count: ', data.msg);
+      }
+    } catch (error) {
+      console.error('Error: ', error);
+      if (retryCount > 0) {
+        setTimeout(() => {
+          getCount(slug, retryCount - 1);
+        }, 1000);
+      }
+    }
+  }
+</script>
+
+
+
+
+ 
+<div class="toc">
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#-c-gellyfish-and-flaming-peony">🧮 C. Gellyfish and Flaming Peony</a>
+      <ul>
+        <li><a href="#-input">📥 Input</a></li>
+        <li><a href="#-output">📤 Output</a></li>
+        <li><a href="#-example">💡 Example</a></li>
+      </ul>
+    </li>
+    <li><a href="#solution">Solution</a></li>
+  </ul>
+</nav>
+</div>
+
+
+
+  </main>
+  <footer>
+
+
+
+
+Subscribe via <a href="/index.xml">RSS</a>.
+<br />
+
+
+
+
+
+
+Made with
+<a href="https://github.com/rokcso/hugo-bearblog-neo/">Hugo Bear Neo</a>.
+<br />
+
+
+
+
+
+
+
+🗺️ <a href="/sitemap.xml">Sitemap</a>.
+
+</footer>
+
+    
+
+
+</body>
+
+</html>
