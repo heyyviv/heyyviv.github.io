@@ -21,6 +21,7 @@ ignoreErrors = ["error-disable-taxonomy"]
     upvoteURL = "The domain name of the Worker that was just deployed/" 
     groupByYear = true
     toc = true
+    math = true 
 
 
 
