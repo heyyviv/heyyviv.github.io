@@ -10,10 +10,24 @@
     
     
     
-    <lastBuildDate>Wed, 30 Jul 2025 22:28:21 +0530</lastBuildDate>
+    <lastBuildDate>Sat, 02 Aug 2025 14:46:59 +0530</lastBuildDate>
     
     
     <atom:link href="//localhost:1313/tags/notes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Docker Notes</title>
+      <link>//localhost:1313/blog/docker-notes/</link>
+      <pubDate>Sat, 02 Aug 2025 14:46:59 +0530</pubDate>
+      <guid>//localhost:1313/blog/docker-notes/</guid>
+      <description>&lt;h1 id=&#34;why-we-use-&#34;&gt;Why we use ?&lt;/h1&gt;&#xA;&lt;p&gt;For Developing,shipping and running application. It seperate application from infrastructure.&#xA;Docker provides ability to run application in losely isolated envirnment called container. Container are light weight and contain every thing needed to run an application independent of host.&#xA;Reasons to use container&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Portability : It can run anywhere irrespective of OS and hardware platform&lt;/li&gt;&#xA;&lt;li&gt;Consistency : operate in same way regardless where they are deployed&lt;/li&gt;&#xA;&lt;li&gt;speed of deploy : No need to worry whether application may break in production envirnment&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;virtual machine instance needs an entire operating system to be in place and running, which adds a lot of overhead and increases the number of variables that need to be managed between what a developer builds and what is running in production.&#xA;a container only needs a single instance of an operating system in place so it can run more instances on the same servers.&lt;/p&gt;&#xA;</description>
+    </item>
+    <item>
+      <title>Kubernetes</title>
+      <link>//localhost:1313/blog/kubernetes/</link>
+      <pubDate>Wed, 30 Jul 2025 22:33:52 +0530</pubDate>
+      <guid>//localhost:1313/blog/kubernetes/</guid>
+      <description>&lt;h2 id=&#34;what-is-kubernetes-&#34;&gt;What is kubernetes ?&lt;/h2&gt;&#xA;</description>
+    </item>
     <item>
       <title>Mapper Reducer</title>
       <link>//localhost:1313/blog/mapper-reducer/</link>
