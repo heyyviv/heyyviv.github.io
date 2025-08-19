@@ -27,7 +27,7 @@ Our primary goals for this book club are:
 
 | Week Number | Chapter Name | Links |
 | :--- | :--- | :--- |
-| Week 1 | Chapter 1 - Microservices | |
+| Week 1 | Chapter 1 - Microservices | | 
 | Week 2 | Chapter 2 - The Evolutionary Architect | |
 | Week 3 | Chapter 3 - How to Model Services | |
 | Week 4 | Chapter 4 - Integration | |
