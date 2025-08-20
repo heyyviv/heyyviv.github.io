@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-us">
 
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+<head>
   <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,10 +14,10 @@ Unfortunately, the incorporation of LayerNorm raises computational overhead. Alt
 One major feature of LayerNorm that is widely regarded as contributions to the stabilization is its  recentering invariance property." />
 <meta name="keywords" content="LLM,notes," />
 
-<link rel="canonical" href="//localhost:1313/blog/about-llm-part-1/">
+<link rel="canonical" href="/blog/about-llm-part-1/">
 
 
-<meta property="og:url" content="//localhost:1313/blog/about-llm-part-1/">
+<meta property="og:url" content="/blog/about-llm-part-1/">
   <meta property="og:site_name" content="Vivek&#39;s Field Notes">
   <meta property="og:title" content="About LLM part 1 ">
   <meta property="og:description" content="Root Mean Square Layer Normalization Layer normalization (LayerNorm) has been successfully applied to various deep neural networks to help stabilize training and boost model convergence because of its capability in handling re-centering and re-scaling of both inputs and weight matrix. However, the computational overhead introduced by LayerNorm makes these improvements expensive and significantly slows the underlying network. LayerNorm was widely accepted because it’s simplicity and no dependence among training cases and it also handle variable length inputs unlike BatchNorm. Unfortunately, the incorporation of LayerNorm raises computational overhead. Although this is negligible to small and shallow neural models with few normalization layers, this problem becomes severe when underlying networks grow larger and deeper. As a result, the efficiency gain from faster and more stable training (in terms of number of training steps) is counter-balanced by an increased computational cost per training step, which diminishes the net efficiency. One major feature of LayerNorm that is widely regarded as contributions to the stabilization is its recentering invariance property.">
@@ -475,9 +475,9 @@ We mean-pool the key and value projection matrices of the original heads within 
 
 <p>
   
-  <a href="//localhost:1313/tags/llm/">#LLM</a>
+  <a href="/tags/llm/">#LLM</a>
   
-  <a href="//localhost:1313/tags/notes/">#Notes</a>
+  <a href="/tags/notes/">#Notes</a>
   
 </p>
 
