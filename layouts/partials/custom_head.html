@@ -1,0 +1,96 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --font-primary: 'Inter', sans-serif;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* Force Light Mode */
+    body.light-mode {
+        --body-bg-color: #fcfcfc;
+        --bold-text-color: #222;
+        --body-text-color: #444;
+        --link-color: #3273dc;
+        --link-visited-color: #8b6fcb;
+        --table-border-color: #f2f2f2;
+        --table-th-bg-color: #f2f2f2;
+        --img-border-color: #f2f2f2;
+        --code-bg-color: #f2f2f2;
+        --code-text-color: #222;
+        --blockquote-border-color: #666;
+        --blockquote-text-color: #666;
+        --upvoted-color: #FA8072;
+    }
+
+    /* Force Dark Mode */
+    body.dark-mode {
+        --body-bg-color: #1c1c1c;
+        --bold-text-color: #eee;
+        --body-text-color: #ddd;
+        --link-color: #8cc2dd;
+        --link-visited-color: #c3b1ee;
+        --table-border-color: #999;
+        --table-th-bg-color: #999;
+        --img-border-color: #999;
+        --code-bg-color: #555;
+        --code-text-color: #ddd;
+        --blockquote-border-color: #ccc;
+        --blockquote-text-color: #ccc;
+    }
+
+    #theme-toggle {
+        border: none;
+        background: none;
+        cursor: pointer;
+        padding: 0;
+        margin-left: 10px;
+        font-size: 1.2rem;
+        vertical-align: sub;
+    }
+
+    /* Back to Top Button */
+    #back-to-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: var(--body-bg-color);
+        border: 1px solid var(--body-text-color);
+        color: var(--body-text-color);
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: none;
+        /* Hidden by default */
+        z-index: 100;
+    }
+</style>
+
+<script>
+    // Back to Top Logic
+    document.addEventListener('DOMContentLoaded', () => {
+        const backToTopBtn = document.getElementById('back-to-top');
+        if (backToTopBtn) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    backToTopBtn.style.display = 'block';
+                } else {
+                    backToTopBtn.style.display = 'none';
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+    });
+</script>

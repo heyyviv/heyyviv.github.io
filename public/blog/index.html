@@ -32,8 +32,8 @@
 
   <meta itemprop="name" content="Blogs">
   <meta itemprop="description" content="A quiet corner of the web where thoughts wander, pixels settle into place, and small ideas take root. &#39;Kanna&#39;s Field Notes&#39; is a personal blog and digital sketchbook—a place to share reflections, experiments, and discoveries in technology, creativity, and life. Whether it&#39;s a snippet of code, a captured moment, or a late-night thought, this is where it lives, gently archived for the curious passerby.">
-  <meta itemprop="datePublished" content="2025-08-19T22:28:21+05:30">
-  <meta itemprop="dateModified" content="2025-08-19T22:28:21+05:30">
+  <meta itemprop="datePublished" content="2026-02-10T21:24:16+05:30">
+  <meta itemprop="dateModified" content="2026-02-10T21:24:16+05:30">
 <meta name="referrer" content="no-referrer-when-downgrade" />
 
   <link rel="alternate" type="application/rss+xml" href="/blog/index.xml" title="Vivek's Field Notes" />
@@ -341,12 +341,106 @@
     }
   }
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-</head>
+<style>
+    :root {
+        --font-primary: 'Inter', sans-serif;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+     
+    body.light-mode {
+        --body-bg-color: #fcfcfc;
+        --bold-text-color: #222;
+        --body-text-color: #444;
+        --link-color: #3273dc;
+        --link-visited-color: #8b6fcb;
+        --table-border-color: #f2f2f2;
+        --table-th-bg-color: #f2f2f2;
+        --img-border-color: #f2f2f2;
+        --code-bg-color: #f2f2f2;
+        --code-text-color: #222;
+        --blockquote-border-color: #666;
+        --blockquote-text-color: #666;
+        --upvoted-color: #FA8072;
+    }
+
+     
+    body.dark-mode {
+        --body-bg-color: #1c1c1c;
+        --bold-text-color: #eee;
+        --body-text-color: #ddd;
+        --link-color: #8cc2dd;
+        --link-visited-color: #c3b1ee;
+        --table-border-color: #999;
+        --table-th-bg-color: #999;
+        --img-border-color: #999;
+        --code-bg-color: #555;
+        --code-text-color: #ddd;
+        --blockquote-border-color: #ccc;
+        --blockquote-text-color: #ccc;
+    }
+
+    #theme-toggle {
+        border: none;
+        background: none;
+        cursor: pointer;
+        padding: 0;
+        margin-left: 10px;
+        font-size: 1.2rem;
+        vertical-align: sub;
+    }
+
+     
+    #back-to-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: var(--body-bg-color);
+        border: 1px solid var(--body-text-color);
+        color: var(--body-text-color);
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: none;
+         
+        z-index: 100;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const backToTopBtn = document.getElementById('back-to-top');
+        if (backToTopBtn) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    backToTopBtn.style.display = 'block';
+                } else {
+                    backToTopBtn.style.display = 'none';
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+    });
+</script></head>
 
 <body>
   <header><a href="/" class="title">
-  <h1>Vivek&#39;s Field Notes</h1>
+    <h1>Vivek&#39;s Field Notes</h1>
 </a>
 <nav><a href="/">Home</a>
 
@@ -359,14 +453,65 @@
 
 <a href="/blog/">Blog</a>
 
+<button id="theme-toggle" aria-label="Toggle Dark Mode">Theme</button>
 </nav>
+
 <script>
-window.MathJax = {
-  tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] }
-};
+    
+    (function () {
+        const toggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        const iconSun = "☀️";
+        const iconMoon = "🌙";
+
+        
+        function setIcon(isDark) {
+            toggleBtn.innerHTML = isDark ? iconSun : iconMoon;
+            toggleBtn.setAttribute('aria-label', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+        }
+
+        
+        let currentTheme = localStorage.getItem('theme');
+
+        
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (!currentTheme) {
+            currentTheme = systemPrefersDark ? 'dark' : 'light';
+        }
+
+        
+        if (currentTheme === 'dark') {
+            body.classList.add('dark-mode');
+            setIcon(true);
+        } else {
+            body.classList.add('light-mode');
+            setIcon(false);
+        }
+
+        
+        toggleBtn.addEventListener('click', function () {
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                localStorage.setItem('theme', 'light');
+                setIcon(false);
+            } else {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+                setIcon(true);
+            }
+        });
+    })();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
-</header>
+
+<script>
+    window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }
+    };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script></header>
   <main>
 <content>
   
@@ -420,21 +565,21 @@ window.MathJax = {
     
     
     
-    <h3>2025</h3>
+    <h3>2026</h3>
     
     
     
     <li>
       <span class=" grouped ">
         <i>
-          <time datetime='2025-08-19' pubdate>
+          <time datetime='2026-02-10' pubdate>
             
-            19 Aug.
+            10 Feb.
             
           </time>
         </i>
       </span>
-      <a href="/blog/microservices-part-1/">Microservices Part 1</a>
+      <a href="/blog/ai-agents-notes/">Ai agents Notes</a>
     </li>
     
     
@@ -446,14 +591,36 @@ window.MathJax = {
     <li>
       <span class=" grouped ">
         <i>
-          <time datetime='2025-08-19' pubdate>
+          <time datetime='2026-01-24' pubdate>
             
-            19 Aug.
+            24 Jan.
             
           </time>
         </i>
       </span>
-      <a href="/blog/multi-processor-programming/">Multi Processor Programming</a>
+      <a href="/blog/24-01-26/">24 01 26</a>
+    </li>
+    
+    
+    
+    
+    
+    
+    <h3>2025</h3>
+    
+    
+    
+    <li>
+      <span class=" grouped ">
+        <i>
+          <time datetime='2025-11-14' pubdate>
+            
+            14 Nov.
+            
+          </time>
+        </i>
+      </span>
+      <a href="/blog/docker-kubernetes/">Docker &amp; kubernetes </a>
     </li>
     
     
@@ -472,7 +639,7 @@ window.MathJax = {
           </time>
         </i>
       </span>
-      <a href="/blog/go-modules/">Go modules</a>
+      <a href="/blog/go-lang/">Go Lang</a>
     </li>
     
     
@@ -492,44 +659,6 @@ window.MathJax = {
         </i>
       </span>
       <a href="/blog/book-club-building-microservices-designing-fine-grained-systems/">Book club Building Microservices DESIGNING FINE-GRAINED SYSTEMS</a>
-    </li>
-    
-    
-    
-    
-    
-    
-    
-    <li>
-      <span class=" grouped ">
-        <i>
-          <time datetime='2025-08-02' pubdate>
-            
-            02 Aug.
-            
-          </time>
-        </i>
-      </span>
-      <a href="/blog/docker-notes/">Docker Notes</a>
-    </li>
-    
-    
-    
-    
-    
-    
-    
-    <li>
-      <span class=" grouped ">
-        <i>
-          <time datetime='2025-07-30' pubdate>
-            
-            30 Jul.
-            
-          </time>
-        </i>
-      </span>
-      <a href="/blog/kubernetes/">Kubernetes</a>
     </li>
     
     
@@ -659,7 +788,8 @@ Made with
 
 🗺️ <a href="/sitemap.xml">Sitemap</a>.
 
-</footer>
+
+<button id="back-to-top" title="Go to top">↑</button></footer>
 
     
 

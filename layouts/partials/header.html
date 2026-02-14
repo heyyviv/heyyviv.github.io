@@ -1,0 +1,64 @@
+<a href="{{ "" | relURL }}" class="title">
+    <h1>{{ .Site.Title }}</h1>
+</a>
+<nav>
+    {{- partial "nav.html" . -}}
+    <button id="theme-toggle" aria-label="Toggle Dark Mode">Theme</button>
+</nav>
+
+<script>
+    // Theme Layout Script
+    (function () {
+        const toggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        const iconSun = "☀️";
+        const iconMoon = "🌙";
+
+        // Helper to set theme
+        function setIcon(isDark) {
+            toggleBtn.innerHTML = isDark ? iconSun : iconMoon;
+            toggleBtn.setAttribute('aria-label', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+        }
+
+        // 1. Check LocalStorage
+        let currentTheme = localStorage.getItem('theme');
+
+        // 2. Check System Preference if no LocalStorage
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (!currentTheme) {
+            currentTheme = systemPrefersDark ? 'dark' : 'light';
+        }
+
+        // Apply initial theme
+        if (currentTheme === 'dark') {
+            body.classList.add('dark-mode');
+            setIcon(true);
+        } else {
+            body.classList.add('light-mode');
+            setIcon(false);
+        }
+
+        // Toggle Event
+        toggleBtn.addEventListener('click', function () {
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                localStorage.setItem('theme', 'light');
+                setIcon(false);
+            } else {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+                setIcon(true);
+            }
+        });
+    })();
+</script>
+
+<script>
+    window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }
+    };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script>
