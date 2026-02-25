@@ -4,7 +4,7 @@ date = "2025-05-23T15:12:55+05:30"
 
 # description is optional
 #
-# description = "An optional description for SEO. If not provided, an automatically created summary will be used."
+description = "Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism."
 
 tags = ["training","LLM","notes"]
 +++

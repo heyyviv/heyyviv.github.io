@@ -4,7 +4,7 @@ date = "2025-05-22T15:35:24+05:30"
 
 # description is optional
 #
-# description = "An optional description for SEO. If not provided, an automatically created summary will be used."
+description = "Quick reference for essential Hugo commands to create pages, posts, and run the local server."
 
 tags = ['tips','blog']
 +++

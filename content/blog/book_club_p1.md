@@ -4,7 +4,7 @@ date = "2025-08-03T23:07:41+05:30"
 
 # description is optional
 #
-# description = "An optional description for SEO. If not provided, an automatically created summary will be used."
+description = "Join our weekly book club reading 'Building Microservices: Designing Fine-Grained Systems' to learn and grow together."
 
 tags = ["blog"]
 +++
@@ -39,4 +39,3 @@ Our primary goals for this book club are:
 | Week 10 | Chapter 10 - Conway’s Law and System Design | |
 | Week 11 | Chapter 11 - Microservices at Scale | |
 | Week 12 | Chapter 12 - Bringing It All Together | |
-
