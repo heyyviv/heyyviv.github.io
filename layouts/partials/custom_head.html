@@ -1,10 +1,26 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link
+    href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Quicksand:wght@300..700&display=swap"
+    rel="stylesheet">
 
 <style>
     :root {
-        --font-primary: 'Inter', sans-serif;
+        --font-primary: 'Quicksand', sans-serif;
+        --font-serif: 'Lora', serif;
+        --bg-cream: #FDF6E3;
+        --text-forest: #4B3D30;
+        --accent-moss: #7B9E89;
+        --accent-sky: #7EB2D1;
+        --night-bg: #1A2F25;
+        --night-text: #E0E5C1;
+        --night-gold: #FFD700;
+
+        --body-bg-color: var(--bg-cream);
+        --bold-text-color: var(--text-forest);
+        --body-text-color: var(--text-forest);
+        --link-color: var(--accent-sky);
+        --link-visited-color: #8b6fcb;
     }
 
     html {
@@ -12,50 +28,129 @@
     }
 
     body {
-        transition: background-color 0.3s, color 0.3s;
+        transition: background-color 0.5s ease, color 0.5s ease;
+        font-family: var(--font-primary);
+        line-height: 1.7;
+        background-color: var(--body-bg-color);
+        color: var(--body-text-color);
+        background-image: url('https://www.transparenttextures.com/patterns/water-color.png');
+        /* Subtle watercolor texture */
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-serif);
+        color: var(--bold-text-color);
+        margin-top: 1.5em;
     }
 
     /* Force Light Mode */
     body.light-mode {
-        --body-bg-color: #fcfcfc;
-        --bold-text-color: #222;
-        --body-text-color: #444;
-        --link-color: #3273dc;
-        --link-visited-color: #8b6fcb;
-        --table-border-color: #f2f2f2;
-        --table-th-bg-color: #f2f2f2;
-        --img-border-color: #f2f2f2;
-        --code-bg-color: #f2f2f2;
-        --code-text-color: #222;
-        --blockquote-border-color: #666;
-        --blockquote-text-color: #666;
-        --upvoted-color: #FA8072;
+        --body-bg-color: var(--bg-cream);
+        --bold-text-color: var(--text-forest);
+        --body-text-color: #5D4D3D;
+        --link-color: #4A89A4;
+        --code-bg-color: #E9E1CC;
+        --code-text-color: var(--text-forest);
+        --blockquote-border-color: var(--accent-moss);
+        --blockquote-text-color: #6D5D4D;
     }
 
     /* Force Dark Mode */
     body.dark-mode {
-        --body-bg-color: #1c1c1c;
-        --bold-text-color: #eee;
-        --body-text-color: #ddd;
-        --link-color: #8cc2dd;
-        --link-visited-color: #c3b1ee;
-        --table-border-color: #999;
-        --table-th-bg-color: #999;
-        --img-border-color: #999;
-        --code-bg-color: #555;
-        --code-text-color: #ddd;
-        --blockquote-border-color: #ccc;
-        --blockquote-text-color: #ccc;
+        --body-bg-color: var(--night-bg);
+        --bold-text-color: var(--night-text);
+        --body-text-color: #C8CDA9;
+        --link-color: var(--night-gold);
+        --code-bg-color: #243D32;
+        --code-text-color: var(--night-text);
+        --blockquote-border-color: var(--night-gold);
+        --blockquote-text-color: #B0B594;
+    }
+
+    /* Cloud Animation Styles */
+    .hero-container {
+        position: relative;
+        overflow: hidden;
+        height: 300px;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        background-image: url('/ghibli_hero.jpeg');
+        background-size: cover;
+        background-position: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .clouds {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    .cloud {
+        position: absolute;
+        background: white;
+        border-radius: 50%;
+        opacity: 0.3;
+        filter: blur(20px);
+        animation: drift linear infinite;
+    }
+
+    @keyframes drift {
+        from {
+            transform: translateX(-150px);
+        }
+
+        to {
+            transform: translateX(calc(100vw + 150px));
+        }
+    }
+
+    .cloud-1 {
+        width: 150px;
+        height: 60px;
+        top: 10%;
+        animation-duration: 60s;
+    }
+
+    .cloud-2 {
+        width: 200px;
+        height: 80px;
+        top: 25%;
+        animation-duration: 85s;
+        animation-delay: -20s;
+    }
+
+    .cloud-3 {
+        width: 120px;
+        height: 50px;
+        top: 15%;
+        animation-duration: 45s;
+        animation-delay: -10s;
     }
 
     #theme-toggle {
-        border: none;
-        background: none;
+        border: 2px solid var(--accent-moss);
+        background: white;
         cursor: pointer;
-        padding: 0;
+        padding: 5px 12px;
+        border-radius: 20px;
         margin-left: 10px;
-        font-size: 1.2rem;
-        vertical-align: sub;
+        font-family: var(--font-primary);
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    #theme-toggle:hover {
+        transform: scale(1.05);
+        border-color: var(--accent-sky);
     }
 
     /* Back to Top Button */
@@ -63,15 +158,51 @@
         position: fixed;
         bottom: 20px;
         right: 20px;
-        background-color: var(--body-bg-color);
-        border: 1px solid var(--body-text-color);
-        color: var(--body-text-color);
-        padding: 10px;
-        border-radius: 5px;
+        background-color: var(--accent-moss);
+        border: none;
+        color: white;
+        padding: 12px;
+        border-radius: 50%;
         cursor: pointer;
         display: none;
-        /* Hidden by default */
         z-index: 100;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    #back-to-top:hover {
+        transform: translateY(-5px);
+        background-color: var(--accent-sky);
+    }
+
+    /* Nice hover for links */
+    a {
+        text-decoration: none;
+        position: relative;
+        transition: color 0.3s ease;
+    }
+
+    a::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--link-color);
+        transition: width 0.3s ease;
+    }
+
+    a:hover::after {
+        width: 100%;
+    }
+
+    blockquote {
+        border-left: 5px solid var(--blockquote-border-color);
+        padding: 10px 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 0 8px 8px 0;
+        font-style: italic;
     }
 </style>
 
