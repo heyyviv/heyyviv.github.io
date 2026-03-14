@@ -1,0 +1,135 @@
+<style>
+    .form-container {
+        max-width: 500px;
+        margin: 2rem auto;
+        padding: 2rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 1rem;
+        box-sizing: border-box;
+    }
+
+    .form-button {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--text);
+        color: var(--bg);
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
+
+    .form-button:hover {
+        opacity: 0.9;
+    }
+
+    .form-message {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 4px;
+        display: none;
+    }
+
+    .success {
+        background: #d4edda;
+        color: #155724;
+        display: block;
+    }
+
+    .error {
+        background: #f8d7da;
+        color: #721c24;
+        display: block;
+    }
+</style>
+
+<div class="form-container">
+    <h2>Add New Bookmark</h2>
+    <form id="bookmarkForm">
+        <div class="form-group">
+            <label class="form-label" for="url">URL</label>
+            <input class="form-input" type="url" id="url" name="url" required placeholder="https://...">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="title">Title / Description</label>
+            <input class="form-input" type="text" id="title" name="title" required
+                placeholder="What is this link about?">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="password">Secret Password</label>
+            <input class="form-input" type="password" id="password" name="password" required>
+        </div>
+
+        <button type="submit" class="form-button" id="submitBtn">Add Bookmark</button>
+    </form>
+    <div id="formMessage" class="form-message"></div>
+</div>
+
+<script>
+    document.getElementById('bookmarkForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const btn = document.getElementById('submitBtn');
+        const msg = document.getElementById('formMessage');
+        const url = document.getElementById('url').value;
+        const title = document.getElementById('title').value;
+        const password = document.getElementById('password').value;
+
+        btn.disabled = true;
+        btn.innerText = 'Saving...';
+        msg.className = 'form-message'; // reset
+
+        try {
+            // THE WORKER URL WILL GO HERE ONCE YOU CREATE IT
+            const workerUrl = 'https://bookmark-api.random4hello.workers.dev';
+
+            const response = await fetch(workerUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url, title, password })
+            });
+
+            if (response.ok) {
+                msg.innerText = 'Bookmark saved! The site is rebuilding, check back in a minute.';
+                msg.className = 'form-message success';
+                document.getElementById('bookmarkForm').reset();
+            } else {
+                const errData = await response.text();
+                throw new Error(errData || 'Failed to save bookmark');
+            }
+        } catch (error) {
+            msg.innerText = 'Error: ' + error.message;
+            msg.className = 'form-message error';
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Add Bookmark';
+        }
+    });
+</script>

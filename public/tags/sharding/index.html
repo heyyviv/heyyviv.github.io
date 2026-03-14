@@ -5,45 +5,38 @@
   <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Training_LLM | Vivek&#39;s Field Notes</title>
-<meta name="title" content="Training_LLM" />
-<meta name="description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism." />
-<meta name="keywords" content="training,LLM,notes," />
+<title>Sharding | Vivek&#39;s Field Notes</title>
+<meta name="title" content="Sharding" />
+<meta name="description" content="A quiet corner of the web where thoughts wander, pixels settle into place, and small ideas take root. &#39;Kanna&#39;s Field Notes&#39; is a personal blog and digital sketchbook—a place to share reflections, experiments, and discoveries in technology, creativity, and life. Whether it&#39;s a snippet of code, a captured moment, or a late-night thought, this is where it lives, gently archived for the curious passerby." />
+<meta name="keywords" content="blog,database,distributed_systems,llm,notes,sharding,tips,training," />
 
-<link rel="canonical" href="//localhost:1313/blog/training_llm/">
+<link rel="canonical" href="//localhost:1313/tags/sharding/">
 
 
-<meta property="og:url" content="//localhost:1313/blog/training_llm/">
+<meta property="og:url" content="//localhost:1313/tags/sharding/">
   <meta property="og:site_name" content="Vivek&#39;s Field Notes">
-  <meta property="og:title" content="Training_LLM">
-  <meta property="og:description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism.">
+  <meta property="og:title" content="Sharding">
+  <meta property="og:description" content="A quiet corner of the web where thoughts wander, pixels settle into place, and small ideas take root. &#39;Kanna&#39;s Field Notes&#39; is a personal blog and digital sketchbook—a place to share reflections, experiments, and discoveries in technology, creativity, and life. Whether it&#39;s a snippet of code, a captured moment, or a late-night thought, this is where it lives, gently archived for the curious passerby.">
   <meta property="og:locale" content="en_us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="blog">
-    <meta property="article:published_time" content="2025-05-23T15:12:55+05:30">
-    <meta property="article:modified_time" content="2025-05-23T15:12:55+05:30">
-    <meta property="article:tag" content="Training">
-    <meta property="article:tag" content="LLM">
-    <meta property="article:tag" content="Notes">
+  <meta property="og:type" content="website">
 
 
 
 
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Training_LLM">
-  <meta name="twitter:description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism.">
+  <meta name="twitter:title" content="Sharding">
+  <meta name="twitter:description" content="A quiet corner of the web where thoughts wander, pixels settle into place, and small ideas take root. &#39;Kanna&#39;s Field Notes&#39; is a personal blog and digital sketchbook—a place to share reflections, experiments, and discoveries in technology, creativity, and life. Whether it&#39;s a snippet of code, a captured moment, or a late-night thought, this is where it lives, gently archived for the curious passerby.">
 
 
 
 
-  <meta itemprop="name" content="Training_LLM">
-  <meta itemprop="description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism.">
-  <meta itemprop="datePublished" content="2025-05-23T15:12:55+05:30">
-  <meta itemprop="dateModified" content="2025-05-23T15:12:55+05:30">
-  <meta itemprop="wordCount" content="1096">
-  <meta itemprop="keywords" content="Training,LLM,Notes">
+  <meta itemprop="name" content="Sharding">
+  <meta itemprop="description" content="A quiet corner of the web where thoughts wander, pixels settle into place, and small ideas take root. &#39;Kanna&#39;s Field Notes&#39; is a personal blog and digital sketchbook—a place to share reflections, experiments, and discoveries in technology, creativity, and life. Whether it&#39;s a snippet of code, a captured moment, or a late-night thought, this is where it lives, gently archived for the curious passerby.">
+  <meta itemprop="datePublished" content="2026-02-28T20:16:56+05:30">
+  <meta itemprop="dateModified" content="2026-02-28T20:16:56+05:30">
 <meta name="referrer" content="no-referrer-when-downgrade" />
 
+  <link rel="alternate" type="application/rss+xml" href="//localhost:1313/tags/sharding/index.xml" title="Vivek's Field Notes" />
   <style>
    
   :root {
@@ -659,188 +652,85 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script></header>
   <main>
-
-
-<h1>Training_LLM</h1>
-
-<p>
-    <i>
-        <time datetime='2025-05-23' pubdate>
-            23 May, 2025
-        </time>
-        • 6 min read
-    </i>
-</p>
-
-
-
-
-<content> <h1 id="training-on-one-gpu">Training on One GPU</h1>
-<p>when a model trained, there are 3 phases</p>
-<ul>
-<li>A forward pass, which passes inputs through the model to yield its outputs</li>
-<li>A backward pass to compute the gradients</li>
-<li>An optimization step using the gradients to update the parameters
-The batch size (bs) is one of the important hyperparameters for model training; it affects both model convergence and throughput.</li>
-</ul>
-<p>A small batch size can be useful early in training to quickly move through the training landscape to reach an optimal learning point. However, further along in the model training, small batch sizes will keep gradients noisy, and the model may not be able to converge to the most optimal final performance. At the other extreme, a large batch size, while giving very accurate gradient estimations, will tend to make less use of each training token, rendering convergence slower and potentially wasting compute resources.</p>
-<p>Batch size also affects the time it takes to train on a given text dataset: a small batch size will require more optimizer steps to train on the same amount of samples. Optimizer steps are costly (in compute time), and the total time to train will thus increase compared to using a larger batch size. That being said, note that the batch size can often be adjusted quite widely around the optimal batch size without major impact on the performance of the model - that is, the sensitivity of final model performance to the exact batch size value is usually rather low around the optimal batch size.
-In the LLM pretraining community, batch sizes are commonly reported in terms of tokens rather than number of samples
-bst = batch size tokens
-bs = batch size
-seq = model input sequence length
-bst = bs * seq
-Llama 1 was trained with a batch size of ~4M tokens for 1.4 trillion tokens, while DeepSeek was trained with a batch size of ~60M tokens for 14 trillion tokens.</p>
-<p>we couldn&rsquo;t calculate exact memory usage by a model cuz</p>
-<ul>
-<li>CUDA kernels typically require 1-2 GB of GPU memory</li>
-<li>Some memory is used for buffers and intermediate results, and there&rsquo;s some memory that can&rsquo;t be used due to fragmentation.
-We could face out-of-memory (OOM) issues when training this large models but why?
-When training a neural network model, we store several items in memory:</li>
-<li>Model weights</li>
-<li>Model gradients</li>
-<li>Optimizer states</li>
-<li>Activations needed to compute the gradients</li>
-</ul>
-<p>First the activations increase quickly as we do the forward pass, then during the backward pass the gradients build up, and as the backward pass propagates, the stored activations used to compute the gradients are progressively cleared. Finally, we perform optimization, during which we need all the gradients, and then update the optimizer states before we start the next forward pass.</p>
-<p>An interesting observation here is that memory usage is not static for a given model; rather, it scales linearly with the batch size and quadratically with the sequence length. This means the activation memory is the part that will blow up when we increase our batch size or train with longer sequences.</p>
-<p>These graphs tell a striking story: for short sequences (or small batch sizes), memory usage for activations is almost negligible, but from around 2-4k tokens they start to take up a significant amount of memory, while usage for parameters, gradients, and optimizer states (as we’ll discuss later) is roughly independent of the sequence length and batch size.
-The general idea behind activation recomputation – also called gradient checkpointing or rematerialization – is to discard some activations during the forward pass to save memory and spend some extra compute to recompute these on the fly during the backward pass. Without recomputation, we store every hidden state between two learnable operations (e.g., feedforward, LayerNorm, etc.), so that we can use them during the backward pass to compute gradients. When we use recomputation, we typically only store activations at a few key points in the model architecture, discarding the rest of the activations and recomputing them on the fly during the backward pass from the nearest saved activations. Basically, we perform a sub-part of the forward pass again, to trade off memory for compute.</p>
-<ul>
-<li>FULL : We checkpoint activations at the transition point between each layer of the Transformer model. This is usually called the “full” strategy since it requires a forward pass through each layer, essentially adding a full forward pass during the backward pass. This strategy saves the most memory but is the most expensive one in terms of compute. It typically increases the compute cost and time by up to 30-40%, which is very noticeable.</li>
-<li>Selective: In general, we can do better than full. The authors of the recomputation paper did a detailed analysis studying which activations grow the largest and have the cheapest recomputation cost in terms of floating-point operations per second (FLOPS). It turns out that the attention computations fall in that category, and thus we can usually discard them and focus on checkpointing the expensive feedforward computations. For a GPT-3 (175B) model, this means a 70% activation memory reduction at a 2.7% compute cost.</li>
-</ul>
-<p>Gradient accumulation is a very straightforward method to avoid memory explosion that consists of splitting a batch into micro-batches. We then perform forward and backward passes successively on each micro-batch, compute the gradients, and, as the name suggests, sum the gradients of all micro-batches before we perform optimization. In practice, the optimization step is conducted not on the sum but on the average of the gradients, so that the result is independent of the number of gradient accumulation steps.
-Gradient accumulation allows us to reduce activation memory, which grows linearly with batch size, by processing smaller micro-batches sequentially. This reduces stored activations and gradients since only one micro-batch&rsquo;s worth of activations needs to be kept in memory at a time, which helps reduce the overall activation memory footprint.
-One drawback, however, is that gradient accumulation requires multiple consecutive forward/backward passes per optimization step, thereby increasing the compute overhead and slowing down training.</p>
-<h1 id="data-parallelism">Data Parallelism</h1>
-<p>The idea behind data parallelism (DP) is to replicate the model on several GPUs (we call the replicas “model instances”) and run forward and backward passes on different micro-batches of data in parallel on each GPU - hence the name data parallelism.
-Using a different micro-batch for each GPU means we’ll have different gradients on each GPU, so to keep the model instances in sync across the different GPUs, we&rsquo;ll average the gradients from the model instances using an operation called “all-reduce.” This operation takes place during the backward pass, before the optimizer step.</p>
- </content>
-
-<p>
-    
-    <a href="//localhost:1313/tags/training/">#Training</a>
-    
-    <a href="//localhost:1313/tags/llm/">#LLM</a>
-    
-    <a href="//localhost:1313/tags/notes/">#Notes</a>
-    
-</p>
-
-
-
-<div class="upvote-container">
-    <small class="upvote">
-        <button class="upvote-btn" id="upvote-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor"
-                stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
-                <polyline points="17 11 12 6 7 11"></polyline>
-                <polyline points="17 18 12 13 7 18"></polyline>
-            </svg>
-            <span class="upvote-count" id="upvote-count">0</span>
-        </button>
-    </small>
-</div>
-
-<script>
-    let hasUpvoted = false;
-    let upvoteBtn;
-    let upvoteCount;
-
+<content>
+  
+  <h3 style="margin-bottom:0">Filtering for "Sharding"</h3>
+  <small>
+    <a href="/blog">Remove filter</a>
+  </small>
+  
+  
+  <input id="search-input" type="text" placeholder="Search..." style="margin-top: 16px" />
+  <script>
     
     document.addEventListener('DOMContentLoaded', function () {
-        const slug = '';
-        upvoteBtn = document.getElementById('upvote-btn');
-        upvoteCount = document.getElementById('upvote-count');
-        getCount(slug);
+      
+      const searchInput = document.getElementById('search-input');
+      const posts = document.querySelectorAll('.blog-posts li');
+      const years = document.querySelectorAll('.blog-posts h3');
+
+      
+      function updateSearchResults(searchTerm) {
+        let visiblePosts = 0;
+        const displayedYears = new Set();
+        posts.forEach(function (post) {
+          const title = post.querySelector('a').textContent.toLowerCase();
+          const year = post.querySelector('time').getAttribute('datetime').split('-')[0];
+          if (title.includes(searchTerm)) {
+            post.style.display = '';
+            visiblePosts++;
+            displayedYears.add(year);
+          } else {
+            post.style.display = 'none';
+          }
+        });
 
         
-        upvoteBtn.addEventListener('click', handleUpvote);
+        years.forEach(function (y) {
+          const year = y.textContent;
+          y.style.display = displayedYears.has(year) ? '' : 'none';
+        });
+        
+
+        
+      }
+
+      searchInput.addEventListener('input', function () {
+        updateSearchResults(this.value.toLowerCase().trim());
+      });
     });
-
+  </script>
+  
+  
+  <ul class="blog-posts">
     
-    async function handleUpvote() {
-        if (hasUpvoted) {
-            console.log('You have already upvoted this post!');
-            return;
-        }
-        const slug = '';
-
-        
-        upvoteBtn.disabled = true;
-        
-        upvoteBtn.classList.add('upvoted');
-        
-        upvoteCount.innerText = parseInt(upvoteCount.innerText) + 1;
-
-        try {
-            const response = await fetch('The domain name of the Worker that was just deployed\/upvote', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ postId: slug, diff: 1 }),
-            });
-
-            if (response.ok) {
-                console.log('Upvote successful!');
-                hasUpvoted = true;
-                await getCount(slug, 3);
-            } else {
-                console.log('Upvote failed!');
-            }
-        } catch (error) {
-            console.error('Error: ', error);
-        } finally {
-            upvoteBtn.disabled = false;
-        }
-    }
-
     
-    async function getCount(slug, retryCount = 0) {
-        try {
-            const response = await fetch('The domain name of the Worker that was just deployed\/count?post=' + slug, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            const data = await response.json();
-
-            if (data.code === 0) {
-                const count = data.data.count;
-                upvoteCount.innerText = count;
-                hasUpvoted = data.data.hasUpvoted;
-                if (hasUpvoted) {
-                    upvoteBtn.classList.add('upvoted');
-                } else {
-                    upvoteBtn.classList.remove('upvoted');
-                }
-            } else {
-                console.error('Failed to get upvote count: ', data.msg);
-            }
-        } catch (error) {
-            console.error('Error: ', error);
-            if (retryCount > 0) {
-                setTimeout(() => {
-                    getCount(slug, retryCount - 1);
-                }, 1000);
-            }
-        }
-    }
-</script>
-
-
-
-
-
-<div class="toc">
-    <nav id="TableOfContents"></nav>
-</div>
-
-
+    
+    
+    
+    
+    <h3>2026</h3>
+    
+    
+    
+    <li>
+      <span class=" grouped ">
+        <i>
+          <time datetime='2026-02-28' pubdate>
+            
+            28 Feb.
+            
+          </time>
+        </i>
+      </span>
+      <a href="//localhost:1313/blog/scaling-databases-with-sharding/">Scaling Databases with Sharding</a>
+    </li>
+    
+    
+  </ul>
+  
+  
+</content>
 
   </main>
   <footer>

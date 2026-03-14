@@ -5,43 +5,59 @@
   <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Training_LLM | Vivek&#39;s Field Notes</title>
-<meta name="title" content="Training_LLM" />
-<meta name="description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism." />
-<meta name="keywords" content="training,LLM,notes," />
-
-<link rel="canonical" href="//localhost:1313/blog/training_llm/">
+<title>Add Bookmark | Vivek&#39;s Field Notes</title>
+<meta name="title" content="Add Bookmark" />
+<meta name="description" content="
 
 
-<meta property="og:url" content="//localhost:1313/blog/training_llm/">
+    Add New Bookmark
+    
+        
+            URL
+            
+        
+
+        
+            Title / Description
+            
+        
+
+        
+            Secret Password
+            
+        
+
+        Add Bookmark
+    
+    
+
+
+" />
+<meta name="keywords" content="" />
+
+<link rel="canonical" href="//localhost:1313/dash/">
+
+
+<meta property="og:url" content="//localhost:1313/dash/">
   <meta property="og:site_name" content="Vivek&#39;s Field Notes">
-  <meta property="og:title" content="Training_LLM">
-  <meta property="og:description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism.">
+  <meta property="og:title" content="Add Bookmark">
+  <meta property="og:description" content="Add New Bookmark URL Title / Description Secret Password Add Bookmark">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
-    <meta property="article:section" content="blog">
-    <meta property="article:published_time" content="2025-05-23T15:12:55+05:30">
-    <meta property="article:modified_time" content="2025-05-23T15:12:55+05:30">
-    <meta property="article:tag" content="Training">
-    <meta property="article:tag" content="LLM">
-    <meta property="article:tag" content="Notes">
 
 
 
 
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Training_LLM">
-  <meta name="twitter:description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism.">
+  <meta name="twitter:title" content="Add Bookmark">
+  <meta name="twitter:description" content="Add New Bookmark URL Title / Description Secret Password Add Bookmark">
 
 
 
 
-  <meta itemprop="name" content="Training_LLM">
-  <meta itemprop="description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism.">
-  <meta itemprop="datePublished" content="2025-05-23T15:12:55+05:30">
-  <meta itemprop="dateModified" content="2025-05-23T15:12:55+05:30">
-  <meta itemprop="wordCount" content="1096">
-  <meta itemprop="keywords" content="Training,LLM,Notes">
+  <meta itemprop="name" content="Add Bookmark">
+  <meta itemprop="description" content="Add New Bookmark URL Title / Description Secret Password Add Bookmark">
+  <meta itemprop="wordCount" content="11">
 <meta name="referrer" content="no-referrer-when-downgrade" />
 
   <style>
@@ -661,70 +677,144 @@
   <main>
 
 
-<h1>Training_LLM</h1>
+<content> <style>
+    .form-container {
+        max-width: 500px;
+        margin: 2rem auto;
+        padding: 2rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg);
+    }
 
-<p>
-    <i>
-        <time datetime='2025-05-23' pubdate>
-            23 May, 2025
-        </time>
-        • 6 min read
-    </i>
-</p>
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
 
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
 
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 1rem;
+        box-sizing: border-box;
+    }
 
+    .form-button {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--text);
+        color: var(--bg);
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+    }
 
-<content> <h1 id="training-on-one-gpu">Training on One GPU</h1>
-<p>when a model trained, there are 3 phases</p>
-<ul>
-<li>A forward pass, which passes inputs through the model to yield its outputs</li>
-<li>A backward pass to compute the gradients</li>
-<li>An optimization step using the gradients to update the parameters
-The batch size (bs) is one of the important hyperparameters for model training; it affects both model convergence and throughput.</li>
-</ul>
-<p>A small batch size can be useful early in training to quickly move through the training landscape to reach an optimal learning point. However, further along in the model training, small batch sizes will keep gradients noisy, and the model may not be able to converge to the most optimal final performance. At the other extreme, a large batch size, while giving very accurate gradient estimations, will tend to make less use of each training token, rendering convergence slower and potentially wasting compute resources.</p>
-<p>Batch size also affects the time it takes to train on a given text dataset: a small batch size will require more optimizer steps to train on the same amount of samples. Optimizer steps are costly (in compute time), and the total time to train will thus increase compared to using a larger batch size. That being said, note that the batch size can often be adjusted quite widely around the optimal batch size without major impact on the performance of the model - that is, the sensitivity of final model performance to the exact batch size value is usually rather low around the optimal batch size.
-In the LLM pretraining community, batch sizes are commonly reported in terms of tokens rather than number of samples
-bst = batch size tokens
-bs = batch size
-seq = model input sequence length
-bst = bs * seq
-Llama 1 was trained with a batch size of ~4M tokens for 1.4 trillion tokens, while DeepSeek was trained with a batch size of ~60M tokens for 14 trillion tokens.</p>
-<p>we couldn&rsquo;t calculate exact memory usage by a model cuz</p>
-<ul>
-<li>CUDA kernels typically require 1-2 GB of GPU memory</li>
-<li>Some memory is used for buffers and intermediate results, and there&rsquo;s some memory that can&rsquo;t be used due to fragmentation.
-We could face out-of-memory (OOM) issues when training this large models but why?
-When training a neural network model, we store several items in memory:</li>
-<li>Model weights</li>
-<li>Model gradients</li>
-<li>Optimizer states</li>
-<li>Activations needed to compute the gradients</li>
-</ul>
-<p>First the activations increase quickly as we do the forward pass, then during the backward pass the gradients build up, and as the backward pass propagates, the stored activations used to compute the gradients are progressively cleared. Finally, we perform optimization, during which we need all the gradients, and then update the optimizer states before we start the next forward pass.</p>
-<p>An interesting observation here is that memory usage is not static for a given model; rather, it scales linearly with the batch size and quadratically with the sequence length. This means the activation memory is the part that will blow up when we increase our batch size or train with longer sequences.</p>
-<p>These graphs tell a striking story: for short sequences (or small batch sizes), memory usage for activations is almost negligible, but from around 2-4k tokens they start to take up a significant amount of memory, while usage for parameters, gradients, and optimizer states (as we’ll discuss later) is roughly independent of the sequence length and batch size.
-The general idea behind activation recomputation – also called gradient checkpointing or rematerialization – is to discard some activations during the forward pass to save memory and spend some extra compute to recompute these on the fly during the backward pass. Without recomputation, we store every hidden state between two learnable operations (e.g., feedforward, LayerNorm, etc.), so that we can use them during the backward pass to compute gradients. When we use recomputation, we typically only store activations at a few key points in the model architecture, discarding the rest of the activations and recomputing them on the fly during the backward pass from the nearest saved activations. Basically, we perform a sub-part of the forward pass again, to trade off memory for compute.</p>
-<ul>
-<li>FULL : We checkpoint activations at the transition point between each layer of the Transformer model. This is usually called the “full” strategy since it requires a forward pass through each layer, essentially adding a full forward pass during the backward pass. This strategy saves the most memory but is the most expensive one in terms of compute. It typically increases the compute cost and time by up to 30-40%, which is very noticeable.</li>
-<li>Selective: In general, we can do better than full. The authors of the recomputation paper did a detailed analysis studying which activations grow the largest and have the cheapest recomputation cost in terms of floating-point operations per second (FLOPS). It turns out that the attention computations fall in that category, and thus we can usually discard them and focus on checkpointing the expensive feedforward computations. For a GPT-3 (175B) model, this means a 70% activation memory reduction at a 2.7% compute cost.</li>
-</ul>
-<p>Gradient accumulation is a very straightforward method to avoid memory explosion that consists of splitting a batch into micro-batches. We then perform forward and backward passes successively on each micro-batch, compute the gradients, and, as the name suggests, sum the gradients of all micro-batches before we perform optimization. In practice, the optimization step is conducted not on the sum but on the average of the gradients, so that the result is independent of the number of gradient accumulation steps.
-Gradient accumulation allows us to reduce activation memory, which grows linearly with batch size, by processing smaller micro-batches sequentially. This reduces stored activations and gradients since only one micro-batch&rsquo;s worth of activations needs to be kept in memory at a time, which helps reduce the overall activation memory footprint.
-One drawback, however, is that gradient accumulation requires multiple consecutive forward/backward passes per optimization step, thereby increasing the compute overhead and slowing down training.</p>
-<h1 id="data-parallelism">Data Parallelism</h1>
-<p>The idea behind data parallelism (DP) is to replicate the model on several GPUs (we call the replicas “model instances”) and run forward and backward passes on different micro-batches of data in parallel on each GPU - hence the name data parallelism.
-Using a different micro-batch for each GPU means we’ll have different gradients on each GPU, so to keep the model instances in sync across the different GPUs, we&rsquo;ll average the gradients from the model instances using an operation called “all-reduce.” This operation takes place during the backward pass, before the optimizer step.</p>
+    .form-button:hover {
+        opacity: 0.9;
+    }
+
+    .form-message {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 4px;
+        display: none;
+    }
+
+    .success {
+        background: #d4edda;
+        color: #155724;
+        display: block;
+    }
+
+    .error {
+        background: #f8d7da;
+        color: #721c24;
+        display: block;
+    }
+</style>
+
+<div class="form-container">
+    <h2>Add New Bookmark</h2>
+    <form id="bookmarkForm">
+        <div class="form-group">
+            <label class="form-label" for="url">URL</label>
+            <input class="form-input" type="url" id="url" name="url" required placeholder="https://...">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="title">Title / Description</label>
+            <input class="form-input" type="text" id="title" name="title" required
+                placeholder="What is this link about?">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="password">Secret Password</label>
+            <input class="form-input" type="password" id="password" name="password" required>
+        </div>
+
+        <button type="submit" class="form-button" id="submitBtn">Add Bookmark</button>
+    </form>
+    <div id="formMessage" class="form-message"></div>
+</div>
+
+<script>
+    document.getElementById('bookmarkForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const btn = document.getElementById('submitBtn');
+        const msg = document.getElementById('formMessage');
+        const url = document.getElementById('url').value;
+        const title = document.getElementById('title').value;
+        const password = document.getElementById('password').value;
+
+        btn.disabled = true;
+        btn.innerText = 'Saving...';
+        msg.className = 'form-message'; 
+
+        try {
+            
+            const workerUrl = 'YOUR_CLOUDFLARE_WORKER_URL_HERE';
+
+            const response = await fetch(workerUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url, title, password })
+            });
+
+            if (response.ok) {
+                msg.innerText = 'Bookmark saved! The site is rebuilding, check back in a minute.';
+                msg.className = 'form-message success';
+                document.getElementById('bookmarkForm').reset();
+            } else {
+                const errData = await response.text();
+                throw new Error(errData || 'Failed to save bookmark');
+            }
+        } catch (error) {
+            msg.innerText = 'Error: ' + error.message;
+            msg.className = 'form-message error';
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Add Bookmark';
+        }
+    });
+</script>
  </content>
 
 <p>
-    
-    <a href="//localhost:1313/tags/training/">#Training</a>
-    
-    <a href="//localhost:1313/tags/llm/">#LLM</a>
-    
-    <a href="//localhost:1313/tags/notes/">#Notes</a>
     
 </p>
 

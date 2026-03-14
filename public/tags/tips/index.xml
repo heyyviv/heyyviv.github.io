@@ -1,272 +1,60 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Tips on Vivek's Field Notes</title><link>/tags/tips/</link><description>Recent content in Tips on Vivek's Field Notes</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Wed, 25 Feb 2026 23:32:36 +0530</lastBuildDate><atom:link href="/tags/tips/index.xml" rel="self" type="application/rss+xml"/><item><title>Storage and Retrival</title><link>/blog/storage-and-retrival/</link><pubDate>Wed, 25 Feb 2026 23:32:36 +0530</pubDate><guid>/blog/storage-and-retrival/</guid><description>&lt;p>In particular, there is a big difference between storage engines that are optimized for
-transactional workloads and those that are optimized for analytics.&lt;/p>
-&lt;p>An index is an additional structure that is derived from the primary data. Many data‐
-bases allow you to add and remove indexes, and this doesn’t affect the contents of the
-database; it only affects the performance of queries. Maintaining additional structures
-incurs overhead, especially on writes. For writes, it’s hard to beat the performance of
-simply appending to a file, because that’s the simplest possible write operation. Any
-kind of index usually slows down writes, because the index also needs to be updated
-every time data is written.&lt;/p>
-&lt;h2 id="hash-index">Hash Index&lt;/h2>
-&lt;p>Let’s say our data storage consists only of appending to a file, as in the preceding
-example. Then the simplest possible indexing strategy is this: keep an in-memory
-hash map where every key is mapped to a byte offset in the data file—the location at
-which the value can be found, as illustrated in Figure 3-1. Whenever you append a
-new key-value pair to the file, you also update the hash map to reflect the offset of the
-data you just wrote (this works both for inserting new keys and for updating existing
-keys). When you want to look up a value, use the hash map to find the offset in the
-data file, seek to that location, and read the value.
-This may sound simplistic, but it is a viable approach. In fact, this is essentially what
-Bitcask (the default storage engine in Riak) does [3]. Bitcask offers high-performance
-reads and writes, subject to the requirement that all the keys fit in the available RAM,
-since the hash map is kept completely in memory. The values can use more space
-than there is available memory, since they can be loaded from disk with just one disk
-seek. If that part of the data file is already in the filesystem cache, a read doesn’t
-require any disk I/O at all.
-A storage engine like Bitcask is well suited to situations where the value for each key
-is updated frequently. For example, the key might be the URL of a cat video, and the
-value might be the number of times it has been played (incremented every time
-someone hits the play button). In this kind of workload, there are a lot of writes, but
-there are not too many distinct keys—you have a large number of writes per key, but
-it’s feasible to keep all keys in memory.
-Moreover, since compaction often makes segments much smaller (assuming that a
-key is overwritten several times on average within one segment), we can also merge
-several segments together at the same time as performing the compaction, as shown
-in Figure 3-3. Segments are never modified after they have been written, so the
-merged segment is written to a new file. The merging and compaction of frozen seg‐
-ments can be done in a background thread, and while it is going on, we can still con‐
-tinue to serve read and write requests as normal, using the old segment files. After the
-merging process is complete, we switch read requests to using the new merged seg‐
-ment instead of the old segments—and then the old segment files can simply be
-deleted.&lt;/p>
-&lt;p>Each segment now has its own in-memory hash table, mapping keys to file offsets. In
-order to find the value for a key, we first check the most recent segment’s hash map;
-if the key is not present we check the second-most-recent segment, and so on. The
-merging process keeps the number of segments small, so lookups don’t need to check
-many hash maps.
-Lots of detail goes into making this simple idea work in practice. Briefly, some of the
-issues that are important in a real implementation are:&lt;/p>
-&lt;p>The hash table must fit in memory, so if you have a very large number of keys,
-you’re out of luck. In principle, you could maintain a hash map on disk, but
-unfortunately it is difficult to make an on-disk hash map perform well. It
-requires a lot of random access I/O, it is expensive to grow when it becomes full,
-and hash collisions require fiddly logic [5].
-• Range queries are not efficient. For example, you cannot easily scan over all keys
-between kitty00000 and kitty99999—you’d have to look up each key individu‐
-ally in the hash maps.&lt;/p></description></item><item><title>Ai agents Notes</title><link>/blog/ai-agents-notes/</link><pubDate>Tue, 10 Feb 2026 21:24:16 +0530</pubDate><guid>/blog/ai-agents-notes/</guid><description>&lt;h1 id="worlflow">Worlflow&lt;/h1>
-&lt;p>Prompt chaining decomposes a task into a sequence of steps, where each LLM call processes the output of the previous one. You can add programmatic checks on any intermediate steps to ensure that the process is still on track.&lt;/p>
-&lt;p>When to use this workflow: This workflow is ideal for situations where the task can be easily and cleanly decomposed into fixed subtasks. The main goal is to trade off latency for higher accuracy, by making each LLM call an easier task.&lt;/p>
-&lt;p>Prompt chaining decomposes a task into a sequence of steps, where each LLM call processes the output of the previous one. You can add programmatic checks (see &amp;ldquo;gate” in the diagram below) on any intermediate steps to ensure that the process is still on track.&lt;/p>
-&lt;p>Routing classifies an input and directs it to a specialized followup task. This workflow allows for separation of concerns, and building more specialized prompts. Without this workflow, optimizing for one kind of input can hurt performance on other inputs.&lt;/p>
-&lt;p>When to use this workflow: Routing works well for complex tasks where there are distinct categories that are better handled separately, and where classification can be handled accurately, either by an LLM or a more traditional classification model/algorithm.&lt;/p>
-&lt;p>LLMs can sometimes work simultaneously on a task and have their outputs aggregated programmatically. This workflow, parallelization, manifests in two key variations:&lt;/p>
-&lt;ul>
-&lt;li>Sectioning: Breaking a task into independent subtasks run in parallel.&lt;/li>
-&lt;li>Voting: Running the same task multiple times to get diverse outputs.&lt;/li>
-&lt;/ul>
-&lt;p>When to use this workflow: Parallelization is effective when the divided subtasks can be parallelized for speed, or when multiple perspectives or attempts are needed for higher confidence results. For complex tasks with multiple considerations, LLMs generally perform better when each consideration is handled by a separate LLM call, allowing focused attention on each specific aspect.&lt;/p>
-&lt;p>In the orchestrator-workers workflow, a central LLM dynamically breaks down tasks, delegates them to worker LLMs, and synthesizes their results.When to use this workflow: This workflow is well-suited for complex tasks where you can’t predict the subtasks needed (in coding, for example, the number of files that need to be changed and the nature of the change in each file likely depend on the task). Whereas it’s topographically similar, the key difference from parallelization is its flexibility—subtasks aren&amp;rsquo;t pre-defined, but determined by the orchestrator based on the specific input.&lt;/p>
-&lt;p>In the evaluator-optimizer workflow, one LLM call generates a response while another provides evaluation and feedback in a loop.
-When to use this workflow: This workflow is particularly effective when we have clear evaluation criteria, and when iterative refinement provides measurable value. The two signs of good fit are, first, that LLM responses can be demonstrably improved when a human articulates their feedback; and second, that the LLM can provide such feedback. This is analogous to the iterative writing process a human writer might go through when producing a polished document.&lt;/p>
-&lt;h1 id="text-to-sql-in-pinterest">Text to SQL in Pinterest&lt;/h1>
-&lt;p>The user asks an analytical question, choosing the tables to be used.&lt;/p>
-&lt;ul>
-&lt;li>The relevant table schemas are retrieved from the table metadata store.&lt;/li>
-&lt;li>The question, selected SQL dialect, and table schemas are compiled into a Text-to-SQL prompt.&lt;/li>
-&lt;li>The prompt is fed into the LLM.&lt;/li>
-&lt;li>A streaming response is generated and displayed to the user.&lt;/li>
-&lt;/ul>
-&lt;p>The table schema acquired from the metadata store includes:
-Table name
-Table description
-Columns
-Column name
-Column type
-Column description&lt;/p>
-&lt;p>Low-Cardinality Columns&lt;/p>
-&lt;p>Certain analytical queries, such as “how many active users are on the ‘web’ platform”, may generate SQL queries that do not conform to the database’s actual values if generated naively. For example, the where clause in the response might bewhere platform=’web’ as opposed to the correct where platform=’WEB’. To address such issues, unique values of low-cardinality columns which would frequently be used for this kind of filtering are processed and incorporated into the table schema, so that the LLM can make use of this information to generate precise SQL queries.&lt;/p>
-&lt;p>Context Window Limit&lt;/p>
-&lt;p>Extremely large table schemas might exceed the typical context window limit. To address this problem, we employed a few techniques:&lt;/p>
-&lt;p>Reduced version of the table schema: This includes only crucial elements such as the table name, column name, and type.
-Column pruning: Columns are tagged in the metadata store, and we exclude certain ones from the table schema based on their tags.&lt;/p>
-&lt;pre tabindex="0">&lt;code>you are a {dialect} expert.
-
-Please help to generate a {dialect} query to answer the question. Your response should ONLY be based on the given context and follow the response guidelines and format instructions.
-
-===Tables
-{table_schemas}
-
-===Original Query
-{original_query}
-
-===Response Guidelines
-1. If the provided context is sufficient, please generate a valid query without any explanations for the question. The query should start with a comment containing the question being asked.
-2. If the provided context is insufficient, please explain why it can&amp;#39;t be generated.
-3. Please use the most relevant table(s).
-5. Please format the query before responding.
-6. Please always respond with a valid well-formed JSON object with the following format
-
-===Response Format
-{{
- &amp;#34;query&amp;#34;: &amp;#34;A generated SQL query when context is sufficient.&amp;#34;,
- &amp;#34;explanation&amp;#34;: &amp;#34;An explanation of failing to generate the query.&amp;#34;
-}}
-
-===Question
-{question}
-&lt;/code>&lt;/pre>&lt;p>spider dataset : &lt;a href="https://arxiv.org/pdf/2204.00498">https://arxiv.org/pdf/2204.00498&lt;/a>&lt;/p>
-&lt;p>An offline job is employed to generate a vector index of tables’ summaries and historical queries against them.
-If the user does not specify any tables, their question is transformed into embeddings, and a similarity search is conducted against the vector index to infer the top N suitable tables.
-The top N tables, along with the table schema and analytical question, are compiled into a prompt for LLM to select the top K most relevant tables.
-The top K tables are returned to the user for validation or alteration.
-The standard Text-to-SQL process is resumed with the user-confirmed tables.&lt;/p>
-&lt;p>Offline Vector Index Creation&lt;/p>
-&lt;p>Table Summarization
-There is an ongoing table standardization effort at Pinterest to add tiering for the tables. We index only top-tier tables, promoting the use of these higher-quality datasets. The table summarization generation process involves the following steps:&lt;/p>
-&lt;p>Retrieve the table schema from the table metadata store.
-Gather the most recent sample queries utilizing the table.
-Based on the context window, incorporate as many sample queries as possible into the table summarization prompt, along with the table schema.
-Forward the prompt to the LLM to create the summary.
-Generate and store embeddings in the vector store.
-The table summary includes description of the table, the data it contains, as well as potential use scenarios. Here is the current prompt we are using for table summarization:&lt;/p>
-&lt;pre tabindex="0">&lt;code>prompt_template = &amp;#34;&amp;#34;&amp;#34;
-You are a data analyst that can help summarize SQL tables.
-
-Summarize below table by the given context.
-
-===Table Schema
-{table_schema}
-
-===Sample Queries
-{sample_queries}
-
-===Response guideline
- - You shall write the summary based only on provided information.
- - Note that above sampled queries are only small sample of queries and thus not all possible use of tables are represented, and only some columns in the table are used.
- - Do not use any adjective to describe the table. For example, the importance of the table, its comprehensiveness or if it is crucial, or who may be using it. For example, you can say that a table contains certain types of data, but you cannot say that the table contains a &amp;#39;wealth&amp;#39; of data, or that it is &amp;#39;comprehensive&amp;#39;.
- - Do not mention about the sampled query. Only talk objectively about the type of data the table contains and its possible utilities.
- - Please also include some potential usecases of the table, e.g. what kind of questions can be answered by the table, what kind of analysis can be done by the table, etc.
-&amp;#34;&amp;#34;&amp;#34;
-&lt;/code>&lt;/pre>&lt;p>Query Summarization
-Besides their role in table summarization, sample queries associated with each table are also summarized individually, including details such as the query’s purpose and utilized tables. Here is the prompt we are using:&lt;/p>
-&lt;pre tabindex="0">&lt;code>prompt_template = &amp;#34;&amp;#34;&amp;#34;
-You are a helpful assistant that can help document SQL queries.
-
-Please document below SQL query by the given table schemas.
-
-===SQL Query
-{query}
-
-===Table Schemas
-{table_schemas}
-
-===Response Guidelines
-Please provide the following list of descriptions for the query:
--The selected columns and their description
--The input tables of the query and the join pattern
--Query&amp;#39;s detailed transformation logic in plain english, and why these transformation are necessary
--The type of filters performed by the query, and why these filters are necessary
--Write very detailed purposes and motives of the query in detail
--Write possible business and functional purposes of the query
-&amp;#34;&amp;#34;&amp;#34;
-&lt;/code>&lt;/pre>&lt;p>NLP Table Search
-When a user asks an analytical question, we convert it into embeddings using the same embedding model. Then we conduct a search against both table and query vector indices. We’re using OpenSearch as the vector store and using its built in similarity search ability.&lt;/p>
-&lt;p>Considering that multiple tables can be associated with a query, a single table could appear multiple times in the similarity search results. Currently, we utilize a simplified strategy to aggregate and score them. Table summaries carry more weight than query summaries, a scoring strategy that could be adjusted in the future.&lt;/p>
-&lt;p>Other than being used in the Text-to-SQL, this NLP-based table search is also used in the general table search in Querybook.&lt;/p>
-&lt;h1 id="rag">RAG&lt;/h1></description></item><item><title>Docker &amp; kubernetes</title><link>/blog/docker-kubernetes/</link><pubDate>Fri, 14 Nov 2025 12:38:31 +0530</pubDate><guid>/blog/docker-kubernetes/</guid><description>&lt;h1 id="docker">Docker&lt;/h1>
-&lt;p>Open Source&lt;/p></description></item><item><title>Go Lang</title><link>/blog/go-lang/</link><pubDate>Sun, 10 Aug 2025 15:24:40 +0530</pubDate><guid>/blog/go-lang/</guid><description>&lt;h1 id="interface">Interface&lt;/h1>
-&lt;p>An interface type in Go is kind of like a definition. It defines and describes the exact methods that some other type must have.&lt;/p>
-&lt;pre tabindex="0">&lt;code>type Stringer interface {
- String() string
-}
-&lt;/code>&lt;/pre>&lt;p>We say that something satisfies this interface (or implements this interface) if it has a method with the exact signature String() string.&lt;/p>
-&lt;pre tabindex="0">&lt;code>type Book struct {
- Title string
- Author string
-}
-
-func (b Book) String() string {
- return fmt.Sprintf(&amp;#34;Book: %s - %s&amp;#34;, b.Title, b.Author)
-}
-&lt;/code>&lt;/pre>&lt;p>Wherever you see declaration in Go (such as a variable, function parameter or struct field) which has an interface type, you can use an object of any type so long as it satisfies the interface.&lt;/p>
-&lt;pre tabindex="0">&lt;code>func WriteLog(s fmt.Stringer) {
- log.Print(s.String())
-}
-&lt;/code>&lt;/pre>&lt;p>Because this WriteLog() function uses the fmt.Stringer interface type in its parameter declaration, we can pass in any object that satisfies the fmt.Stringer interface.&lt;/p>
-&lt;pre tabindex="0">&lt;code>package main
-
-import (
- &amp;#34;fmt&amp;#34;
- &amp;#34;strconv&amp;#34;
- &amp;#34;log&amp;#34;
-)
-
-// Declare a Book type which satisfies the fmt.Stringer interface.
-type Book struct {
- Title string
- Author string
-}
-
-func (b Book) String() string {
- return fmt.Sprintf(&amp;#34;Book: %s - %s&amp;#34;, b.Title, b.Author)
-}
-
-// Declare a Count type which satisfies the fmt.Stringer interface.
-type Count int
-
-func (c Count) String() string {
- return strconv.Itoa(int(c))
-}
-
-// Declare a WriteLog() function which takes any object that satisfies
-// the fmt.Stringer interface as a parameter.
-func WriteLog(s fmt.Stringer) {
- log.Print(s.String())
-}
-
-func main() {
- // Initialize a Count object and pass it to WriteLog().
- book := Book{&amp;#34;Alice in Wonderland&amp;#34;, &amp;#34;Lewis Carrol&amp;#34;}
- WriteLog(book)
-
- // Initialize a Count object and pass it to WriteLog().
- count := Count(3)
- WriteLog(count)
-}
-&lt;/code>&lt;/pre>&lt;p>output:&lt;/p>
-&lt;pre tabindex="0">&lt;code>2009/11/10 23:00:00 Book: Alice in Wonderland - Lewis Carrol
-2009/11/10 23:00:00 3
-&lt;/code>&lt;/pre>&lt;p>Advantage&lt;/p>
-&lt;ul>
-&lt;li>To help reduce duplication or boilerplate code.&lt;/li>
-&lt;li>To make it easier to use mocks instead of real objects in unit tests.&lt;/li>
-&lt;li>As an architectural tool, to help enforce decoupling between parts of your codebase.&lt;/li>
-&lt;/ul>
-&lt;p>the empty interface type interface{} is kind of like a wildcard. Wherever you see it in a declaration (such as a variable, function parameter or struct field) you can use an object of any type.&lt;/p>
-&lt;pre tabindex="0">&lt;code>package main
-
-import &amp;#34;fmt&amp;#34;
-
-
-func main() {
- person := make(map[string]interface{}, 0)
-
- person[&amp;#34;name&amp;#34;] = &amp;#34;Alice&amp;#34;
- person[&amp;#34;age&amp;#34;] = 21
- person[&amp;#34;height&amp;#34;] = 167.64
-
- fmt.Printf(&amp;#34;%+v&amp;#34;, person)
-}
-&lt;/code>&lt;/pre>&lt;h1 id="error-handling">Error Handling&lt;/h1>
-&lt;p>The error type is an interface type. An error variable represents any value that can describe itself as a string. Here is the interface’s declaration:&lt;/p>
-&lt;pre tabindex="0">&lt;code>type error interface {
- Error() string
-}
-&lt;/code>&lt;/pre></description></item><item><title>Hugo Shortcuts</title><link>/blog/hugo-shortcuts/</link><pubDate>Thu, 22 May 2025 15:35:24 +0530</pubDate><guid>/blog/hugo-shortcuts/</guid><description>&lt;h1 id="shortcuts">Shortcuts&lt;/h1>
-&lt;h2 id="to-create-a-page">to create a page&lt;/h2>
-&lt;pre tabindex="0">&lt;code>hugo new my-new-page.md
-&lt;/code>&lt;/pre>&lt;h2 id="to-create-a-blog">to create a blog&lt;/h2>
-&lt;pre tabindex="0">&lt;code>hugo new blog/my-new-post.md
-&lt;/code>&lt;/pre>&lt;h2 id="run-locally">run locally&lt;/h2>
-&lt;pre tabindex="0">&lt;code>hugo server
-&lt;/code>&lt;/pre>&lt;p>This shortcuts will be used by me in future.&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tips on Vivek&#39;s Field Notes</title>
+    <link>//localhost:1313/tags/tips/</link>
+    <description>Recent content in Tips on Vivek&#39;s Field Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    
+    
+    
+    
+    <lastBuildDate>Sat, 28 Feb 2026 20:16:56 +0530</lastBuildDate>
+    
+    
+    <atom:link href="//localhost:1313/tags/tips/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Scaling Databases with Sharding</title>
+      <link>//localhost:1313/blog/scaling-databases-with-sharding/</link>
+      <pubDate>Sat, 28 Feb 2026 20:16:56 +0530</pubDate>
+      <guid>//localhost:1313/blog/scaling-databases-with-sharding/</guid>
+      <description>&lt;h2 id=&#34;introduction-to-sharding&#34;&gt;Introduction to Sharding&lt;/h2&gt;&#xA;&lt;p&gt;Sharding is the process of scaling a database by spreading data across multiple servers, or &lt;strong&gt;shards&lt;/strong&gt;. It is the go-to solution for large organizations managing data at a petabyte scale. Industry leaders like Uber, Shopify, Slack, and OpenAI all leverage sharding to manage their massive datasets.&lt;/p&gt;&#xA;&lt;p&gt;In a typical small-scale application, one or more app servers connect to a single, monolithic database. This server stores all persistent data, from user accounts to application state. However, as data grows, this single point of failure and bottleneck must be addressed.&lt;/p&gt;&#xA;&lt;h2 id=&#34;sharded-architecture&#34;&gt;Sharded Architecture&lt;/h2&gt;&#xA;&lt;p&gt;In a sharded setup, we divide the total data into portions, each hosted on a separate database server.&lt;/p&gt;&#xA;&lt;p&gt;Initially, your application code might try to manage these shards directly—keeping track of which row lives where and maintaining multiple open connections. While manageable with two shards, this approach becomes a maintenance nightmare when dealing with hundreds.&lt;/p&gt;&#xA;&lt;h3 id=&#34;the-proxy-layer&#34;&gt;The Proxy Layer&lt;/h3&gt;&#xA;&lt;p&gt;A more robust solution is to use an &lt;strong&gt;intermediary proxy&lt;/strong&gt;. Application servers connect only to this proxy, which then routes queries to the correct shard.&lt;/p&gt;&#xA;&lt;p&gt;However, proxies introduce their own challenges:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Throughput Limits:&lt;/strong&gt; If a proxy reaches its capacity, queries are queued, adding latency.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Scalability:&lt;/strong&gt; To handle high volumes, you must deploy multiple proxy servers to prevent them from becoming the bottleneck.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;sharding-strategies&#34;&gt;Sharding Strategies&lt;/h2&gt;&#xA;&lt;p&gt;The sharding strategy—the rules determining data placement—is critical for performance and balance. This usually involves a &lt;strong&gt;shard key&lt;/strong&gt;: the column(s) used to route data.&lt;/p&gt;&#xA;&lt;h3 id=&#34;1-range-sharding&#34;&gt;1. Range Sharding&lt;/h3&gt;&#xA;&lt;p&gt;Data is routed based on predefined ranges of values. For example, IDs 1-25 might go to Shard A, 26-50 to Shard B, and so on.&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;[!WARNING]&#xA;Naive range-based sharding with monotonically increasing IDs often leads to &lt;strong&gt;&amp;ldquo;Hot Shards&amp;rdquo;&lt;/strong&gt;. If you insert IDs 1 to 25 sequentially, only the first shard is active while others remain idle.&lt;/p&gt;&lt;/blockquote&gt;&#xA;&lt;h3 id=&#34;2-hash-sharding&#34;&gt;2. Hash Sharding&lt;/h3&gt;&#xA;&lt;p&gt;The proxy generates a cryptographic hash of the shard key for each row. Each shard is then responsible for a specific range of hashes.&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Best Practice:&lt;/strong&gt; Choose a key with &lt;strong&gt;high cardinality&lt;/strong&gt; (e.g., &lt;code&gt;user_id&lt;/code&gt;).&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Avoid:&lt;/strong&gt; Columns like &lt;code&gt;name&lt;/code&gt;, where popular values can still create hotspots despite hashing.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Optimization:&lt;/strong&gt; Hashing fixed-size integers (&lt;code&gt;user_id&lt;/code&gt;) is generally faster than hashing variable-width strings.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h3 id=&#34;3-lookup-sharding&#34;&gt;3. Lookup Sharding&lt;/h3&gt;&#xA;&lt;p&gt;A separate mapping table tracks exactly which data belongs on which shard. This offers maximum flexibility but requires an additional lookup for every query.&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;h2 id=&#34;real-world-case-study-postgresql-and-chatgpt&#34;&gt;Real-World Case Study: PostgreSQL and ChatGPT&lt;/h2&gt;&#xA;&lt;p&gt;While sharding solves many scale problems, specific database architectures like PostgreSQL&amp;rsquo;s &lt;strong&gt;MVCC (Multiversion Concurrency Control)&lt;/strong&gt; introduce unique write penalties that companies like OpenAI have had to navigate.&lt;/p&gt;&#xA;&lt;h3 id=&#34;the-copy-on-write-penalty&#34;&gt;The &amp;ldquo;Copy-on-Write&amp;rdquo; Penalty&lt;/h3&gt;&#xA;&lt;p&gt;In Postgres, updates are not performed &amp;ldquo;in-place.&amp;rdquo; Updating even one byte results in &lt;strong&gt;Write Amplification&lt;/strong&gt;, where the entire row is copied to create a new version. This strains I/O and leads to &lt;strong&gt;Read Amplification&lt;/strong&gt;, as queries must scan through &amp;ldquo;dead&amp;rdquo; versions (old rows) to find live ones.&lt;/p&gt;&#xA;&lt;h3 id=&#34;the-bloat-problem&#34;&gt;The &amp;ldquo;Bloat&amp;rdquo; Problem&lt;/h3&gt;&#xA;&lt;p&gt;Old row versions (Dead Tuples) don&amp;rsquo;t disappear instantly, leading to table bloat and increased &lt;code&gt;autovacuum&lt;/code&gt; overhead. If writes outpace reclamation, performance collapses. Every update also requires updating all indexes to point to the new physical row location, adding CPU stress.&lt;/p&gt;&#xA;&lt;h3 id=&#34;strategies-from-the-openai-engineering-team&#34;&gt;Strategies from the OpenAI Engineering Team&lt;/h3&gt;&#xA;&lt;p&gt;To ensure services like ChatGPT and their API remain responsive during massive write spikes, several strategies are employed:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Minimizing Primary Load:&lt;/strong&gt; Read traffic is offloaded to replicas whenever possible. Queries that must remain on the primary (e.g., those part of write transactions) are strictly optimized for efficiency.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Selective Migration:&lt;/strong&gt; Shardable, write-heavy workloads are migrated to systems like &lt;strong&gt;Azure CosmosDB&lt;/strong&gt;.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Application-Level Optimizations:&lt;/strong&gt; Redundant writes are eliminated, and &amp;ldquo;lazy writes&amp;rdquo; are introduced to smooth out traffic spikes.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Rate Limiting:&lt;/strong&gt; Strict limits are enforced during background tasks, such as backfilling table fields, to prevent excessive write pressure.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;hr&gt;&#xA;&lt;h2 id=&#34;optimization--best-practices&#34;&gt;Optimization &amp;amp; Best Practices&lt;/h2&gt;&#xA;&lt;h3 id=&#34;query-optimization&#34;&gt;Query Optimization&lt;/h3&gt;&#xA;&lt;p&gt;Avoid &amp;ldquo;OLTP anti-patterns&amp;rdquo; that can degrade services:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Simplify Joins:&lt;/strong&gt; A query joining 12 tables (as seen in some historical ChatGPT SEVs) can crash a service during a spike. Move complex join logic to the application layer.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;ORM Awareness:&lt;/strong&gt; Object-Relational Mapping tools can generate inefficient SQL; always review the output.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Timeout Management:&lt;/strong&gt; Configure &lt;code&gt;idle_in_transaction_session_timeout&lt;/code&gt; to prevent idle queries from blocking critical processes like autovacuum.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h3 id=&#34;cross-shard-penalties&#34;&gt;Cross-Shard Penalties&lt;/h3&gt;&#xA;&lt;p&gt;Queries spanning multiple shards add excessive network and CPU overhead. Aim for single-shard queries whenever possible. Additionally, avoid shard keys that change frequently, as moving rows between shards to maintain strategy integrity is expensive.&lt;/p&gt;&#xA;&lt;h2 id=&#34;infrastructure--latency&#34;&gt;Infrastructure &amp;amp; Latency&lt;/h2&gt;&#xA;&lt;p&gt;Adding a proxy introduces a network hop, typically adding ~1ms of latency.&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Server Proximity:&lt;/strong&gt; If proxies and shards are in the same data center, this latency is negligible.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Proven Success:&lt;/strong&gt; Slack uses Vitess to manage massive sharded clusters with an average query latency of just &lt;strong&gt;2ms&lt;/strong&gt;.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;high-availability&#34;&gt;High Availability&lt;/h2&gt;&#xA;&lt;p&gt;Replicas aren&amp;rsquo;t just for reads; they are your safety net. If a primary fails, traffic can be instantly failed over to a replica, preventing hours of downtime.&lt;/p&gt;&#xA;</description>
+    </item>
+    <item>
+      <title>Storage and Retrival</title>
+      <link>//localhost:1313/blog/storage-and-retrival/</link>
+      <pubDate>Wed, 25 Feb 2026 23:32:36 +0530</pubDate>
+      <guid>//localhost:1313/blog/storage-and-retrival/</guid>
+      <description>&lt;p&gt;In particular, there is a big difference between storage engines that are optimized for&#xA;transactional workloads and those that are optimized for analytics.&lt;/p&gt;&#xA;&lt;p&gt;An index is an additional structure that is derived from the primary data. Many data‐&#xA;bases allow you to add and remove indexes, and this doesn’t affect the contents of the&#xA;database; it only affects the performance of queries. Maintaining additional structures&#xA;incurs overhead, especially on writes. For writes, it’s hard to beat the performance of&#xA;simply appending to a file, because that’s the simplest possible write operation. Any&#xA;kind of index usually slows down writes, because the index also needs to be updated&#xA;every time data is written.&lt;/p&gt;&#xA;&lt;h2 id=&#34;hash-index&#34;&gt;Hash Index&lt;/h2&gt;&#xA;&lt;p&gt;Let’s say our data storage consists only of appending to a file, as in the preceding&#xA;example. Then the simplest possible indexing strategy is this: keep an in-memory&#xA;hash map where every key is mapped to a byte offset in the data file—the location at&#xA;which the value can be found, as illustrated in Figure 3-1. Whenever you append a&#xA;new key-value pair to the file, you also update the hash map to reflect the offset of the&#xA;data you just wrote (this works both for inserting new keys and for updating existing&#xA;keys). When you want to look up a value, use the hash map to find the offset in the&#xA;data file, seek to that location, and read the value.&#xA;This may sound simplistic, but it is a viable approach. In fact, this is essentially what&#xA;Bitcask (the default storage engine in Riak) does [3]. Bitcask offers high-performance&#xA;reads and writes, subject to the requirement that all the keys fit in the available RAM,&#xA;since the hash map is kept completely in memory. The values can use more space&#xA;than there is available memory, since they can be loaded from disk with just one disk&#xA;seek. If that part of the data file is already in the filesystem cache, a read doesn’t&#xA;require any disk I/O at all.&#xA;A storage engine like Bitcask is well suited to situations where the value for each key&#xA;is updated frequently. For example, the key might be the URL of a cat video, and the&#xA;value might be the number of times it has been played (incremented every time&#xA;someone hits the play button). In this kind of workload, there are a lot of writes, but&#xA;there are not too many distinct keys—you have a large number of writes per key, but&#xA;it’s feasible to keep all keys in memory.&#xA;Moreover, since compaction often makes segments much smaller (assuming that a&#xA;key is overwritten several times on average within one segment), we can also merge&#xA;several segments together at the same time as performing the compaction, as shown&#xA;in Figure 3-3. Segments are never modified after they have been written, so the&#xA;merged segment is written to a new file. The merging and compaction of frozen seg‐&#xA;ments can be done in a background thread, and while it is going on, we can still con‐&#xA;tinue to serve read and write requests as normal, using the old segment files. After the&#xA;merging process is complete, we switch read requests to using the new merged seg‐&#xA;ment instead of the old segments—and then the old segment files can simply be&#xA;deleted.&lt;/p&gt;&#xA;&lt;p&gt;Each segment now has its own in-memory hash table, mapping keys to file offsets. In&#xA;order to find the value for a key, we first check the most recent segment’s hash map;&#xA;if the key is not present we check the second-most-recent segment, and so on. The&#xA;merging process keeps the number of segments small, so lookups don’t need to check&#xA;many hash maps.&#xA;Lots of detail goes into making this simple idea work in practice. Briefly, some of the&#xA;issues that are important in a real implementation are:&lt;/p&gt;&#xA;&lt;p&gt;The hash table must fit in memory, so if you have a very large number of keys,&#xA;you’re out of luck. In principle, you could maintain a hash map on disk, but&#xA;unfortunately it is difficult to make an on-disk hash map perform well. It&#xA;requires a lot of random access I/O, it is expensive to grow when it becomes full,&#xA;and hash collisions require fiddly logic [5].&#xA;• Range queries are not efficient. For example, you cannot easily scan over all keys&#xA;between kitty00000 and kitty99999—you’d have to look up each key individu‐&#xA;ally in the hash maps.&lt;/p&gt;&#xA;</description>
+    </item>
+    <item>
+      <title>Ai agents Notes</title>
+      <link>//localhost:1313/blog/ai-agents-notes/</link>
+      <pubDate>Tue, 10 Feb 2026 21:24:16 +0530</pubDate>
+      <guid>//localhost:1313/blog/ai-agents-notes/</guid>
+      <description>&lt;h1 id=&#34;worlflow&#34;&gt;Worlflow&lt;/h1&gt;&#xA;&lt;p&gt;Prompt chaining decomposes a task into a sequence of steps, where each LLM call processes the output of the previous one. You can add programmatic checks  on any intermediate steps to ensure that the process is still on track.&lt;/p&gt;&#xA;&lt;p&gt;When to use this workflow: This workflow is ideal for situations where the task can be easily and cleanly decomposed into fixed subtasks. The main goal is to trade off latency for higher accuracy, by making each LLM call an easier task.&lt;/p&gt;&#xA;&lt;p&gt;Prompt chaining decomposes a task into a sequence of steps, where each LLM call processes the output of the previous one. You can add programmatic checks (see &amp;ldquo;gate” in the diagram below) on any intermediate steps to ensure that the process is still on track.&lt;/p&gt;&#xA;&lt;p&gt;Routing classifies an input and directs it to a specialized followup task. This workflow allows for separation of concerns, and building more specialized prompts. Without this workflow, optimizing for one kind of input can hurt performance on other inputs.&lt;/p&gt;&#xA;&lt;p&gt;When to use this workflow: Routing works well for complex tasks where there are distinct categories that are better handled separately, and where classification can be handled accurately, either by an LLM or a more traditional classification model/algorithm.&lt;/p&gt;&#xA;&lt;p&gt;LLMs can sometimes work simultaneously on a task and have their outputs aggregated programmatically. This workflow, parallelization, manifests in two key variations:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Sectioning: Breaking a task into independent subtasks run in parallel.&lt;/li&gt;&#xA;&lt;li&gt;Voting: Running the same task multiple times to get diverse outputs.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;When to use this workflow: Parallelization is effective when the divided subtasks can be parallelized for speed, or when multiple perspectives or attempts are needed for higher confidence results. For complex tasks with multiple considerations, LLMs generally perform better when each consideration is handled by a separate LLM call, allowing focused attention on each specific aspect.&lt;/p&gt;&#xA;&lt;p&gt;In the orchestrator-workers workflow, a central LLM dynamically breaks down tasks, delegates them to worker LLMs, and synthesizes their results.When to use this workflow: This workflow is well-suited for complex tasks where you can’t predict the subtasks needed (in coding, for example, the number of files that need to be changed and the nature of the change in each file likely depend on the task). Whereas it’s topographically similar, the key difference from parallelization is its flexibility—subtasks aren&amp;rsquo;t pre-defined, but determined by the orchestrator based on the specific input.&lt;/p&gt;&#xA;&lt;p&gt;In the evaluator-optimizer workflow, one LLM call generates a response while another provides evaluation and feedback in a loop.&#xA;When to use this workflow: This workflow is particularly effective when we have clear evaluation criteria, and when iterative refinement provides measurable value. The two signs of good fit are, first, that LLM responses can be demonstrably improved when a human articulates their feedback; and second, that the LLM can provide such feedback. This is analogous to the iterative writing process a human writer might go through when producing a polished document.&lt;/p&gt;&#xA;&lt;h1 id=&#34;text-to-sql-in-pinterest&#34;&gt;Text to SQL in Pinterest&lt;/h1&gt;&#xA;&lt;p&gt;The user asks an analytical question, choosing the tables to be used.&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;The relevant table schemas are retrieved from the table metadata store.&lt;/li&gt;&#xA;&lt;li&gt;The question, selected SQL dialect, and table schemas are compiled into a Text-to-SQL prompt.&lt;/li&gt;&#xA;&lt;li&gt;The prompt is fed into the LLM.&lt;/li&gt;&#xA;&lt;li&gt;A streaming response is generated and displayed to the user.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;The table schema acquired from the metadata store includes:&#xA;Table name&#xA;Table description&#xA;Columns&#xA;Column name&#xA;Column type&#xA;Column description&lt;/p&gt;&#xA;&lt;p&gt;Low-Cardinality Columns&lt;/p&gt;&#xA;&lt;p&gt;Certain analytical queries, such as “how many active users are on the ‘web’ platform”, may generate SQL queries that do not conform to the database’s actual values if generated naively. For example, the where clause in the response might bewhere platform=’web’ as opposed to the correct where platform=’WEB’. To address such issues, unique values of low-cardinality columns which would frequently be used for this kind of filtering are processed and incorporated into the table schema, so that the LLM can make use of this information to generate precise SQL queries.&lt;/p&gt;&#xA;&lt;p&gt;Context Window Limit&lt;/p&gt;&#xA;&lt;p&gt;Extremely large table schemas might exceed the typical context window limit. To address this problem, we employed a few techniques:&lt;/p&gt;&#xA;&lt;p&gt;Reduced version of the table schema: This includes only crucial elements such as the table name, column name, and type.&#xA;Column pruning: Columns are tagged in the metadata store, and we exclude certain ones from the table schema based on their tags.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;you are a {dialect} expert.&#xA;&#xA;Please help to generate a {dialect} query to answer the question. Your response should ONLY be based on the given context and follow the response guidelines and format instructions.&#xA;&#xA;===Tables&#xA;{table_schemas}&#xA;&#xA;===Original Query&#xA;{original_query}&#xA;&#xA;===Response Guidelines&#xA;1. If the provided context is sufficient, please generate a valid query without any explanations for the question. The query should start with a comment containing the question being asked.&#xA;2. If the provided context is insufficient, please explain why it can&amp;#39;t be generated.&#xA;3. Please use the most relevant table(s).&#xA;5. Please format the query before responding.&#xA;6. Please always respond with a valid well-formed JSON object with the following format&#xA;&#xA;===Response Format&#xA;{{&#xA;    &amp;#34;query&amp;#34;: &amp;#34;A generated SQL query when context is sufficient.&amp;#34;,&#xA;    &amp;#34;explanation&amp;#34;: &amp;#34;An explanation of failing to generate the query.&amp;#34;&#xA;}}&#xA;&#xA;===Question&#xA;{question}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;spider dataset : &lt;a href=&#34;https://arxiv.org/pdf/2204.00498&#34;&gt;https://arxiv.org/pdf/2204.00498&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;An offline job is employed to generate a vector index of tables’ summaries and historical queries against them.&#xA;If the user does not specify any tables, their question is transformed into embeddings, and a similarity search is conducted against the vector index to infer the top N suitable tables.&#xA;The top N tables, along with the table schema and analytical question, are compiled into a prompt for LLM to select the top K most relevant tables.&#xA;The top K tables are returned to the user for validation or alteration.&#xA;The standard Text-to-SQL process is resumed with the user-confirmed tables.&lt;/p&gt;&#xA;&lt;p&gt;Offline Vector Index Creation&lt;/p&gt;&#xA;&lt;p&gt;Table Summarization&#xA;There is an ongoing table standardization effort at Pinterest to add tiering for the tables. We index only top-tier tables, promoting the use of these higher-quality datasets. The table summarization generation process involves the following steps:&lt;/p&gt;&#xA;&lt;p&gt;Retrieve the table schema from the table metadata store.&#xA;Gather the most recent sample queries utilizing the table.&#xA;Based on the context window, incorporate as many sample queries as possible into the table summarization prompt, along with the table schema.&#xA;Forward the prompt to the LLM to create the summary.&#xA;Generate and store embeddings in the vector store.&#xA;The table summary includes description of the table, the data it contains, as well as potential use scenarios. Here is the current prompt we are using for table summarization:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;prompt_template = &amp;#34;&amp;#34;&amp;#34;&#xA;You are a data analyst that can help summarize SQL tables.&#xA;&#xA;Summarize below table by the given context.&#xA;&#xA;===Table Schema&#xA;{table_schema}&#xA;&#xA;===Sample Queries&#xA;{sample_queries}&#xA;&#xA;===Response guideline&#xA; - You shall write the summary based only on provided information.&#xA; - Note that above sampled queries are only small sample of queries and thus not all possible use of tables are represented, and only some columns in the table are used.&#xA; - Do not use any adjective to describe the table. For example, the importance of the table, its comprehensiveness or if it is crucial, or who may be using it. For example, you can say that a table contains certain types of data, but you cannot say that the table contains a &amp;#39;wealth&amp;#39; of data, or that it is &amp;#39;comprehensive&amp;#39;.&#xA; - Do not mention about the sampled query. Only talk objectively about the type of data the table contains and its possible utilities.&#xA; - Please also include some potential usecases of the table, e.g. what kind of questions can be answered by the table, what kind of analysis can be done by the table, etc.&#xA;&amp;#34;&amp;#34;&amp;#34;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Query Summarization&#xA;Besides their role in table summarization, sample queries associated with each table are also summarized individually, including details such as the query’s purpose and utilized tables. Here is the prompt we are using:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;prompt_template = &amp;#34;&amp;#34;&amp;#34;&#xA;You are a helpful assistant that can help document SQL queries.&#xA;&#xA;Please document below SQL query by the given table schemas.&#xA;&#xA;===SQL Query&#xA;{query}&#xA;&#xA;===Table Schemas&#xA;{table_schemas}&#xA;&#xA;===Response Guidelines&#xA;Please provide the following list of descriptions for the query:&#xA;-The selected columns and their description&#xA;-The input tables of the query and the join pattern&#xA;-Query&amp;#39;s detailed transformation logic in plain english, and why these transformation are necessary&#xA;-The type of filters performed by the query, and why these filters are necessary&#xA;-Write very detailed purposes and motives of the query in detail&#xA;-Write possible business and functional purposes of the query&#xA;&amp;#34;&amp;#34;&amp;#34;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;NLP Table Search&#xA;When a user asks an analytical question, we convert it into embeddings using the same embedding model. Then we conduct a search against both table and query vector indices. We’re using OpenSearch as the vector store and using its built in similarity search ability.&lt;/p&gt;&#xA;&lt;p&gt;Considering that multiple tables can be associated with a query, a single table could appear multiple times in the similarity search results. Currently, we utilize a simplified strategy to aggregate and score them. Table summaries carry more weight than query summaries, a scoring strategy that could be adjusted in the future.&lt;/p&gt;&#xA;&lt;p&gt;Other than being used in the Text-to-SQL, this NLP-based table search is also used in the general table search in Querybook.&lt;/p&gt;&#xA;&lt;h1 id=&#34;rag&#34;&gt;RAG&lt;/h1&gt;&#xA;</description>
+    </item>
+    <item>
+      <title>Docker &amp; kubernetes </title>
+      <link>//localhost:1313/blog/docker-kubernetes/</link>
+      <pubDate>Fri, 14 Nov 2025 12:38:31 +0530</pubDate>
+      <guid>//localhost:1313/blog/docker-kubernetes/</guid>
+      <description>&lt;h1 id=&#34;docker&#34;&gt;Docker&lt;/h1&gt;&#xA;&lt;p&gt;Open Source&lt;/p&gt;&#xA;</description>
+    </item>
+    <item>
+      <title>Go Lang</title>
+      <link>//localhost:1313/blog/go-lang/</link>
+      <pubDate>Sun, 10 Aug 2025 15:24:40 +0530</pubDate>
+      <guid>//localhost:1313/blog/go-lang/</guid>
+      <description>&lt;h1 id=&#34;interface&#34;&gt;Interface&lt;/h1&gt;&#xA;&lt;p&gt;An interface type in Go is kind of like a definition. It defines and describes the exact methods that some other type must have.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;type Stringer interface {&#xA;    String() string&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;We say that something satisfies this interface (or implements this interface) if it has a method with the exact signature String() string.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;type Book struct {&#xA;    Title  string&#xA;    Author string&#xA;}&#xA;&#xA;func (b Book) String() string {&#xA;    return fmt.Sprintf(&amp;#34;Book: %s - %s&amp;#34;, b.Title, b.Author)&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Wherever you see declaration in Go (such as a variable, function parameter or struct field) which has an interface type, you can use an object of any type so long as it satisfies the interface.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;func WriteLog(s fmt.Stringer) {&#xA;    log.Print(s.String())&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Because this WriteLog() function uses the fmt.Stringer interface type in its parameter declaration, we can pass in any object that satisfies the fmt.Stringer interface.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;package main&#xA;&#xA;import (&#xA;    &amp;#34;fmt&amp;#34;&#xA;    &amp;#34;strconv&amp;#34;&#xA;    &amp;#34;log&amp;#34;&#xA;)&#xA;&#xA;// Declare a Book type which satisfies the fmt.Stringer interface.&#xA;type Book struct {&#xA;    Title  string&#xA;    Author string&#xA;}&#xA;&#xA;func (b Book) String() string {&#xA;    return fmt.Sprintf(&amp;#34;Book: %s - %s&amp;#34;, b.Title, b.Author)&#xA;}&#xA;&#xA;// Declare a Count type which satisfies the fmt.Stringer interface.&#xA;type Count int&#xA;&#xA;func (c Count) String() string {&#xA;    return strconv.Itoa(int(c))&#xA;}&#xA;&#xA;// Declare a WriteLog() function which takes any object that satisfies&#xA;// the fmt.Stringer interface as a parameter.&#xA;func WriteLog(s fmt.Stringer) {&#xA;    log.Print(s.String())&#xA;}&#xA;&#xA;func main() {&#xA;    // Initialize a Count object and pass it to WriteLog().&#xA;    book := Book{&amp;#34;Alice in Wonderland&amp;#34;, &amp;#34;Lewis Carrol&amp;#34;}&#xA;    WriteLog(book)&#xA;&#xA;    // Initialize a Count object and pass it to WriteLog().&#xA;    count := Count(3)&#xA;    WriteLog(count)&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;output:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;2009/11/10 23:00:00 Book: Alice in Wonderland - Lewis Carrol&#xA;2009/11/10 23:00:00 3&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Advantage&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;To help reduce duplication or boilerplate code.&lt;/li&gt;&#xA;&lt;li&gt;To make it easier to use mocks instead of real objects in unit tests.&lt;/li&gt;&#xA;&lt;li&gt;As an architectural tool, to help enforce decoupling between parts of your codebase.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;the empty interface type interface{} is kind of like a wildcard. Wherever you see it in a declaration (such as a variable, function parameter or struct field) you can use an object of any type.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;package main&#xA;&#xA;import &amp;#34;fmt&amp;#34;&#xA;&#xA;&#xA;func main() {&#xA;    person := make(map[string]interface{}, 0)&#xA;&#xA;    person[&amp;#34;name&amp;#34;] = &amp;#34;Alice&amp;#34;&#xA;    person[&amp;#34;age&amp;#34;] = 21&#xA;    person[&amp;#34;height&amp;#34;] = 167.64&#xA;&#xA;    fmt.Printf(&amp;#34;%+v&amp;#34;, person)&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;error-handling&#34;&gt;Error Handling&lt;/h1&gt;&#xA;&lt;p&gt;The error type is an interface type. An error variable represents any value that can describe itself as a string. Here is the interface’s declaration:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;type error interface {&#xA;    Error() string&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    <item>
+      <title>Hugo Shortcuts</title>
+      <link>//localhost:1313/blog/hugo-shortcuts/</link>
+      <pubDate>Thu, 22 May 2025 15:35:24 +0530</pubDate>
+      <guid>//localhost:1313/blog/hugo-shortcuts/</guid>
+      <description>&lt;h1 id=&#34;shortcuts&#34;&gt;Shortcuts&lt;/h1&gt;&#xA;&lt;h2 id=&#34;to-create-a-page&#34;&gt;to create a page&lt;/h2&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;hugo new my-new-page.md&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;to-create-a-blog&#34;&gt;to create a blog&lt;/h2&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;hugo new blog/my-new-post.md&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;run-locally&#34;&gt;run locally&lt;/h2&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;hugo server&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This shortcuts will be used by me in future.&lt;/p&gt;&#xA;</description>
+    </item>
+  </channel>
+</rss>

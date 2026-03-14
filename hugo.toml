@@ -10,7 +10,6 @@ disableKinds = ["taxonomy"]
 ignoreErrors = ["error-disable-taxonomy"]
 [permalinks]
   blog = "/blog/:slug/"
-  cp = "/cp/:slug/"
 
 [params]
     # The "description" of your website. This is used in the meta data of your generated html.
@@ -44,9 +43,9 @@ ignoreErrors = ["error-disable-taxonomy"]
     weight = 1
 
   [[menu.main]]
-    name = "CP"
-    url = "/cp/"
-    weight = 3
+    name = "Reading List"
+    url = "/bookmarks/"
+    weight = 2
 
 
 [caches]

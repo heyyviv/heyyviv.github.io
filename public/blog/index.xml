@@ -1,540 +1,88 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogs on Vivek's Field Notes</title><link>/blog/</link><description>Recent content in Blogs on Vivek's Field Notes</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Wed, 25 Feb 2026 23:32:36 +0530</lastBuildDate><atom:link href="/blog/index.xml" rel="self" type="application/rss+xml"/><item><title>Storage and Retrival</title><link>/blog/storage-and-retrival/</link><pubDate>Wed, 25 Feb 2026 23:32:36 +0530</pubDate><guid>/blog/storage-and-retrival/</guid><description>&lt;p>In particular, there is a big difference between storage engines that are optimized for
-transactional workloads and those that are optimized for analytics.&lt;/p>
-&lt;p>An index is an additional structure that is derived from the primary data. Many data‐
-bases allow you to add and remove indexes, and this doesn’t affect the contents of the
-database; it only affects the performance of queries. Maintaining additional structures
-incurs overhead, especially on writes. For writes, it’s hard to beat the performance of
-simply appending to a file, because that’s the simplest possible write operation. Any
-kind of index usually slows down writes, because the index also needs to be updated
-every time data is written.&lt;/p>
-&lt;h2 id="hash-index">Hash Index&lt;/h2>
-&lt;p>Let’s say our data storage consists only of appending to a file, as in the preceding
-example. Then the simplest possible indexing strategy is this: keep an in-memory
-hash map where every key is mapped to a byte offset in the data file—the location at
-which the value can be found, as illustrated in Figure 3-1. Whenever you append a
-new key-value pair to the file, you also update the hash map to reflect the offset of the
-data you just wrote (this works both for inserting new keys and for updating existing
-keys). When you want to look up a value, use the hash map to find the offset in the
-data file, seek to that location, and read the value.
-This may sound simplistic, but it is a viable approach. In fact, this is essentially what
-Bitcask (the default storage engine in Riak) does [3]. Bitcask offers high-performance
-reads and writes, subject to the requirement that all the keys fit in the available RAM,
-since the hash map is kept completely in memory. The values can use more space
-than there is available memory, since they can be loaded from disk with just one disk
-seek. If that part of the data file is already in the filesystem cache, a read doesn’t
-require any disk I/O at all.
-A storage engine like Bitcask is well suited to situations where the value for each key
-is updated frequently. For example, the key might be the URL of a cat video, and the
-value might be the number of times it has been played (incremented every time
-someone hits the play button). In this kind of workload, there are a lot of writes, but
-there are not too many distinct keys—you have a large number of writes per key, but
-it’s feasible to keep all keys in memory.
-Moreover, since compaction often makes segments much smaller (assuming that a
-key is overwritten several times on average within one segment), we can also merge
-several segments together at the same time as performing the compaction, as shown
-in Figure 3-3. Segments are never modified after they have been written, so the
-merged segment is written to a new file. The merging and compaction of frozen seg‐
-ments can be done in a background thread, and while it is going on, we can still con‐
-tinue to serve read and write requests as normal, using the old segment files. After the
-merging process is complete, we switch read requests to using the new merged seg‐
-ment instead of the old segments—and then the old segment files can simply be
-deleted.&lt;/p>
-&lt;p>Each segment now has its own in-memory hash table, mapping keys to file offsets. In
-order to find the value for a key, we first check the most recent segment’s hash map;
-if the key is not present we check the second-most-recent segment, and so on. The
-merging process keeps the number of segments small, so lookups don’t need to check
-many hash maps.
-Lots of detail goes into making this simple idea work in practice. Briefly, some of the
-issues that are important in a real implementation are:&lt;/p>
-&lt;p>The hash table must fit in memory, so if you have a very large number of keys,
-you’re out of luck. In principle, you could maintain a hash map on disk, but
-unfortunately it is difficult to make an on-disk hash map perform well. It
-requires a lot of random access I/O, it is expensive to grow when it becomes full,
-and hash collisions require fiddly logic [5].
-• Range queries are not efficient. For example, you cannot easily scan over all keys
-between kitty00000 and kitty99999—you’d have to look up each key individu‐
-ally in the hash maps.&lt;/p></description></item><item><title>Ai agents Notes</title><link>/blog/ai-agents-notes/</link><pubDate>Tue, 10 Feb 2026 21:24:16 +0530</pubDate><guid>/blog/ai-agents-notes/</guid><description>&lt;h1 id="worlflow">Worlflow&lt;/h1>
-&lt;p>Prompt chaining decomposes a task into a sequence of steps, where each LLM call processes the output of the previous one. You can add programmatic checks on any intermediate steps to ensure that the process is still on track.&lt;/p>
-&lt;p>When to use this workflow: This workflow is ideal for situations where the task can be easily and cleanly decomposed into fixed subtasks. The main goal is to trade off latency for higher accuracy, by making each LLM call an easier task.&lt;/p>
-&lt;p>Prompt chaining decomposes a task into a sequence of steps, where each LLM call processes the output of the previous one. You can add programmatic checks (see &amp;ldquo;gate” in the diagram below) on any intermediate steps to ensure that the process is still on track.&lt;/p>
-&lt;p>Routing classifies an input and directs it to a specialized followup task. This workflow allows for separation of concerns, and building more specialized prompts. Without this workflow, optimizing for one kind of input can hurt performance on other inputs.&lt;/p>
-&lt;p>When to use this workflow: Routing works well for complex tasks where there are distinct categories that are better handled separately, and where classification can be handled accurately, either by an LLM or a more traditional classification model/algorithm.&lt;/p>
-&lt;p>LLMs can sometimes work simultaneously on a task and have their outputs aggregated programmatically. This workflow, parallelization, manifests in two key variations:&lt;/p>
-&lt;ul>
-&lt;li>Sectioning: Breaking a task into independent subtasks run in parallel.&lt;/li>
-&lt;li>Voting: Running the same task multiple times to get diverse outputs.&lt;/li>
-&lt;/ul>
-&lt;p>When to use this workflow: Parallelization is effective when the divided subtasks can be parallelized for speed, or when multiple perspectives or attempts are needed for higher confidence results. For complex tasks with multiple considerations, LLMs generally perform better when each consideration is handled by a separate LLM call, allowing focused attention on each specific aspect.&lt;/p>
-&lt;p>In the orchestrator-workers workflow, a central LLM dynamically breaks down tasks, delegates them to worker LLMs, and synthesizes their results.When to use this workflow: This workflow is well-suited for complex tasks where you can’t predict the subtasks needed (in coding, for example, the number of files that need to be changed and the nature of the change in each file likely depend on the task). Whereas it’s topographically similar, the key difference from parallelization is its flexibility—subtasks aren&amp;rsquo;t pre-defined, but determined by the orchestrator based on the specific input.&lt;/p>
-&lt;p>In the evaluator-optimizer workflow, one LLM call generates a response while another provides evaluation and feedback in a loop.
-When to use this workflow: This workflow is particularly effective when we have clear evaluation criteria, and when iterative refinement provides measurable value. The two signs of good fit are, first, that LLM responses can be demonstrably improved when a human articulates their feedback; and second, that the LLM can provide such feedback. This is analogous to the iterative writing process a human writer might go through when producing a polished document.&lt;/p>
-&lt;h1 id="text-to-sql-in-pinterest">Text to SQL in Pinterest&lt;/h1>
-&lt;p>The user asks an analytical question, choosing the tables to be used.&lt;/p>
-&lt;ul>
-&lt;li>The relevant table schemas are retrieved from the table metadata store.&lt;/li>
-&lt;li>The question, selected SQL dialect, and table schemas are compiled into a Text-to-SQL prompt.&lt;/li>
-&lt;li>The prompt is fed into the LLM.&lt;/li>
-&lt;li>A streaming response is generated and displayed to the user.&lt;/li>
-&lt;/ul>
-&lt;p>The table schema acquired from the metadata store includes:
-Table name
-Table description
-Columns
-Column name
-Column type
-Column description&lt;/p>
-&lt;p>Low-Cardinality Columns&lt;/p>
-&lt;p>Certain analytical queries, such as “how many active users are on the ‘web’ platform”, may generate SQL queries that do not conform to the database’s actual values if generated naively. For example, the where clause in the response might bewhere platform=’web’ as opposed to the correct where platform=’WEB’. To address such issues, unique values of low-cardinality columns which would frequently be used for this kind of filtering are processed and incorporated into the table schema, so that the LLM can make use of this information to generate precise SQL queries.&lt;/p>
-&lt;p>Context Window Limit&lt;/p>
-&lt;p>Extremely large table schemas might exceed the typical context window limit. To address this problem, we employed a few techniques:&lt;/p>
-&lt;p>Reduced version of the table schema: This includes only crucial elements such as the table name, column name, and type.
-Column pruning: Columns are tagged in the metadata store, and we exclude certain ones from the table schema based on their tags.&lt;/p>
-&lt;pre tabindex="0">&lt;code>you are a {dialect} expert.
-
-Please help to generate a {dialect} query to answer the question. Your response should ONLY be based on the given context and follow the response guidelines and format instructions.
-
-===Tables
-{table_schemas}
-
-===Original Query
-{original_query}
-
-===Response Guidelines
-1. If the provided context is sufficient, please generate a valid query without any explanations for the question. The query should start with a comment containing the question being asked.
-2. If the provided context is insufficient, please explain why it can&amp;#39;t be generated.
-3. Please use the most relevant table(s).
-5. Please format the query before responding.
-6. Please always respond with a valid well-formed JSON object with the following format
-
-===Response Format
-{{
- &amp;#34;query&amp;#34;: &amp;#34;A generated SQL query when context is sufficient.&amp;#34;,
- &amp;#34;explanation&amp;#34;: &amp;#34;An explanation of failing to generate the query.&amp;#34;
-}}
-
-===Question
-{question}
-&lt;/code>&lt;/pre>&lt;p>spider dataset : &lt;a href="https://arxiv.org/pdf/2204.00498">https://arxiv.org/pdf/2204.00498&lt;/a>&lt;/p>
-&lt;p>An offline job is employed to generate a vector index of tables’ summaries and historical queries against them.
-If the user does not specify any tables, their question is transformed into embeddings, and a similarity search is conducted against the vector index to infer the top N suitable tables.
-The top N tables, along with the table schema and analytical question, are compiled into a prompt for LLM to select the top K most relevant tables.
-The top K tables are returned to the user for validation or alteration.
-The standard Text-to-SQL process is resumed with the user-confirmed tables.&lt;/p>
-&lt;p>Offline Vector Index Creation&lt;/p>
-&lt;p>Table Summarization
-There is an ongoing table standardization effort at Pinterest to add tiering for the tables. We index only top-tier tables, promoting the use of these higher-quality datasets. The table summarization generation process involves the following steps:&lt;/p>
-&lt;p>Retrieve the table schema from the table metadata store.
-Gather the most recent sample queries utilizing the table.
-Based on the context window, incorporate as many sample queries as possible into the table summarization prompt, along with the table schema.
-Forward the prompt to the LLM to create the summary.
-Generate and store embeddings in the vector store.
-The table summary includes description of the table, the data it contains, as well as potential use scenarios. Here is the current prompt we are using for table summarization:&lt;/p>
-&lt;pre tabindex="0">&lt;code>prompt_template = &amp;#34;&amp;#34;&amp;#34;
-You are a data analyst that can help summarize SQL tables.
-
-Summarize below table by the given context.
-
-===Table Schema
-{table_schema}
-
-===Sample Queries
-{sample_queries}
-
-===Response guideline
- - You shall write the summary based only on provided information.
- - Note that above sampled queries are only small sample of queries and thus not all possible use of tables are represented, and only some columns in the table are used.
- - Do not use any adjective to describe the table. For example, the importance of the table, its comprehensiveness or if it is crucial, or who may be using it. For example, you can say that a table contains certain types of data, but you cannot say that the table contains a &amp;#39;wealth&amp;#39; of data, or that it is &amp;#39;comprehensive&amp;#39;.
- - Do not mention about the sampled query. Only talk objectively about the type of data the table contains and its possible utilities.
- - Please also include some potential usecases of the table, e.g. what kind of questions can be answered by the table, what kind of analysis can be done by the table, etc.
-&amp;#34;&amp;#34;&amp;#34;
-&lt;/code>&lt;/pre>&lt;p>Query Summarization
-Besides their role in table summarization, sample queries associated with each table are also summarized individually, including details such as the query’s purpose and utilized tables. Here is the prompt we are using:&lt;/p>
-&lt;pre tabindex="0">&lt;code>prompt_template = &amp;#34;&amp;#34;&amp;#34;
-You are a helpful assistant that can help document SQL queries.
-
-Please document below SQL query by the given table schemas.
-
-===SQL Query
-{query}
-
-===Table Schemas
-{table_schemas}
-
-===Response Guidelines
-Please provide the following list of descriptions for the query:
--The selected columns and their description
--The input tables of the query and the join pattern
--Query&amp;#39;s detailed transformation logic in plain english, and why these transformation are necessary
--The type of filters performed by the query, and why these filters are necessary
--Write very detailed purposes and motives of the query in detail
--Write possible business and functional purposes of the query
-&amp;#34;&amp;#34;&amp;#34;
-&lt;/code>&lt;/pre>&lt;p>NLP Table Search
-When a user asks an analytical question, we convert it into embeddings using the same embedding model. Then we conduct a search against both table and query vector indices. We’re using OpenSearch as the vector store and using its built in similarity search ability.&lt;/p>
-&lt;p>Considering that multiple tables can be associated with a query, a single table could appear multiple times in the similarity search results. Currently, we utilize a simplified strategy to aggregate and score them. Table summaries carry more weight than query summaries, a scoring strategy that could be adjusted in the future.&lt;/p>
-&lt;p>Other than being used in the Text-to-SQL, this NLP-based table search is also used in the general table search in Querybook.&lt;/p>
-&lt;h1 id="rag">RAG&lt;/h1></description></item><item><title>Docker &amp; kubernetes</title><link>/blog/docker-kubernetes/</link><pubDate>Fri, 14 Nov 2025 12:38:31 +0530</pubDate><guid>/blog/docker-kubernetes/</guid><description>&lt;h1 id="docker">Docker&lt;/h1>
-&lt;p>Open Source&lt;/p></description></item><item><title>Go Lang</title><link>/blog/go-lang/</link><pubDate>Sun, 10 Aug 2025 15:24:40 +0530</pubDate><guid>/blog/go-lang/</guid><description>&lt;h1 id="interface">Interface&lt;/h1>
-&lt;p>An interface type in Go is kind of like a definition. It defines and describes the exact methods that some other type must have.&lt;/p>
-&lt;pre tabindex="0">&lt;code>type Stringer interface {
- String() string
-}
-&lt;/code>&lt;/pre>&lt;p>We say that something satisfies this interface (or implements this interface) if it has a method with the exact signature String() string.&lt;/p>
-&lt;pre tabindex="0">&lt;code>type Book struct {
- Title string
- Author string
-}
-
-func (b Book) String() string {
- return fmt.Sprintf(&amp;#34;Book: %s - %s&amp;#34;, b.Title, b.Author)
-}
-&lt;/code>&lt;/pre>&lt;p>Wherever you see declaration in Go (such as a variable, function parameter or struct field) which has an interface type, you can use an object of any type so long as it satisfies the interface.&lt;/p>
-&lt;pre tabindex="0">&lt;code>func WriteLog(s fmt.Stringer) {
- log.Print(s.String())
-}
-&lt;/code>&lt;/pre>&lt;p>Because this WriteLog() function uses the fmt.Stringer interface type in its parameter declaration, we can pass in any object that satisfies the fmt.Stringer interface.&lt;/p>
-&lt;pre tabindex="0">&lt;code>package main
-
-import (
- &amp;#34;fmt&amp;#34;
- &amp;#34;strconv&amp;#34;
- &amp;#34;log&amp;#34;
-)
-
-// Declare a Book type which satisfies the fmt.Stringer interface.
-type Book struct {
- Title string
- Author string
-}
-
-func (b Book) String() string {
- return fmt.Sprintf(&amp;#34;Book: %s - %s&amp;#34;, b.Title, b.Author)
-}
-
-// Declare a Count type which satisfies the fmt.Stringer interface.
-type Count int
-
-func (c Count) String() string {
- return strconv.Itoa(int(c))
-}
-
-// Declare a WriteLog() function which takes any object that satisfies
-// the fmt.Stringer interface as a parameter.
-func WriteLog(s fmt.Stringer) {
- log.Print(s.String())
-}
-
-func main() {
- // Initialize a Count object and pass it to WriteLog().
- book := Book{&amp;#34;Alice in Wonderland&amp;#34;, &amp;#34;Lewis Carrol&amp;#34;}
- WriteLog(book)
-
- // Initialize a Count object and pass it to WriteLog().
- count := Count(3)
- WriteLog(count)
-}
-&lt;/code>&lt;/pre>&lt;p>output:&lt;/p>
-&lt;pre tabindex="0">&lt;code>2009/11/10 23:00:00 Book: Alice in Wonderland - Lewis Carrol
-2009/11/10 23:00:00 3
-&lt;/code>&lt;/pre>&lt;p>Advantage&lt;/p>
-&lt;ul>
-&lt;li>To help reduce duplication or boilerplate code.&lt;/li>
-&lt;li>To make it easier to use mocks instead of real objects in unit tests.&lt;/li>
-&lt;li>As an architectural tool, to help enforce decoupling between parts of your codebase.&lt;/li>
-&lt;/ul>
-&lt;p>the empty interface type interface{} is kind of like a wildcard. Wherever you see it in a declaration (such as a variable, function parameter or struct field) you can use an object of any type.&lt;/p>
-&lt;pre tabindex="0">&lt;code>package main
-
-import &amp;#34;fmt&amp;#34;
-
-
-func main() {
- person := make(map[string]interface{}, 0)
-
- person[&amp;#34;name&amp;#34;] = &amp;#34;Alice&amp;#34;
- person[&amp;#34;age&amp;#34;] = 21
- person[&amp;#34;height&amp;#34;] = 167.64
-
- fmt.Printf(&amp;#34;%+v&amp;#34;, person)
-}
-&lt;/code>&lt;/pre>&lt;h1 id="error-handling">Error Handling&lt;/h1>
-&lt;p>The error type is an interface type. An error variable represents any value that can describe itself as a string. Here is the interface’s declaration:&lt;/p>
-&lt;pre tabindex="0">&lt;code>type error interface {
- Error() string
-}
-&lt;/code>&lt;/pre></description></item><item><title>Book club Building Microservices DESIGNING FINE-GRAINED SYSTEMS</title><link>/blog/book-club-building-microservices-designing-fine-grained-systems/</link><pubDate>Sun, 03 Aug 2025 23:07:41 +0530</pubDate><guid>/blog/book-club-building-microservices-designing-fine-grained-systems/</guid><description>&lt;h3 id="announcing-our-new-book-club">Announcing Our New Book Club!&lt;/h3>
-&lt;p>We are excited to launch a new book club dedicated to continuous learning and professional growth.&lt;/p>
-&lt;h4 id="our-mission">Our Mission&lt;/h4>
-&lt;p>Our primary goals for this book club are:&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>To Learn New Things:&lt;/strong> We aim to explore new concepts and technologies together, fostering a collaborative learning environment.&lt;/li>
-&lt;li>&lt;strong>To Build Consistency:&lt;/strong> By meeting regularly, we can create a consistent habit of reading, learning, and sharing knowledge.&lt;/li>
-&lt;/ul>
-&lt;h4 id="how-it-works">How It Works&lt;/h4>
-&lt;ul>
-&lt;li>&lt;strong>Weekly Virtual Meetings:&lt;/strong> We will host a weekly meeting on Google Meet/Zoom to discuss the designated chapter.&lt;/li>
-&lt;/ul>
-&lt;h2 id="building-microservices-designing-fine-grained-systems">Building Microservices DESIGNING FINE-GRAINED SYSTEMS&lt;/h2>
-&lt;table>
- &lt;thead>
- &lt;tr>
- &lt;th style="text-align: left">Week Number&lt;/th>
- &lt;th style="text-align: left">Chapter Name&lt;/th>
- &lt;th style="text-align: left">Links&lt;/th>
- &lt;/tr>
- &lt;/thead>
- &lt;tbody>
- &lt;tr>
- &lt;td style="text-align: left">Week 1&lt;/td>
- &lt;td style="text-align: left">Chapter 1 - Microservices&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
- &lt;/tr>
- &lt;tr>
- &lt;td style="text-align: left">Week 2&lt;/td>
- &lt;td style="text-align: left">Chapter 2 - The Evolutionary Architect&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
- &lt;/tr>
- &lt;tr>
- &lt;td style="text-align: left">Week 3&lt;/td>
- &lt;td style="text-align: left">Chapter 3 - How to Model Services&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
- &lt;/tr>
- &lt;tr>
- &lt;td style="text-align: left">Week 4&lt;/td>
- &lt;td style="text-align: left">Chapter 4 - Integration&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
- &lt;/tr>
- &lt;tr>
- &lt;td style="text-align: left">Week 5&lt;/td>
- &lt;td style="text-align: left">Chapter 5 - Splitting the Monolith&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
- &lt;/tr>
- &lt;tr>
- &lt;td style="text-align: left">Week 6&lt;/td>
- &lt;td style="text-align: left">Chapter 6 - Deployment&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
- &lt;/tr>
- &lt;tr>
- &lt;td style="text-align: left">Week 7&lt;/td>
- &lt;td style="text-align: left">Chapter 7 - Testing&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
- &lt;/tr>
- &lt;tr>
- &lt;td style="text-align: left">Week 8&lt;/td>
- &lt;td style="text-align: left">Chapter 8 - Monitoring&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
- &lt;/tr>
- &lt;tr>
- &lt;td style="text-align: left">Week 9&lt;/td>
- &lt;td style="text-align: left">Chapter 9 - Security&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
- &lt;/tr>
- &lt;tr>
- &lt;td style="text-align: left">Week 10&lt;/td>
- &lt;td style="text-align: left">Chapter 10 - Conway’s Law and System Design&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
- &lt;/tr>
- &lt;tr>
- &lt;td style="text-align: left">Week 11&lt;/td>
- &lt;td style="text-align: left">Chapter 11 - Microservices at Scale&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
- &lt;/tr>
- &lt;tr>
- &lt;td style="text-align: left">Week 12&lt;/td>
- &lt;td style="text-align: left">Chapter 12 - Bringing It All Together&lt;/td>
- &lt;td style="text-align: left">&lt;/td>
- &lt;/tr>
- &lt;/tbody>
-&lt;/table></description></item><item><title>Mapper Reducer</title><link>/blog/mapper-reducer/</link><pubDate>Wed, 30 Jul 2025 22:28:21 +0530</pubDate><guid>/blog/mapper-reducer/</guid><description>&lt;h1 id="map-reduce">Map Reduce&lt;/h1>
-&lt;h3 id="problem-faced-by-google">Problem faced by google:&lt;/h3>
-&lt;p>Large Data like crawled pages over WWW. They need to do some analysis over this data. It&amp;rsquo;s really not possible to store all this data in one system and to analyse this data serially wil take a lots of time. So they created MapReduce
-Issue:&lt;/p>
-&lt;ul>
-&lt;li>parallelize Computation&lt;/li>
-&lt;li>distribute the data&lt;/li>
-&lt;li>handle failure cases&lt;/li>
-&lt;li>load balancing&lt;/li>
-&lt;/ul>
-&lt;h3 id="programming-model">Programming Model&lt;/h3>
-&lt;p>For example in large database we are trying to calculate number of occurrence of each words
-Map:
-receive a document&lt;/p>
-&lt;pre tabindex="0">&lt;code>map(String key, String value):
-	// key: document name
-	// value: document contents
-	for each word w in value:
-		EmitIntermediate(w, &amp;#34;1&amp;#34;);
-&lt;/code>&lt;/pre>&lt;p>Reduce:
-will receive intermediate values&lt;/p>
-&lt;pre tabindex="0">&lt;code>reduce(String key, Iterator values):
-	// key: a word
-	// values: a list of counts
-	int result = 0;
-	for each v in values:
-		result += ParseInt(v);
-	Emit(AsString(result));
-&lt;/code>&lt;/pre>&lt;p>Mapper produce
-(the,1)
-(map,1)
-(function,1)
-Reducer receive
-(&amp;ldquo;the&amp;rdquo;,{1,1,1,1,2,3,})
-Reducer produce
-(&amp;ldquo;the&amp;rdquo;,9)&lt;/p>
-&lt;pre tabindex="0">&lt;code>map (k1,v1) → list(k2,v2)
-
-reduce (k2,list(v2)) → list(v2)
-&lt;/code>&lt;/pre>&lt;h3 id="implementation">Implementation&lt;/h3>
-&lt;ul>
-&lt;li>We Split the data into M split. Input split is processed in parallel by different machine.&lt;/li>
-&lt;li>We split intermediate value into R split using partitioning function specified by user. ex (hash(value)%R).
-Steps&lt;/li>
-&lt;li>The MapReduce library in the user program first splits the input files into M pieces of typically 16 megabytes to 64 megabytes (MB) per piece (controllable by the user via an optional parameter). It then starts up many copies of the program on a cluster of machines.&lt;/li>
-&lt;li>One of the copies of the program is special – the master. The rest are workers that are assigned work by the master. There are M map tasks and R reduce tasks to assign. The master picks idle workers and assigns each one a map task or a reduce task.&lt;/li>
-&lt;li>A worker who is assigned a map task reads the contents of the corresponding input split. It parses key/value pairs out of the input data and passes each pair to the user-defined Map function. The intermediate key/value pairs produced by the Map function are buffered in memory&lt;/li>
-&lt;li>Periodically, the buffered pairs are written to local disk, partitioned into R regions by the partitioning function. The locations of these buffered pairs on the local disk are passed back to the master, who is responsible for forwarding these locations to the reduce workers.&lt;/li>
-&lt;li>When a reduce worker is notified by the master about these locations, it uses remote procedure calls to read the buffered data from the local disks of themap workers. When a reduce worker has read all intermediate data, it sorts it by the intermediate keysso that all occurrences of the same key are grouped together. The sorting is needed because typically many different keys map to the same reduce task. If the amount of intermediate data is too large to fit in memory, an external sort is used&lt;/li>
-&lt;li>The reduce worker iterates over the sorted intermediate data and for each unique intermediate key encountered, it passes the key and the corresponding set of intermediate values to the user’s Reduce function. The output of the Reduce function is appended to a final output file for this reduce partition.&lt;/li>
-&lt;li>When all map tasks and reduce tasks have been completed, the master wakes up the user program. At this point, the MapReduce call in the user program returns back to the user code.&lt;/li>
-&lt;/ul>
-&lt;p>for each completed map task,the master stores the locations and sizes of the R intermediate file regions produced by the map task. Updates to this location and size information are received as map tasks are completed. The information is pushed incrementally to workers that have in-progress reduce tasks.&lt;/p>
-&lt;h3 id="fault-tolerance">Fault Tolerance&lt;/h3>
-&lt;p>Master pings every machine time to time if they failed to response in time then master make the task assigned to that system as failure and reschedule that task to some other worker.
-Completed map task is reschedule on failure cuz intermediate data is stored in local disk but completed reduce task in not reschedule on failure cuz output is stored in global disk.&lt;/p>
-&lt;p>It is easy to make the master write periodic checkpoints of the master data structures described above. If the master task dies, a new copy can be started from the last checkpointed state. However, given that there is only a single master, its failure is unlikely; therefore our current implementation aborts the MapReduce computation if the master fails. Clients can check for this condition and retry the MapReduce operation if they desire.
-Reduce produce 1 output file
-Mapper produce R output file
-When a map task completes, the worker sends a message to the master and includes the names of the R temporary files in the message.
-When a reduce task completes, the reduce worker atomically renames its temporary output file to the final output file. If the same reduce task is executed on multiple machines, multiple rename calls will be executed for the same final output file.&lt;/p>
-&lt;p>We split mapper phase into M split and reduce phase in R split ideally (M&amp;amp;R ) should be much larger than number of worker.&lt;/p>
-&lt;ul>
-&lt;li>Having each worker perform many different tasks improves dynamic load balancing&lt;/li>
-&lt;li>speeds up recovery when a worker fails
-we tend to choose M so that each individual task is roughly 16 MB to 64 MB of input data (so that the locality optimization described above is most effective)&lt;/li>
-&lt;/ul>
-&lt;p>One of the common causes that lengthens the total time taken for a MapReduce operation is a “straggler”: a machine that takes an unusually long time to complete one of the last few map or reduce tasks in the computation.
-When MapReduce operation is close to completion master assign in progress task to backup machines.he task is marked as completed whenever either the primary or the backup execution completes.&lt;/p></description></item><item><title>About LLM part 1</title><link>/blog/about-llm-part-1/</link><pubDate>Thu, 26 Jun 2025 16:53:53 +0530</pubDate><guid>/blog/about-llm-part-1/</guid><description>&lt;h1 id="root-mean-square-layer-normalization">Root Mean Square Layer Normalization&lt;/h1>
-&lt;p>Layer normalization (LayerNorm) has been successfully applied to various deep neural networks to help stabilize training and boost model convergence because of its capability in handling re-centering and re-scaling of both inputs and weight matrix. However, the computational overhead introduced by LayerNorm makes these improvements expensive and significantly slows the underlying network.
-LayerNorm was widely accepted because it&amp;rsquo;s simplicity and no dependence among training cases and it also handle variable length inputs unlike BatchNorm.
-Unfortunately, the incorporation of LayerNorm raises computational overhead. Although this is negligible to small and shallow neural models with few normalization layers, this problem becomes severe when underlying networks grow larger and deeper. As a result, the efficiency gain from faster and more stable training (in terms of number of training steps) is counter-balanced by an increased computational cost per training step, which diminishes the net efficiency.
-One major feature of LayerNorm that is widely regarded as contributions to the stabilization is its recentering invariance property.&lt;/p>
-&lt;p>&lt;figure>&lt;img src="/rmsnorm_1.png">
-&lt;/figure>
-
-RMSNorm which only focuses on re-scaling invariance and regularizes the summed inputs simply according to the root mean square (RMS) statistic
-RMS Norm Equation
-$$
-\mathrm{RMS} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} x_i^2}
-$$&lt;/p>
-&lt;p>A well-known explanation of the success of LayerNorm is its re-centering and re-scaling invariance
-property. The former enables the model to be insensitive to shift noises on both inputs and weights,
-and the latter keeps the output representations intact when both inputs and weights are randomly
-scaled&lt;/p>
-&lt;h1 id="positional-encoding">Positional Encoding&lt;/h1>
-&lt;p>Desirable Properties&lt;/p>
-&lt;ul>
-&lt;li>Each position needs a unique encoding that remains consistent regardless of sequence length&lt;/li>
-&lt;li>The relationship between positions should be mathematically simple. If we know the encoding for position p, it should be straightforward to compute the encoding for position p+k, making it easier for the model to learn positional patterns.&lt;/li>
-&lt;li>It would be ideal if our positional encodings could be drawn from a deterministic process. This should allow the model to learn the mechanism behind our encoding scheme efficiently.&lt;/li>
-&lt;/ul>
-&lt;p>Drawbacks of absolute positonal encoding&lt;/p>
-&lt;ul>
-&lt;li>Don&amp;rsquo;t capture relative position between tokens&lt;/li>
-&lt;li>While absolute positional encoding captures the positional information for a word, it does not capture the positional information for the entire sentence&lt;/li>
-&lt;/ul>
-&lt;p>Rotary Positional Encoding is a type of position encoding that encodes absolute positional information with a rotation matrix and naturally incorporates explicit relative position dependency in self-attention formulation&lt;/p>
-&lt;p>we&amp;rsquo;ve generated a separate positional encoding vector and added it to our token embedding prior to our Q, K and V projections. By adding the positional information directly to our token embedding, we are polluting the semantic information with the positional information.
-$$
-R(m\theta) =
-\begin{bmatrix}
-\cos(m\theta) &amp;amp; -\sin(m\theta) \
-\sin(m\theta) &amp;amp; \cos(m\theta)
-\end{bmatrix}
-$$
-&lt;figure>&lt;img src="/rope_2.png">
-&lt;/figure>
-
-The challenge with this solution was that it works only for 2D. Hence, the authors came up with a solution that takes token pairs. This is why ROPE embeddings require dimensions of even length.&lt;/p>
-&lt;figure>&lt;img src="/rope_1.png">
-&lt;/figure>
-
-&lt;h1 id="kv-caching">KV Caching&lt;/h1>
-&lt;p>&lt;figure>&lt;img src="/kv_1.png">
-&lt;/figure>
-
-When we implement an LLM text generation function, we typically only use the last generated token from each step. However, the visualization above highlights one of the main inefficiencies on a conceptual level. This inefficiency (or redundancy) becomes more clear if we zoom in on the attention mechanism itself.
-&lt;figure>&lt;img src="/kv_2.png">
-&lt;/figure>
-
-LLMs generate one word (or token) at a time. Suppose the LLM generated the word “fast” so that the prompt for the next round becomes “Time flies fast”. This is illustrated in the next figure below:
-As we can see, based on comparing the previous 2 figures, the keys and value vectors for the first two tokens are exactly the same, and it would be wasteful to recompute them in each next-token text generation round.&lt;/p>
-&lt;p>Now, the idea of the KV cache is to implement a caching mechanism that stores the previously generated key and value vectors for reuse, which helps us to avoid these unnecessary recomputations.&lt;/p>
-&lt;p>Notice the redundancy: tokens “Time” and “flies” are recomputed at every new generation step. The KV cache resolves this inefficiency by storing and reusing previously computed key and value vectors:&lt;/p>
-&lt;ul>
-&lt;li>Initially, the model computes and caches key and value vectors for the input tokens.&lt;/li>
-&lt;li>For each new token generated, the model only computes key and value vectors for that specific token.&lt;/li>
-&lt;li>Previously computed vectors are retrieved from the cache to avoid redundant computations.&lt;/li>
-&lt;/ul>
-&lt;figure>&lt;img src="/kv_3.png">
-&lt;/figure>
-
-&lt;p>As sequence length increases, the benefits and downsides of a KV cache become more pronounced in the following ways:&lt;/p>
-&lt;ul>
-&lt;li>[Good] Computational efficiency increases: Without caching, the attention at step t must compare the new query with t previous keys, so the cumulative work scales quadratically, O(n²). With a cache, each key and value is computed once and then reused, reducing the total per-step complexity to linear, O(n).&lt;/li>
-&lt;li>[Bad] Memory usage increases linearly: Each new token appends to the KV cache. For long sequences and larger LLMs, the cumulative KV cache grows larger, which can consume a significant or even prohibitive amount of (GPU) memory. As a workaround, we can truncate the KV cache, but this adds even more complexity (but again, it may well be worth it when deploying LLMs.)&lt;/li>
-&lt;/ul>
-&lt;h1 id="grouped-query-attention">Grouped Query Attention&lt;/h1>
-&lt;p>Grouped-query attention (GQA) is a simple approach that blends elements of multi-head attention (MHA) and multi-query attention (MQA) to create a more efficient attention mechanism. The mathematical framework of GQA can be understood as follows:&lt;/p>
-&lt;p>Division into Groups: In GQA, the query heads (Q) from a traditional multi-head model are divided into G groups. Each group is assigned a single key (K) and value (V) head. This configuration is denoted as GQA-G, where G represents the number of groups.
-We mean-pool the key and value projection matrices of the original heads within each group to convert a multi-head model into a GQA model. This technique averages the projection matrices of each head in a group, resulting in a single key and value projection for that group.&lt;/p>
-&lt;p>By utilizing GQA, the model maintains a balance between MHA quality and MQA speed. Because there are fewer key-value pairs, memory bandwidth and data loading needs are minimized. The choice of G presents a trade-off: more groups (closer to MHA) result in higher quality but slower performance, whereas fewer groups (near to MQA) boost speed at the risk of sacrificing quality. Furthermore, as the model size grows, GQA allows for a proportional decrease in memory bandwidth and model capacity, corresponding with the model’s scale. In contrast, for bigger models, the reduction to a single key and value head can be unduly severe in MQA.
-&lt;figure>&lt;img src="/kv_4.png">
-&lt;/figure>
-&lt;/p></description></item><item><title>Training_LLM</title><link>/blog/training_llm/</link><pubDate>Fri, 23 May 2025 15:12:55 +0530</pubDate><guid>/blog/training_llm/</guid><description>&lt;h1 id="training-on-one-gpu">Training on One GPU&lt;/h1>
-&lt;p>when a model trained, there are 3 phases&lt;/p>
-&lt;ul>
-&lt;li>A forward pass, which passes inputs through the model to yield its outputs&lt;/li>
-&lt;li>A backward pass to compute the gradients&lt;/li>
-&lt;li>An optimization step using the gradients to update the parameters
-The batch size (bs) is one of the important hyperparameters for model training; it affects both model convergence and throughput.&lt;/li>
-&lt;/ul>
-&lt;p>A small batch size can be useful early in training to quickly move through the training landscape to reach an optimal learning point. However, further along in the model training, small batch sizes will keep gradients noisy, and the model may not be able to converge to the most optimal final performance. At the other extreme, a large batch size, while giving very accurate gradient estimations, will tend to make less use of each training token, rendering convergence slower and potentially wasting compute resources.&lt;/p>
-&lt;p>Batch size also affects the time it takes to train on a given text dataset: a small batch size will require more optimizer steps to train on the same amount of samples. Optimizer steps are costly (in compute time), and the total time to train will thus increase compared to using a larger batch size. That being said, note that the batch size can often be adjusted quite widely around the optimal batch size without major impact on the performance of the model - that is, the sensitivity of final model performance to the exact batch size value is usually rather low around the optimal batch size.
-In the LLM pretraining community, batch sizes are commonly reported in terms of tokens rather than number of samples
-bst = batch size tokens
-bs = batch size
-seq = model input sequence length
-bst = bs * seq
-Llama 1 was trained with a batch size of ~4M tokens for 1.4 trillion tokens, while DeepSeek was trained with a batch size of ~60M tokens for 14 trillion tokens.&lt;/p>
-&lt;p>we couldn&amp;rsquo;t calculate exact memory usage by a model cuz&lt;/p>
-&lt;ul>
-&lt;li>CUDA kernels typically require 1-2 GB of GPU memory&lt;/li>
-&lt;li>Some memory is used for buffers and intermediate results, and there&amp;rsquo;s some memory that can&amp;rsquo;t be used due to fragmentation.
-We could face out-of-memory (OOM) issues when training this large models but why?
-When training a neural network model, we store several items in memory:&lt;/li>
-&lt;li>Model weights&lt;/li>
-&lt;li>Model gradients&lt;/li>
-&lt;li>Optimizer states&lt;/li>
-&lt;li>Activations needed to compute the gradients&lt;/li>
-&lt;/ul>
-&lt;p>First the activations increase quickly as we do the forward pass, then during the backward pass the gradients build up, and as the backward pass propagates, the stored activations used to compute the gradients are progressively cleared. Finally, we perform optimization, during which we need all the gradients, and then update the optimizer states before we start the next forward pass.&lt;/p>
-&lt;p>An interesting observation here is that memory usage is not static for a given model; rather, it scales linearly with the batch size and quadratically with the sequence length. This means the activation memory is the part that will blow up when we increase our batch size or train with longer sequences.&lt;/p>
-&lt;p>These graphs tell a striking story: for short sequences (or small batch sizes), memory usage for activations is almost negligible, but from around 2-4k tokens they start to take up a significant amount of memory, while usage for parameters, gradients, and optimizer states (as we’ll discuss later) is roughly independent of the sequence length and batch size.
-The general idea behind activation recomputation – also called gradient checkpointing or rematerialization – is to discard some activations during the forward pass to save memory and spend some extra compute to recompute these on the fly during the backward pass. Without recomputation, we store every hidden state between two learnable operations (e.g., feedforward, LayerNorm, etc.), so that we can use them during the backward pass to compute gradients. When we use recomputation, we typically only store activations at a few key points in the model architecture, discarding the rest of the activations and recomputing them on the fly during the backward pass from the nearest saved activations. Basically, we perform a sub-part of the forward pass again, to trade off memory for compute.&lt;/p>
-&lt;ul>
-&lt;li>FULL : We checkpoint activations at the transition point between each layer of the Transformer model. This is usually called the “full” strategy since it requires a forward pass through each layer, essentially adding a full forward pass during the backward pass. This strategy saves the most memory but is the most expensive one in terms of compute. It typically increases the compute cost and time by up to 30-40%, which is very noticeable.&lt;/li>
-&lt;li>Selective: In general, we can do better than full. The authors of the recomputation paper did a detailed analysis studying which activations grow the largest and have the cheapest recomputation cost in terms of floating-point operations per second (FLOPS). It turns out that the attention computations fall in that category, and thus we can usually discard them and focus on checkpointing the expensive feedforward computations. For a GPT-3 (175B) model, this means a 70% activation memory reduction at a 2.7% compute cost.&lt;/li>
-&lt;/ul>
-&lt;p>Gradient accumulation is a very straightforward method to avoid memory explosion that consists of splitting a batch into micro-batches. We then perform forward and backward passes successively on each micro-batch, compute the gradients, and, as the name suggests, sum the gradients of all micro-batches before we perform optimization. In practice, the optimization step is conducted not on the sum but on the average of the gradients, so that the result is independent of the number of gradient accumulation steps.
-Gradient accumulation allows us to reduce activation memory, which grows linearly with batch size, by processing smaller micro-batches sequentially. This reduces stored activations and gradients since only one micro-batch&amp;rsquo;s worth of activations needs to be kept in memory at a time, which helps reduce the overall activation memory footprint.
-One drawback, however, is that gradient accumulation requires multiple consecutive forward/backward passes per optimization step, thereby increasing the compute overhead and slowing down training.&lt;/p>
-&lt;h1 id="data-parallelism">Data Parallelism&lt;/h1>
-&lt;p>The idea behind data parallelism (DP) is to replicate the model on several GPUs (we call the replicas “model instances”) and run forward and backward passes on different micro-batches of data in parallel on each GPU - hence the name data parallelism.
-Using a different micro-batch for each GPU means we’ll have different gradients on each GPU, so to keep the model instances in sync across the different GPUs, we&amp;rsquo;ll average the gradients from the model instances using an operation called “all-reduce.” This operation takes place during the backward pass, before the optimizer step.&lt;/p></description></item><item><title>Hugo Shortcuts</title><link>/blog/hugo-shortcuts/</link><pubDate>Thu, 22 May 2025 15:35:24 +0530</pubDate><guid>/blog/hugo-shortcuts/</guid><description>&lt;h1 id="shortcuts">Shortcuts&lt;/h1>
-&lt;h2 id="to-create-a-page">to create a page&lt;/h2>
-&lt;pre tabindex="0">&lt;code>hugo new my-new-page.md
-&lt;/code>&lt;/pre>&lt;h2 id="to-create-a-blog">to create a blog&lt;/h2>
-&lt;pre tabindex="0">&lt;code>hugo new blog/my-new-post.md
-&lt;/code>&lt;/pre>&lt;h2 id="run-locally">run locally&lt;/h2>
-&lt;pre tabindex="0">&lt;code>hugo server
-&lt;/code>&lt;/pre>&lt;p>This shortcuts will be used by me in future.&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blogs on Vivek&#39;s Field Notes</title>
+    <link>//localhost:1313/blog/</link>
+    <description>Recent content in Blogs on Vivek&#39;s Field Notes</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    
+    
+    
+    
+    <lastBuildDate>Sat, 28 Feb 2026 20:16:56 +0530</lastBuildDate>
+    
+    
+    <atom:link href="//localhost:1313/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Scaling Databases with Sharding</title>
+      <link>//localhost:1313/blog/scaling-databases-with-sharding/</link>
+      <pubDate>Sat, 28 Feb 2026 20:16:56 +0530</pubDate>
+      <guid>//localhost:1313/blog/scaling-databases-with-sharding/</guid>
+      <description>&lt;h2 id=&#34;introduction-to-sharding&#34;&gt;Introduction to Sharding&lt;/h2&gt;&#xA;&lt;p&gt;Sharding is the process of scaling a database by spreading data across multiple servers, or &lt;strong&gt;shards&lt;/strong&gt;. It is the go-to solution for large organizations managing data at a petabyte scale. Industry leaders like Uber, Shopify, Slack, and OpenAI all leverage sharding to manage their massive datasets.&lt;/p&gt;&#xA;&lt;p&gt;In a typical small-scale application, one or more app servers connect to a single, monolithic database. This server stores all persistent data, from user accounts to application state. However, as data grows, this single point of failure and bottleneck must be addressed.&lt;/p&gt;&#xA;&lt;h2 id=&#34;sharded-architecture&#34;&gt;Sharded Architecture&lt;/h2&gt;&#xA;&lt;p&gt;In a sharded setup, we divide the total data into portions, each hosted on a separate database server.&lt;/p&gt;&#xA;&lt;p&gt;Initially, your application code might try to manage these shards directly—keeping track of which row lives where and maintaining multiple open connections. While manageable with two shards, this approach becomes a maintenance nightmare when dealing with hundreds.&lt;/p&gt;&#xA;&lt;h3 id=&#34;the-proxy-layer&#34;&gt;The Proxy Layer&lt;/h3&gt;&#xA;&lt;p&gt;A more robust solution is to use an &lt;strong&gt;intermediary proxy&lt;/strong&gt;. Application servers connect only to this proxy, which then routes queries to the correct shard.&lt;/p&gt;&#xA;&lt;p&gt;However, proxies introduce their own challenges:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Throughput Limits:&lt;/strong&gt; If a proxy reaches its capacity, queries are queued, adding latency.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Scalability:&lt;/strong&gt; To handle high volumes, you must deploy multiple proxy servers to prevent them from becoming the bottleneck.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;sharding-strategies&#34;&gt;Sharding Strategies&lt;/h2&gt;&#xA;&lt;p&gt;The sharding strategy—the rules determining data placement—is critical for performance and balance. This usually involves a &lt;strong&gt;shard key&lt;/strong&gt;: the column(s) used to route data.&lt;/p&gt;&#xA;&lt;h3 id=&#34;1-range-sharding&#34;&gt;1. Range Sharding&lt;/h3&gt;&#xA;&lt;p&gt;Data is routed based on predefined ranges of values. For example, IDs 1-25 might go to Shard A, 26-50 to Shard B, and so on.&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;[!WARNING]&#xA;Naive range-based sharding with monotonically increasing IDs often leads to &lt;strong&gt;&amp;ldquo;Hot Shards&amp;rdquo;&lt;/strong&gt;. If you insert IDs 1 to 25 sequentially, only the first shard is active while others remain idle.&lt;/p&gt;&lt;/blockquote&gt;&#xA;&lt;h3 id=&#34;2-hash-sharding&#34;&gt;2. Hash Sharding&lt;/h3&gt;&#xA;&lt;p&gt;The proxy generates a cryptographic hash of the shard key for each row. Each shard is then responsible for a specific range of hashes.&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Best Practice:&lt;/strong&gt; Choose a key with &lt;strong&gt;high cardinality&lt;/strong&gt; (e.g., &lt;code&gt;user_id&lt;/code&gt;).&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Avoid:&lt;/strong&gt; Columns like &lt;code&gt;name&lt;/code&gt;, where popular values can still create hotspots despite hashing.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Optimization:&lt;/strong&gt; Hashing fixed-size integers (&lt;code&gt;user_id&lt;/code&gt;) is generally faster than hashing variable-width strings.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h3 id=&#34;3-lookup-sharding&#34;&gt;3. Lookup Sharding&lt;/h3&gt;&#xA;&lt;p&gt;A separate mapping table tracks exactly which data belongs on which shard. This offers maximum flexibility but requires an additional lookup for every query.&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;h2 id=&#34;real-world-case-study-postgresql-and-chatgpt&#34;&gt;Real-World Case Study: PostgreSQL and ChatGPT&lt;/h2&gt;&#xA;&lt;p&gt;While sharding solves many scale problems, specific database architectures like PostgreSQL&amp;rsquo;s &lt;strong&gt;MVCC (Multiversion Concurrency Control)&lt;/strong&gt; introduce unique write penalties that companies like OpenAI have had to navigate.&lt;/p&gt;&#xA;&lt;h3 id=&#34;the-copy-on-write-penalty&#34;&gt;The &amp;ldquo;Copy-on-Write&amp;rdquo; Penalty&lt;/h3&gt;&#xA;&lt;p&gt;In Postgres, updates are not performed &amp;ldquo;in-place.&amp;rdquo; Updating even one byte results in &lt;strong&gt;Write Amplification&lt;/strong&gt;, where the entire row is copied to create a new version. This strains I/O and leads to &lt;strong&gt;Read Amplification&lt;/strong&gt;, as queries must scan through &amp;ldquo;dead&amp;rdquo; versions (old rows) to find live ones.&lt;/p&gt;&#xA;&lt;h3 id=&#34;the-bloat-problem&#34;&gt;The &amp;ldquo;Bloat&amp;rdquo; Problem&lt;/h3&gt;&#xA;&lt;p&gt;Old row versions (Dead Tuples) don&amp;rsquo;t disappear instantly, leading to table bloat and increased &lt;code&gt;autovacuum&lt;/code&gt; overhead. If writes outpace reclamation, performance collapses. Every update also requires updating all indexes to point to the new physical row location, adding CPU stress.&lt;/p&gt;&#xA;&lt;h3 id=&#34;strategies-from-the-openai-engineering-team&#34;&gt;Strategies from the OpenAI Engineering Team&lt;/h3&gt;&#xA;&lt;p&gt;To ensure services like ChatGPT and their API remain responsive during massive write spikes, several strategies are employed:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Minimizing Primary Load:&lt;/strong&gt; Read traffic is offloaded to replicas whenever possible. Queries that must remain on the primary (e.g., those part of write transactions) are strictly optimized for efficiency.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Selective Migration:&lt;/strong&gt; Shardable, write-heavy workloads are migrated to systems like &lt;strong&gt;Azure CosmosDB&lt;/strong&gt;.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Application-Level Optimizations:&lt;/strong&gt; Redundant writes are eliminated, and &amp;ldquo;lazy writes&amp;rdquo; are introduced to smooth out traffic spikes.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Rate Limiting:&lt;/strong&gt; Strict limits are enforced during background tasks, such as backfilling table fields, to prevent excessive write pressure.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;hr&gt;&#xA;&lt;h2 id=&#34;optimization--best-practices&#34;&gt;Optimization &amp;amp; Best Practices&lt;/h2&gt;&#xA;&lt;h3 id=&#34;query-optimization&#34;&gt;Query Optimization&lt;/h3&gt;&#xA;&lt;p&gt;Avoid &amp;ldquo;OLTP anti-patterns&amp;rdquo; that can degrade services:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Simplify Joins:&lt;/strong&gt; A query joining 12 tables (as seen in some historical ChatGPT SEVs) can crash a service during a spike. Move complex join logic to the application layer.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;ORM Awareness:&lt;/strong&gt; Object-Relational Mapping tools can generate inefficient SQL; always review the output.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Timeout Management:&lt;/strong&gt; Configure &lt;code&gt;idle_in_transaction_session_timeout&lt;/code&gt; to prevent idle queries from blocking critical processes like autovacuum.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h3 id=&#34;cross-shard-penalties&#34;&gt;Cross-Shard Penalties&lt;/h3&gt;&#xA;&lt;p&gt;Queries spanning multiple shards add excessive network and CPU overhead. Aim for single-shard queries whenever possible. Additionally, avoid shard keys that change frequently, as moving rows between shards to maintain strategy integrity is expensive.&lt;/p&gt;&#xA;&lt;h2 id=&#34;infrastructure--latency&#34;&gt;Infrastructure &amp;amp; Latency&lt;/h2&gt;&#xA;&lt;p&gt;Adding a proxy introduces a network hop, typically adding ~1ms of latency.&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Server Proximity:&lt;/strong&gt; If proxies and shards are in the same data center, this latency is negligible.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Proven Success:&lt;/strong&gt; Slack uses Vitess to manage massive sharded clusters with an average query latency of just &lt;strong&gt;2ms&lt;/strong&gt;.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;high-availability&#34;&gt;High Availability&lt;/h2&gt;&#xA;&lt;p&gt;Replicas aren&amp;rsquo;t just for reads; they are your safety net. If a primary fails, traffic can be instantly failed over to a replica, preventing hours of downtime.&lt;/p&gt;&#xA;</description>
+    </item>
+    <item>
+      <title>Storage and Retrival</title>
+      <link>//localhost:1313/blog/storage-and-retrival/</link>
+      <pubDate>Wed, 25 Feb 2026 23:32:36 +0530</pubDate>
+      <guid>//localhost:1313/blog/storage-and-retrival/</guid>
+      <description>&lt;p&gt;In particular, there is a big difference between storage engines that are optimized for&#xA;transactional workloads and those that are optimized for analytics.&lt;/p&gt;&#xA;&lt;p&gt;An index is an additional structure that is derived from the primary data. Many data‐&#xA;bases allow you to add and remove indexes, and this doesn’t affect the contents of the&#xA;database; it only affects the performance of queries. Maintaining additional structures&#xA;incurs overhead, especially on writes. For writes, it’s hard to beat the performance of&#xA;simply appending to a file, because that’s the simplest possible write operation. Any&#xA;kind of index usually slows down writes, because the index also needs to be updated&#xA;every time data is written.&lt;/p&gt;&#xA;&lt;h2 id=&#34;hash-index&#34;&gt;Hash Index&lt;/h2&gt;&#xA;&lt;p&gt;Let’s say our data storage consists only of appending to a file, as in the preceding&#xA;example. Then the simplest possible indexing strategy is this: keep an in-memory&#xA;hash map where every key is mapped to a byte offset in the data file—the location at&#xA;which the value can be found, as illustrated in Figure 3-1. Whenever you append a&#xA;new key-value pair to the file, you also update the hash map to reflect the offset of the&#xA;data you just wrote (this works both for inserting new keys and for updating existing&#xA;keys). When you want to look up a value, use the hash map to find the offset in the&#xA;data file, seek to that location, and read the value.&#xA;This may sound simplistic, but it is a viable approach. In fact, this is essentially what&#xA;Bitcask (the default storage engine in Riak) does [3]. Bitcask offers high-performance&#xA;reads and writes, subject to the requirement that all the keys fit in the available RAM,&#xA;since the hash map is kept completely in memory. The values can use more space&#xA;than there is available memory, since they can be loaded from disk with just one disk&#xA;seek. If that part of the data file is already in the filesystem cache, a read doesn’t&#xA;require any disk I/O at all.&#xA;A storage engine like Bitcask is well suited to situations where the value for each key&#xA;is updated frequently. For example, the key might be the URL of a cat video, and the&#xA;value might be the number of times it has been played (incremented every time&#xA;someone hits the play button). In this kind of workload, there are a lot of writes, but&#xA;there are not too many distinct keys—you have a large number of writes per key, but&#xA;it’s feasible to keep all keys in memory.&#xA;Moreover, since compaction often makes segments much smaller (assuming that a&#xA;key is overwritten several times on average within one segment), we can also merge&#xA;several segments together at the same time as performing the compaction, as shown&#xA;in Figure 3-3. Segments are never modified after they have been written, so the&#xA;merged segment is written to a new file. The merging and compaction of frozen seg‐&#xA;ments can be done in a background thread, and while it is going on, we can still con‐&#xA;tinue to serve read and write requests as normal, using the old segment files. After the&#xA;merging process is complete, we switch read requests to using the new merged seg‐&#xA;ment instead of the old segments—and then the old segment files can simply be&#xA;deleted.&lt;/p&gt;&#xA;&lt;p&gt;Each segment now has its own in-memory hash table, mapping keys to file offsets. In&#xA;order to find the value for a key, we first check the most recent segment’s hash map;&#xA;if the key is not present we check the second-most-recent segment, and so on. The&#xA;merging process keeps the number of segments small, so lookups don’t need to check&#xA;many hash maps.&#xA;Lots of detail goes into making this simple idea work in practice. Briefly, some of the&#xA;issues that are important in a real implementation are:&lt;/p&gt;&#xA;&lt;p&gt;The hash table must fit in memory, so if you have a very large number of keys,&#xA;you’re out of luck. In principle, you could maintain a hash map on disk, but&#xA;unfortunately it is difficult to make an on-disk hash map perform well. It&#xA;requires a lot of random access I/O, it is expensive to grow when it becomes full,&#xA;and hash collisions require fiddly logic [5].&#xA;• Range queries are not efficient. For example, you cannot easily scan over all keys&#xA;between kitty00000 and kitty99999—you’d have to look up each key individu‐&#xA;ally in the hash maps.&lt;/p&gt;&#xA;</description>
+    </item>
+    <item>
+      <title>Ai agents Notes</title>
+      <link>//localhost:1313/blog/ai-agents-notes/</link>
+      <pubDate>Tue, 10 Feb 2026 21:24:16 +0530</pubDate>
+      <guid>//localhost:1313/blog/ai-agents-notes/</guid>
+      <description>&lt;h1 id=&#34;worlflow&#34;&gt;Worlflow&lt;/h1&gt;&#xA;&lt;p&gt;Prompt chaining decomposes a task into a sequence of steps, where each LLM call processes the output of the previous one. You can add programmatic checks  on any intermediate steps to ensure that the process is still on track.&lt;/p&gt;&#xA;&lt;p&gt;When to use this workflow: This workflow is ideal for situations where the task can be easily and cleanly decomposed into fixed subtasks. The main goal is to trade off latency for higher accuracy, by making each LLM call an easier task.&lt;/p&gt;&#xA;&lt;p&gt;Prompt chaining decomposes a task into a sequence of steps, where each LLM call processes the output of the previous one. You can add programmatic checks (see &amp;ldquo;gate” in the diagram below) on any intermediate steps to ensure that the process is still on track.&lt;/p&gt;&#xA;&lt;p&gt;Routing classifies an input and directs it to a specialized followup task. This workflow allows for separation of concerns, and building more specialized prompts. Without this workflow, optimizing for one kind of input can hurt performance on other inputs.&lt;/p&gt;&#xA;&lt;p&gt;When to use this workflow: Routing works well for complex tasks where there are distinct categories that are better handled separately, and where classification can be handled accurately, either by an LLM or a more traditional classification model/algorithm.&lt;/p&gt;&#xA;&lt;p&gt;LLMs can sometimes work simultaneously on a task and have their outputs aggregated programmatically. This workflow, parallelization, manifests in two key variations:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Sectioning: Breaking a task into independent subtasks run in parallel.&lt;/li&gt;&#xA;&lt;li&gt;Voting: Running the same task multiple times to get diverse outputs.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;When to use this workflow: Parallelization is effective when the divided subtasks can be parallelized for speed, or when multiple perspectives or attempts are needed for higher confidence results. For complex tasks with multiple considerations, LLMs generally perform better when each consideration is handled by a separate LLM call, allowing focused attention on each specific aspect.&lt;/p&gt;&#xA;&lt;p&gt;In the orchestrator-workers workflow, a central LLM dynamically breaks down tasks, delegates them to worker LLMs, and synthesizes their results.When to use this workflow: This workflow is well-suited for complex tasks where you can’t predict the subtasks needed (in coding, for example, the number of files that need to be changed and the nature of the change in each file likely depend on the task). Whereas it’s topographically similar, the key difference from parallelization is its flexibility—subtasks aren&amp;rsquo;t pre-defined, but determined by the orchestrator based on the specific input.&lt;/p&gt;&#xA;&lt;p&gt;In the evaluator-optimizer workflow, one LLM call generates a response while another provides evaluation and feedback in a loop.&#xA;When to use this workflow: This workflow is particularly effective when we have clear evaluation criteria, and when iterative refinement provides measurable value. The two signs of good fit are, first, that LLM responses can be demonstrably improved when a human articulates their feedback; and second, that the LLM can provide such feedback. This is analogous to the iterative writing process a human writer might go through when producing a polished document.&lt;/p&gt;&#xA;&lt;h1 id=&#34;text-to-sql-in-pinterest&#34;&gt;Text to SQL in Pinterest&lt;/h1&gt;&#xA;&lt;p&gt;The user asks an analytical question, choosing the tables to be used.&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;The relevant table schemas are retrieved from the table metadata store.&lt;/li&gt;&#xA;&lt;li&gt;The question, selected SQL dialect, and table schemas are compiled into a Text-to-SQL prompt.&lt;/li&gt;&#xA;&lt;li&gt;The prompt is fed into the LLM.&lt;/li&gt;&#xA;&lt;li&gt;A streaming response is generated and displayed to the user.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;The table schema acquired from the metadata store includes:&#xA;Table name&#xA;Table description&#xA;Columns&#xA;Column name&#xA;Column type&#xA;Column description&lt;/p&gt;&#xA;&lt;p&gt;Low-Cardinality Columns&lt;/p&gt;&#xA;&lt;p&gt;Certain analytical queries, such as “how many active users are on the ‘web’ platform”, may generate SQL queries that do not conform to the database’s actual values if generated naively. For example, the where clause in the response might bewhere platform=’web’ as opposed to the correct where platform=’WEB’. To address such issues, unique values of low-cardinality columns which would frequently be used for this kind of filtering are processed and incorporated into the table schema, so that the LLM can make use of this information to generate precise SQL queries.&lt;/p&gt;&#xA;&lt;p&gt;Context Window Limit&lt;/p&gt;&#xA;&lt;p&gt;Extremely large table schemas might exceed the typical context window limit. To address this problem, we employed a few techniques:&lt;/p&gt;&#xA;&lt;p&gt;Reduced version of the table schema: This includes only crucial elements such as the table name, column name, and type.&#xA;Column pruning: Columns are tagged in the metadata store, and we exclude certain ones from the table schema based on their tags.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;you are a {dialect} expert.&#xA;&#xA;Please help to generate a {dialect} query to answer the question. Your response should ONLY be based on the given context and follow the response guidelines and format instructions.&#xA;&#xA;===Tables&#xA;{table_schemas}&#xA;&#xA;===Original Query&#xA;{original_query}&#xA;&#xA;===Response Guidelines&#xA;1. If the provided context is sufficient, please generate a valid query without any explanations for the question. The query should start with a comment containing the question being asked.&#xA;2. If the provided context is insufficient, please explain why it can&amp;#39;t be generated.&#xA;3. Please use the most relevant table(s).&#xA;5. Please format the query before responding.&#xA;6. Please always respond with a valid well-formed JSON object with the following format&#xA;&#xA;===Response Format&#xA;{{&#xA;    &amp;#34;query&amp;#34;: &amp;#34;A generated SQL query when context is sufficient.&amp;#34;,&#xA;    &amp;#34;explanation&amp;#34;: &amp;#34;An explanation of failing to generate the query.&amp;#34;&#xA;}}&#xA;&#xA;===Question&#xA;{question}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;spider dataset : &lt;a href=&#34;https://arxiv.org/pdf/2204.00498&#34;&gt;https://arxiv.org/pdf/2204.00498&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;An offline job is employed to generate a vector index of tables’ summaries and historical queries against them.&#xA;If the user does not specify any tables, their question is transformed into embeddings, and a similarity search is conducted against the vector index to infer the top N suitable tables.&#xA;The top N tables, along with the table schema and analytical question, are compiled into a prompt for LLM to select the top K most relevant tables.&#xA;The top K tables are returned to the user for validation or alteration.&#xA;The standard Text-to-SQL process is resumed with the user-confirmed tables.&lt;/p&gt;&#xA;&lt;p&gt;Offline Vector Index Creation&lt;/p&gt;&#xA;&lt;p&gt;Table Summarization&#xA;There is an ongoing table standardization effort at Pinterest to add tiering for the tables. We index only top-tier tables, promoting the use of these higher-quality datasets. The table summarization generation process involves the following steps:&lt;/p&gt;&#xA;&lt;p&gt;Retrieve the table schema from the table metadata store.&#xA;Gather the most recent sample queries utilizing the table.&#xA;Based on the context window, incorporate as many sample queries as possible into the table summarization prompt, along with the table schema.&#xA;Forward the prompt to the LLM to create the summary.&#xA;Generate and store embeddings in the vector store.&#xA;The table summary includes description of the table, the data it contains, as well as potential use scenarios. Here is the current prompt we are using for table summarization:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;prompt_template = &amp;#34;&amp;#34;&amp;#34;&#xA;You are a data analyst that can help summarize SQL tables.&#xA;&#xA;Summarize below table by the given context.&#xA;&#xA;===Table Schema&#xA;{table_schema}&#xA;&#xA;===Sample Queries&#xA;{sample_queries}&#xA;&#xA;===Response guideline&#xA; - You shall write the summary based only on provided information.&#xA; - Note that above sampled queries are only small sample of queries and thus not all possible use of tables are represented, and only some columns in the table are used.&#xA; - Do not use any adjective to describe the table. For example, the importance of the table, its comprehensiveness or if it is crucial, or who may be using it. For example, you can say that a table contains certain types of data, but you cannot say that the table contains a &amp;#39;wealth&amp;#39; of data, or that it is &amp;#39;comprehensive&amp;#39;.&#xA; - Do not mention about the sampled query. Only talk objectively about the type of data the table contains and its possible utilities.&#xA; - Please also include some potential usecases of the table, e.g. what kind of questions can be answered by the table, what kind of analysis can be done by the table, etc.&#xA;&amp;#34;&amp;#34;&amp;#34;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Query Summarization&#xA;Besides their role in table summarization, sample queries associated with each table are also summarized individually, including details such as the query’s purpose and utilized tables. Here is the prompt we are using:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;prompt_template = &amp;#34;&amp;#34;&amp;#34;&#xA;You are a helpful assistant that can help document SQL queries.&#xA;&#xA;Please document below SQL query by the given table schemas.&#xA;&#xA;===SQL Query&#xA;{query}&#xA;&#xA;===Table Schemas&#xA;{table_schemas}&#xA;&#xA;===Response Guidelines&#xA;Please provide the following list of descriptions for the query:&#xA;-The selected columns and their description&#xA;-The input tables of the query and the join pattern&#xA;-Query&amp;#39;s detailed transformation logic in plain english, and why these transformation are necessary&#xA;-The type of filters performed by the query, and why these filters are necessary&#xA;-Write very detailed purposes and motives of the query in detail&#xA;-Write possible business and functional purposes of the query&#xA;&amp;#34;&amp;#34;&amp;#34;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;NLP Table Search&#xA;When a user asks an analytical question, we convert it into embeddings using the same embedding model. Then we conduct a search against both table and query vector indices. We’re using OpenSearch as the vector store and using its built in similarity search ability.&lt;/p&gt;&#xA;&lt;p&gt;Considering that multiple tables can be associated with a query, a single table could appear multiple times in the similarity search results. Currently, we utilize a simplified strategy to aggregate and score them. Table summaries carry more weight than query summaries, a scoring strategy that could be adjusted in the future.&lt;/p&gt;&#xA;&lt;p&gt;Other than being used in the Text-to-SQL, this NLP-based table search is also used in the general table search in Querybook.&lt;/p&gt;&#xA;&lt;h1 id=&#34;rag&#34;&gt;RAG&lt;/h1&gt;&#xA;</description>
+    </item>
+    <item>
+      <title>Docker &amp; kubernetes </title>
+      <link>//localhost:1313/blog/docker-kubernetes/</link>
+      <pubDate>Fri, 14 Nov 2025 12:38:31 +0530</pubDate>
+      <guid>//localhost:1313/blog/docker-kubernetes/</guid>
+      <description>&lt;h1 id=&#34;docker&#34;&gt;Docker&lt;/h1&gt;&#xA;&lt;p&gt;Open Source&lt;/p&gt;&#xA;</description>
+    </item>
+    <item>
+      <title>Go Lang</title>
+      <link>//localhost:1313/blog/go-lang/</link>
+      <pubDate>Sun, 10 Aug 2025 15:24:40 +0530</pubDate>
+      <guid>//localhost:1313/blog/go-lang/</guid>
+      <description>&lt;h1 id=&#34;interface&#34;&gt;Interface&lt;/h1&gt;&#xA;&lt;p&gt;An interface type in Go is kind of like a definition. It defines and describes the exact methods that some other type must have.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;type Stringer interface {&#xA;    String() string&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;We say that something satisfies this interface (or implements this interface) if it has a method with the exact signature String() string.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;type Book struct {&#xA;    Title  string&#xA;    Author string&#xA;}&#xA;&#xA;func (b Book) String() string {&#xA;    return fmt.Sprintf(&amp;#34;Book: %s - %s&amp;#34;, b.Title, b.Author)&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Wherever you see declaration in Go (such as a variable, function parameter or struct field) which has an interface type, you can use an object of any type so long as it satisfies the interface.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;func WriteLog(s fmt.Stringer) {&#xA;    log.Print(s.String())&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Because this WriteLog() function uses the fmt.Stringer interface type in its parameter declaration, we can pass in any object that satisfies the fmt.Stringer interface.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;package main&#xA;&#xA;import (&#xA;    &amp;#34;fmt&amp;#34;&#xA;    &amp;#34;strconv&amp;#34;&#xA;    &amp;#34;log&amp;#34;&#xA;)&#xA;&#xA;// Declare a Book type which satisfies the fmt.Stringer interface.&#xA;type Book struct {&#xA;    Title  string&#xA;    Author string&#xA;}&#xA;&#xA;func (b Book) String() string {&#xA;    return fmt.Sprintf(&amp;#34;Book: %s - %s&amp;#34;, b.Title, b.Author)&#xA;}&#xA;&#xA;// Declare a Count type which satisfies the fmt.Stringer interface.&#xA;type Count int&#xA;&#xA;func (c Count) String() string {&#xA;    return strconv.Itoa(int(c))&#xA;}&#xA;&#xA;// Declare a WriteLog() function which takes any object that satisfies&#xA;// the fmt.Stringer interface as a parameter.&#xA;func WriteLog(s fmt.Stringer) {&#xA;    log.Print(s.String())&#xA;}&#xA;&#xA;func main() {&#xA;    // Initialize a Count object and pass it to WriteLog().&#xA;    book := Book{&amp;#34;Alice in Wonderland&amp;#34;, &amp;#34;Lewis Carrol&amp;#34;}&#xA;    WriteLog(book)&#xA;&#xA;    // Initialize a Count object and pass it to WriteLog().&#xA;    count := Count(3)&#xA;    WriteLog(count)&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;output:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;2009/11/10 23:00:00 Book: Alice in Wonderland - Lewis Carrol&#xA;2009/11/10 23:00:00 3&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Advantage&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;To help reduce duplication or boilerplate code.&lt;/li&gt;&#xA;&lt;li&gt;To make it easier to use mocks instead of real objects in unit tests.&lt;/li&gt;&#xA;&lt;li&gt;As an architectural tool, to help enforce decoupling between parts of your codebase.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;the empty interface type interface{} is kind of like a wildcard. Wherever you see it in a declaration (such as a variable, function parameter or struct field) you can use an object of any type.&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;package main&#xA;&#xA;import &amp;#34;fmt&amp;#34;&#xA;&#xA;&#xA;func main() {&#xA;    person := make(map[string]interface{}, 0)&#xA;&#xA;    person[&amp;#34;name&amp;#34;] = &amp;#34;Alice&amp;#34;&#xA;    person[&amp;#34;age&amp;#34;] = 21&#xA;    person[&amp;#34;height&amp;#34;] = 167.64&#xA;&#xA;    fmt.Printf(&amp;#34;%+v&amp;#34;, person)&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;error-handling&#34;&gt;Error Handling&lt;/h1&gt;&#xA;&lt;p&gt;The error type is an interface type. An error variable represents any value that can describe itself as a string. Here is the interface’s declaration:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;type error interface {&#xA;    Error() string&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    <item>
+      <title>Book club Building Microservices DESIGNING FINE-GRAINED SYSTEMS</title>
+      <link>//localhost:1313/blog/book-club-building-microservices-designing-fine-grained-systems/</link>
+      <pubDate>Sun, 03 Aug 2025 23:07:41 +0530</pubDate>
+      <guid>//localhost:1313/blog/book-club-building-microservices-designing-fine-grained-systems/</guid>
+      <description>&lt;h3 id=&#34;announcing-our-new-book-club&#34;&gt;Announcing Our New Book Club!&lt;/h3&gt;&#xA;&lt;p&gt;We are excited to launch a new book club dedicated to continuous learning and professional growth.&lt;/p&gt;&#xA;&lt;h4 id=&#34;our-mission&#34;&gt;Our Mission&lt;/h4&gt;&#xA;&lt;p&gt;Our primary goals for this book club are:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;To Learn New Things:&lt;/strong&gt; We aim to explore new concepts and technologies together, fostering a collaborative learning environment.&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;To Build Consistency:&lt;/strong&gt; By meeting regularly, we can create a consistent habit of reading, learning, and sharing knowledge.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h4 id=&#34;how-it-works&#34;&gt;How It Works&lt;/h4&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Weekly Virtual Meetings:&lt;/strong&gt; We will host a weekly meeting on Google Meet/Zoom to discuss the designated chapter.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;building-microservices-designing-fine-grained-systems&#34;&gt;Building Microservices DESIGNING FINE-GRAINED SYSTEMS&lt;/h2&gt;&#xA;&lt;table&gt;&#xA;  &lt;thead&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;th style=&#34;text-align: left&#34;&gt;Week Number&lt;/th&gt;&#xA;          &lt;th style=&#34;text-align: left&#34;&gt;Chapter Name&lt;/th&gt;&#xA;          &lt;th style=&#34;text-align: left&#34;&gt;Links&lt;/th&gt;&#xA;      &lt;/tr&gt;&#xA;  &lt;/thead&gt;&#xA;  &lt;tbody&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Week 1&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Chapter 1 - Microservices&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Week 2&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Chapter 2 - The Evolutionary Architect&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Week 3&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Chapter 3 - How to Model Services&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Week 4&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Chapter 4 - Integration&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Week 5&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Chapter 5 - Splitting the Monolith&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Week 6&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Chapter 6 - Deployment&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Week 7&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Chapter 7 - Testing&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Week 8&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Chapter 8 - Monitoring&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Week 9&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Chapter 9 - Security&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Week 10&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Chapter 10 - Conway’s Law and System Design&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Week 11&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Chapter 11 - Microservices at Scale&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Week 12&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;Chapter 12 - Bringing It All Together&lt;/td&gt;&#xA;          &lt;td style=&#34;text-align: left&#34;&gt;&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;  &lt;/tbody&gt;&#xA;&lt;/table&gt;&#xA;</description>
+    </item>
+    <item>
+      <title>Mapper Reducer</title>
+      <link>//localhost:1313/blog/mapper-reducer/</link>
+      <pubDate>Wed, 30 Jul 2025 22:28:21 +0530</pubDate>
+      <guid>//localhost:1313/blog/mapper-reducer/</guid>
+      <description>&lt;h1 id=&#34;map-reduce&#34;&gt;Map Reduce&lt;/h1&gt;&#xA;&lt;h3 id=&#34;problem-faced-by-google&#34;&gt;Problem faced by google:&lt;/h3&gt;&#xA;&lt;p&gt;Large Data like crawled pages over WWW. They need to do some analysis over this data. It&amp;rsquo;s really not possible to store all this data in one system and to analyse this data serially wil take a lots of time. So they created MapReduce&#xA;Issue:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;parallelize Computation&lt;/li&gt;&#xA;&lt;li&gt;distribute the data&lt;/li&gt;&#xA;&lt;li&gt;handle failure cases&lt;/li&gt;&#xA;&lt;li&gt;load balancing&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h3 id=&#34;programming-model&#34;&gt;Programming Model&lt;/h3&gt;&#xA;&lt;p&gt;For example in large database we are trying to calculate number of occurrence of each words&#xA;Map:&#xA;receive a document&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;map(String key, String value):&#xA;&#x9;// key: document name&#xA;&#x9;// value: document contents&#xA;&#x9;for each word w in value:&#xA;&#x9;&#x9;EmitIntermediate(w, &amp;#34;1&amp;#34;);&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Reduce:&#xA;will receive intermediate values&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;reduce(String key, Iterator values):&#xA;&#x9;// key: a word&#xA;&#x9;// values: a list of counts&#xA;&#x9;int result = 0;&#xA;&#x9;for each v in values:&#xA;&#x9;&#x9;result += ParseInt(v);&#xA;&#x9;Emit(AsString(result));&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Mapper produce&#xA;(the,1)&#xA;(map,1)&#xA;(function,1)&#xA;Reducer receive&#xA;(&amp;ldquo;the&amp;rdquo;,{1,1,1,1,2,3,})&#xA;Reducer produce&#xA;(&amp;ldquo;the&amp;rdquo;,9)&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;map (k1,v1) → list(k2,v2)&#xA;&#xA;reduce (k2,list(v2)) → list(v2)&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;implementation&#34;&gt;Implementation&lt;/h3&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;We Split the data into M split. Input split is processed in parallel  by different machine.&lt;/li&gt;&#xA;&lt;li&gt;We split intermediate value into R split using partitioning function specified by user. ex (hash(value)%R).&#xA;Steps&lt;/li&gt;&#xA;&lt;li&gt;The MapReduce library in the user program first splits the input files into M pieces of typically 16 megabytes to 64 megabytes (MB) per piece (controllable by the user via an optional parameter). It then starts up many copies of the program on a cluster of machines.&lt;/li&gt;&#xA;&lt;li&gt;One of the copies of the program is special – the master. The rest are workers that are assigned work by the master. There are M map tasks and R reduce tasks to assign. The master picks idle workers and assigns each one a map task or a reduce task.&lt;/li&gt;&#xA;&lt;li&gt;A worker who is assigned a map task reads the contents of the corresponding input split. It parses key/value pairs out of the input data and passes each pair to the user-defined Map function. The intermediate key/value pairs produced by the Map function are buffered in memory&lt;/li&gt;&#xA;&lt;li&gt;Periodically, the buffered pairs are written to local disk, partitioned into R regions by the partitioning function. The locations of these buffered pairs on the local disk are passed back to the master, who is responsible for forwarding these locations to the reduce workers.&lt;/li&gt;&#xA;&lt;li&gt;When a reduce worker is notified by the master about these locations, it uses remote procedure calls to read the buffered data from the local disks of themap workers. When a reduce worker has read all intermediate data, it sorts it by the intermediate keysso that all occurrences of the same key are grouped together. The sorting is needed because typically many different keys map to the same reduce task. If the amount of intermediate data is too large to fit in memory, an external sort is used&lt;/li&gt;&#xA;&lt;li&gt;The reduce worker iterates over the sorted intermediate data and for each unique intermediate key encountered, it passes the key and the corresponding set of intermediate values to the user’s Reduce function. The output of the Reduce function is appended to a final output file for this reduce partition.&lt;/li&gt;&#xA;&lt;li&gt;When all map tasks and reduce tasks have been completed, the master wakes up the user program. At this point, the MapReduce call in the user program returns back to the user code.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;for each completed map task,the master stores the locations and sizes of the R intermediate file regions produced by the map task. Updates to this location and size information are received as map tasks are completed. The information is pushed incrementally to workers that have in-progress reduce tasks.&lt;/p&gt;&#xA;&lt;h3 id=&#34;fault-tolerance&#34;&gt;Fault Tolerance&lt;/h3&gt;&#xA;&lt;p&gt;Master pings every machine time to time if they failed to response in time then master make the task assigned to that system as failure and reschedule that task to some other worker.&#xA;Completed map task is reschedule on failure cuz intermediate data is stored in local disk but completed reduce task in not reschedule on failure cuz output is stored in global disk.&lt;/p&gt;&#xA;&lt;p&gt;It is easy to make the master write periodic checkpoints of the master data structures described above. If the master task dies, a new copy can be started from the last checkpointed state. However, given that there is only a single master, its failure is unlikely; therefore our current implementation aborts the MapReduce computation if the master fails. Clients can check for this condition and retry the MapReduce operation if they desire.&#xA;Reduce produce 1 output file&#xA;Mapper produce R output file&#xA;When a map task completes, the worker sends a message to the master and includes the names of the R temporary files in the message.&#xA;When a reduce task completes, the reduce worker atomically renames its temporary output file to the final output file. If the same reduce task is executed on multiple machines, multiple rename calls will be executed for the same final output file.&lt;/p&gt;&#xA;&lt;p&gt;We split mapper phase into M split and reduce phase in R split ideally (M&amp;amp;R ) should be much larger than number of worker.&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Having each worker perform many different tasks improves dynamic load balancing&lt;/li&gt;&#xA;&lt;li&gt;speeds up recovery when a worker fails&#xA;we tend to choose M so that each individual task is roughly 16 MB to 64 MB of input data (so that the locality optimization described above is most effective)&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;One of the common causes that lengthens the total time taken for a MapReduce operation is a “straggler”: a machine that takes an unusually long time to complete one of the last few map or reduce tasks in the computation.&#xA;When MapReduce operation is close to completion master assign in progress task to backup machines.he task is marked as completed whenever either the primary or the backup execution completes.&lt;/p&gt;&#xA;</description>
+    </item>
+    <item>
+      <title>About LLM part 1 </title>
+      <link>//localhost:1313/blog/about-llm-part-1/</link>
+      <pubDate>Thu, 26 Jun 2025 16:53:53 +0530</pubDate>
+      <guid>//localhost:1313/blog/about-llm-part-1/</guid>
+      <description>&lt;h1 id=&#34;root-mean-square-layer-normalization&#34;&gt;Root Mean Square Layer Normalization&lt;/h1&gt;&#xA;&lt;p&gt;Layer normalization (LayerNorm) has been successfully applied to various deep neural networks to help stabilize training and boost model convergence because of its capability in handling re-centering and re-scaling of both inputs and weight matrix. However, the computational overhead introduced by LayerNorm makes these improvements expensive and significantly slows the underlying network.&#xA;LayerNorm was widely accepted because it&amp;rsquo;s simplicity and no dependence  among training cases and it also handle variable length inputs unlike BatchNorm.&#xA;Unfortunately, the incorporation of LayerNorm raises computational overhead. Although this is negligible to small and shallow neural models with few normalization layers, this problem becomes severe when underlying networks grow larger and deeper. As a result, the efficiency gain from faster and more stable training (in terms of number of training steps) is counter-balanced by an  increased computational cost per training step, which diminishes the net efficiency.&#xA;One major feature of LayerNorm that is widely regarded as contributions to the stabilization is its  recentering invariance property.&lt;/p&gt;&#xA;&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;//localhost:1313/rmsnorm_1.png&#34;&gt;&#xA;&lt;/figure&gt;&#xA;&#xA;RMSNorm which only focuses on re-scaling invariance and regularizes the summed inputs simply according to the root mean square (RMS) statistic&#xA;RMS Norm Equation&#xA;$$&#xA;\mathrm{RMS} = \sqrt{\frac{1}{n} \sum_{i=1}^{n} x_i^2}&#xA;$$&lt;/p&gt;&#xA;&lt;p&gt;A well-known explanation of the success of LayerNorm is its re-centering and re-scaling invariance&#xA;property. The former enables the model to be insensitive to shift noises on both inputs and weights,&#xA;and the latter keeps the output representations intact when both inputs and weights are randomly&#xA;scaled&lt;/p&gt;&#xA;&lt;h1 id=&#34;positional-encoding&#34;&gt;Positional Encoding&lt;/h1&gt;&#xA;&lt;p&gt;Desirable Properties&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Each position needs a unique encoding that remains consistent regardless of sequence length&lt;/li&gt;&#xA;&lt;li&gt;The relationship between positions should be mathematically simple. If we know the encoding for position p, it should be straightforward to compute the encoding for position p+k, making it easier for the model to learn positional patterns.&lt;/li&gt;&#xA;&lt;li&gt;It would be ideal if our positional encodings could be drawn from a deterministic process. This should allow the model to learn the mechanism behind our encoding scheme efficiently.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Drawbacks of absolute positonal encoding&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Don&amp;rsquo;t capture relative position between tokens&lt;/li&gt;&#xA;&lt;li&gt;While absolute positional encoding captures the positional information for a word, it does not capture the positional information for the entire sentence&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Rotary Positional Encoding is a type of position encoding that encodes absolute positional information with a rotation matrix and naturally incorporates explicit relative position dependency in self-attention formulation&lt;/p&gt;&#xA;&lt;p&gt;we&amp;rsquo;ve generated a separate positional encoding vector and added it to our token embedding prior to our Q, K and V projections. By adding the positional information directly to our token embedding, we are polluting the semantic information with the positional information.&#xA;$$&#xA;R(m\theta) =&#xA;\begin{bmatrix}&#xA;\cos(m\theta) &amp;amp; -\sin(m\theta) \&#xA;\sin(m\theta) &amp;amp; \cos(m\theta)&#xA;\end{bmatrix}&#xA;$$&#xA;&lt;figure&gt;&lt;img src=&#34;//localhost:1313/rope_2.png&#34;&gt;&#xA;&lt;/figure&gt;&#xA;&#xA;The challenge with this solution was that it works only for 2D. Hence, the authors came up with a solution that takes token pairs. This is why ROPE embeddings require dimensions of even length.&lt;/p&gt;&#xA;&lt;figure&gt;&lt;img src=&#34;//localhost:1313/rope_1.png&#34;&gt;&#xA;&lt;/figure&gt;&#xA;&#xA;&lt;h1 id=&#34;kv-caching&#34;&gt;KV Caching&lt;/h1&gt;&#xA;&lt;p&gt;&lt;figure&gt;&lt;img src=&#34;//localhost:1313/kv_1.png&#34;&gt;&#xA;&lt;/figure&gt;&#xA;&#xA;When we implement an LLM text generation function, we typically only use the last generated token from each step. However, the visualization above highlights one of the main inefficiencies on a conceptual level. This inefficiency (or redundancy) becomes more clear if we zoom in on the attention mechanism itself.&#xA;&lt;figure&gt;&lt;img src=&#34;//localhost:1313/kv_2.png&#34;&gt;&#xA;&lt;/figure&gt;&#xA;&#xA;LLMs generate one word (or token) at a time. Suppose the LLM generated the word “fast” so that the prompt for the next round becomes “Time flies fast”. This is illustrated in the next figure below:&#xA;As we can see, based on comparing the previous 2 figures, the keys and value vectors for the first two tokens are exactly the same, and it would be wasteful to recompute them in each next-token text generation round.&lt;/p&gt;&#xA;&lt;p&gt;Now, the idea of the KV cache is to implement a caching mechanism that stores the previously generated key and value vectors for reuse, which helps us to avoid these unnecessary recomputations.&lt;/p&gt;&#xA;&lt;p&gt;Notice the redundancy: tokens “Time” and “flies” are recomputed at every new generation step. The KV cache resolves this inefficiency by storing and reusing previously computed key and value vectors:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Initially, the model computes and caches key and value vectors for the input tokens.&lt;/li&gt;&#xA;&lt;li&gt;For each new token generated, the model only computes key and value vectors for that specific token.&lt;/li&gt;&#xA;&lt;li&gt;Previously computed vectors are retrieved from the cache to avoid redundant computations.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;figure&gt;&lt;img src=&#34;//localhost:1313/kv_3.png&#34;&gt;&#xA;&lt;/figure&gt;&#xA;&#xA;&lt;p&gt;As sequence length increases, the benefits and downsides of a KV cache become more pronounced in the following ways:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;[Good] Computational efficiency increases: Without caching, the attention at step t must compare the new query with t previous keys, so the cumulative work scales quadratically, O(n²). With a cache, each key and value is computed once and then reused, reducing the total per-step complexity to linear, O(n).&lt;/li&gt;&#xA;&lt;li&gt;[Bad] Memory usage increases linearly: Each new token appends to the KV cache. For long sequences and larger LLMs, the cumulative KV cache grows larger, which can consume a significant or even prohibitive amount of (GPU) memory. As a workaround, we can truncate the KV cache, but this adds even more complexity (but again, it may well be worth it when deploying LLMs.)&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h1 id=&#34;grouped-query-attention&#34;&gt;Grouped Query Attention&lt;/h1&gt;&#xA;&lt;p&gt;Grouped-query attention (GQA) is a simple approach that blends elements of multi-head attention (MHA) and multi-query attention (MQA) to create a more efficient attention mechanism. The mathematical framework of GQA can be understood as follows:&lt;/p&gt;&#xA;&lt;p&gt;Division into Groups: In GQA, the query heads (Q) from a traditional multi-head model are divided into G groups. Each group is assigned a single key (K) and value (V) head. This configuration is denoted as GQA-G, where G represents the number of groups.&#xA;We mean-pool the key and value projection matrices of the original heads within each group to convert a multi-head model into a GQA model. This technique averages the projection matrices of each head in a group, resulting in a single key and value projection for that group.&lt;/p&gt;&#xA;&lt;p&gt;By utilizing GQA, the model maintains a balance between MHA quality and MQA speed. Because there are fewer key-value pairs, memory bandwidth and data loading needs are minimized. The choice of G presents a trade-off: more groups (closer to MHA) result in higher quality but slower performance, whereas fewer groups (near to MQA) boost speed at the risk of sacrificing quality. Furthermore, as the model size grows, GQA allows for a proportional decrease in memory bandwidth and model capacity, corresponding with the model’s scale. In contrast, for bigger models, the reduction to a single key and value head can be unduly severe in MQA.&#xA;&lt;figure&gt;&lt;img src=&#34;//localhost:1313/kv_4.png&#34;&gt;&#xA;&lt;/figure&gt;&#xA;&lt;/p&gt;&#xA;</description>
+    </item>
+    <item>
+      <title>Training_LLM</title>
+      <link>//localhost:1313/blog/training_llm/</link>
+      <pubDate>Fri, 23 May 2025 15:12:55 +0530</pubDate>
+      <guid>//localhost:1313/blog/training_llm/</guid>
+      <description>&lt;h1 id=&#34;training-on-one-gpu&#34;&gt;Training on One GPU&lt;/h1&gt;&#xA;&lt;p&gt;when a model trained, there are 3 phases&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;A forward pass, which passes inputs through the model to yield its outputs&lt;/li&gt;&#xA;&lt;li&gt;A backward pass to compute the gradients&lt;/li&gt;&#xA;&lt;li&gt;An optimization step using the gradients to update the parameters&#xA;The batch size (bs) is one of the important hyperparameters for model training; it affects both model convergence and throughput.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;A small batch size can be useful early in training to quickly move through the training landscape to reach an optimal learning point. However, further along in the model training, small batch sizes will keep gradients noisy, and the model may not be able to converge to the most optimal final performance. At the other extreme, a large batch size, while giving very accurate gradient estimations, will tend to make less use of each training token, rendering convergence slower and potentially wasting compute resources.&lt;/p&gt;&#xA;&lt;p&gt;Batch size also affects the time it takes to train on a given text dataset: a small batch size will require more optimizer steps to train on the same amount of samples. Optimizer steps are costly (in compute time), and the total time to train will thus increase compared to using a larger batch size. That being said, note that the batch size can often be adjusted quite widely around the optimal batch size without major impact on the performance of the model - that is, the sensitivity of final model performance to the exact batch size value is usually rather low around the optimal batch size.&#xA;In the LLM pretraining community, batch sizes are commonly reported in terms of tokens rather than number of samples&#xA;bst = batch size tokens&#xA;bs = batch size&#xA;seq = model input sequence length&#xA;bst = bs * seq&#xA;Llama 1 was trained with a batch size of ~4M tokens for 1.4 trillion tokens, while DeepSeek was trained with a batch size of ~60M tokens for 14 trillion tokens.&lt;/p&gt;&#xA;&lt;p&gt;we couldn&amp;rsquo;t calculate exact memory usage by a model cuz&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;CUDA kernels typically require 1-2 GB of GPU memory&lt;/li&gt;&#xA;&lt;li&gt;Some memory is used for buffers and intermediate results, and there&amp;rsquo;s some memory that can&amp;rsquo;t be used due to fragmentation.&#xA;We could face out-of-memory (OOM) issues when training this large models but why?&#xA;When training a neural network model, we store several items in memory:&lt;/li&gt;&#xA;&lt;li&gt;Model weights&lt;/li&gt;&#xA;&lt;li&gt;Model gradients&lt;/li&gt;&#xA;&lt;li&gt;Optimizer states&lt;/li&gt;&#xA;&lt;li&gt;Activations needed to compute the gradients&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;First the activations increase quickly as we do the forward pass, then during the backward pass the gradients build up, and as the backward pass propagates, the stored activations used to compute the gradients are progressively cleared. Finally, we perform optimization, during which we need all the gradients, and then update the optimizer states before we start the next forward pass.&lt;/p&gt;&#xA;&lt;p&gt;An interesting observation here is that memory usage is not static for a given model; rather, it scales linearly with the batch size and quadratically with the sequence length. This means the activation memory is the part that will blow up when we increase our batch size or train with longer sequences.&lt;/p&gt;&#xA;&lt;p&gt;These graphs tell a striking story: for short sequences (or small batch sizes), memory usage for activations is almost negligible, but from around 2-4k tokens they start to take up a significant amount of memory, while usage for parameters, gradients, and optimizer states (as we’ll discuss later) is roughly independent of the sequence length and batch size.&#xA;The general idea behind activation recomputation – also called gradient checkpointing or rematerialization – is to discard some activations during the forward pass to save memory and spend some extra compute to recompute these on the fly during the backward pass. Without recomputation, we store every hidden state between two learnable operations (e.g., feedforward, LayerNorm, etc.), so that we can use them during the backward pass to compute gradients. When we use recomputation, we typically only store activations at a few key points in the model architecture, discarding the rest of the activations and recomputing them on the fly during the backward pass from the nearest saved activations. Basically, we perform a sub-part of the forward pass again, to trade off memory for compute.&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;FULL : We checkpoint activations at the transition point between each layer of the Transformer model. This is usually called the “full” strategy since it requires a forward pass through each layer, essentially adding a full forward pass during the backward pass. This strategy saves the most memory but is the most expensive one in terms of compute. It typically increases the compute cost and time by up to 30-40%, which is very noticeable.&lt;/li&gt;&#xA;&lt;li&gt;Selective: In general, we can do better than full. The authors of the recomputation paper did a detailed analysis studying which activations grow the largest and have the cheapest recomputation cost in terms of floating-point operations per second (FLOPS). It turns out that the attention computations fall in that category, and thus we can usually discard them and focus on checkpointing the expensive feedforward computations. For a GPT-3 (175B) model, this means a 70% activation memory reduction at a 2.7% compute cost.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Gradient accumulation is a very straightforward method to avoid memory explosion that consists of splitting a batch into micro-batches. We then perform forward and backward passes successively on each micro-batch, compute the gradients, and, as the name suggests, sum the gradients of all micro-batches before we perform optimization. In practice, the optimization step is conducted not on the sum but on the average of the gradients, so that the result is independent of the number of gradient accumulation steps.&#xA;Gradient accumulation allows us to reduce activation memory, which grows linearly with batch size, by processing smaller micro-batches sequentially. This reduces stored activations and gradients since only one micro-batch&amp;rsquo;s worth of activations needs to be kept in memory at a time, which helps reduce the overall activation memory footprint.&#xA;One drawback, however, is that gradient accumulation requires multiple consecutive forward/backward passes per optimization step, thereby increasing the compute overhead and slowing down training.&lt;/p&gt;&#xA;&lt;h1 id=&#34;data-parallelism&#34;&gt;Data Parallelism&lt;/h1&gt;&#xA;&lt;p&gt;The idea behind data parallelism (DP) is to replicate the model on several GPUs (we call the replicas “model instances”) and run forward and backward passes on different micro-batches of data in parallel on each GPU - hence the name data parallelism.&#xA;Using a different micro-batch for each GPU means we’ll have different gradients on each GPU, so to keep the model instances in sync across the different GPUs, we&amp;rsquo;ll average the gradients from the model instances using an operation called “all-reduce.” This operation takes place during the backward pass, before the optimizer step.&lt;/p&gt;&#xA;</description>
+    </item>
+    <item>
+      <title>Hugo Shortcuts</title>
+      <link>//localhost:1313/blog/hugo-shortcuts/</link>
+      <pubDate>Thu, 22 May 2025 15:35:24 +0530</pubDate>
+      <guid>//localhost:1313/blog/hugo-shortcuts/</guid>
+      <description>&lt;h1 id=&#34;shortcuts&#34;&gt;Shortcuts&lt;/h1&gt;&#xA;&lt;h2 id=&#34;to-create-a-page&#34;&gt;to create a page&lt;/h2&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;hugo new my-new-page.md&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;to-create-a-blog&#34;&gt;to create a blog&lt;/h2&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;hugo new blog/my-new-post.md&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;run-locally&#34;&gt;run locally&lt;/h2&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;hugo server&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This shortcuts will be used by me in future.&lt;/p&gt;&#xA;</description>
+    </item>
+  </channel>
+</rss>
