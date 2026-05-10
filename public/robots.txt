@@ -1,2 +1,4 @@
-User-Agent: *
-Sitemap: //localhost:50950/sitemap.xml
+User-agent: *
+Disallow:
+
+Sitemap: https://heyyviv.github.io/sitemap.xml

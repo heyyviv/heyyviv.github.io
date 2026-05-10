@@ -2,72 +2,72 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>//localhost:50950/tags/blog/</loc>
+    <loc>https://heyyviv.github.io/tags/blog/</loc>
+    <lastmod>2026-04-16T19:57:36+05:30</lastmod>
+  </url><url>
+    <loc>https://heyyviv.github.io/blog/</loc>
+    <lastmod>2026-04-16T19:57:36+05:30</lastmod>
+  </url><url>
+    <loc>https://heyyviv.github.io/tags/database/</loc>
+    <lastmod>2026-04-16T19:57:36+05:30</lastmod>
+  </url><url>
+    <loc>https://heyyviv.github.io/blog/database-part-1/</loc>
+    <lastmod>2026-04-16T19:57:36+05:30</lastmod>
+  </url><url>
+    <loc>https://heyyviv.github.io/tags/distributed_systems/</loc>
+    <lastmod>2026-04-16T19:57:36+05:30</lastmod>
+  </url><url>
+    <loc>https://heyyviv.github.io/tags/sharding/</loc>
+    <lastmod>2026-04-16T19:57:36+05:30</lastmod>
+  </url><url>
+    <loc>https://heyyviv.github.io/</loc>
+    <lastmod>2026-04-16T19:57:36+05:30</lastmod>
+  </url><url>
+    <loc>https://heyyviv.github.io/tags/notes/</loc>
     <lastmod>2026-02-28T20:16:56+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/blog/</loc>
+    <loc>https://heyyviv.github.io/blog/scaling-databases-with-sharding/</loc>
     <lastmod>2026-02-28T20:16:56+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/tags/database/</loc>
+    <loc>https://heyyviv.github.io/tags/tips/</loc>
     <lastmod>2026-02-28T20:16:56+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/tags/distributed_systems/</loc>
-    <lastmod>2026-02-28T20:16:56+05:30</lastmod>
-  </url><url>
-    <loc>//localhost:50950/tags/notes/</loc>
-    <lastmod>2026-02-28T20:16:56+05:30</lastmod>
-  </url><url>
-    <loc>//localhost:50950/blog/scaling-databases-with-sharding/</loc>
-    <lastmod>2026-02-28T20:16:56+05:30</lastmod>
-  </url><url>
-    <loc>//localhost:50950/tags/sharding/</loc>
-    <lastmod>2026-02-28T20:16:56+05:30</lastmod>
-  </url><url>
-    <loc>//localhost:50950/tags/tips/</loc>
-    <lastmod>2026-02-28T20:16:56+05:30</lastmod>
-  </url><url>
-    <loc>//localhost:50950/</loc>
-    <lastmod>2026-02-28T20:16:56+05:30</lastmod>
-  </url><url>
-    <loc>//localhost:50950/blog/storage-and-retrival/</loc>
+    <loc>https://heyyviv.github.io/blog/storage-and-retrival/</loc>
     <lastmod>2026-02-25T23:32:36+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/blog/ai-agents-notes/</loc>
+    <loc>https://heyyviv.github.io/blog/ai-agents-notes/</loc>
     <lastmod>2026-02-10T21:24:16+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/tags/llm/</loc>
+    <loc>https://heyyviv.github.io/tags/llm/</loc>
     <lastmod>2026-02-10T21:24:16+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/tags/training/</loc>
+    <loc>https://heyyviv.github.io/tags/training/</loc>
     <lastmod>2026-02-10T21:24:16+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/blog/docker-kubernetes/</loc>
-    <lastmod>2025-11-14T12:38:31+05:30</lastmod>
-  </url><url>
-    <loc>//localhost:50950/blog/go-lang/</loc>
+    <loc>https://heyyviv.github.io/blog/go-lang/</loc>
     <lastmod>2025-08-10T15:24:40+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/blog/book-club-building-microservices-designing-fine-grained-systems/</loc>
+    <loc>https://heyyviv.github.io/blog/book-club-building-microservices-designing-fine-grained-systems/</loc>
     <lastmod>2025-08-03T23:07:41+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/blog/mapper-reducer/</loc>
+    <loc>https://heyyviv.github.io/blog/mapper-reducer/</loc>
     <lastmod>2025-07-30T22:28:21+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/books/</loc>
+    <loc>https://heyyviv.github.io/books/</loc>
     <lastmod>2025-07-27T00:24:29+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/blog/about-llm-part-1/</loc>
+    <loc>https://heyyviv.github.io/blog/about-llm-part-1/</loc>
     <lastmod>2025-06-26T16:53:53+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/blog/training_llm/</loc>
+    <loc>https://heyyviv.github.io/blog/training_llm/</loc>
     <lastmod>2025-05-23T15:12:55+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/blog/hugo-shortcuts/</loc>
+    <loc>https://heyyviv.github.io/blog/hugo-shortcuts/</loc>
     <lastmod>2025-05-22T15:35:24+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/feed/</loc>
+    <loc>https://heyyviv.github.io/feed/</loc>
     <lastmod>2025-05-22T14:08:28+05:30</lastmod>
   </url><url>
-    <loc>//localhost:50950/bookmarks/</loc>
+    <loc>https://heyyviv.github.io/bookmarks/</loc>
   </url>
 </urlset>

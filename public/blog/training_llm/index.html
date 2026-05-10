@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-us">
 
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=50950&amp;path=livereload" data-no-instant defer></script>
+<head>
   <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,10 +10,10 @@
 <meta name="description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism." />
 <meta name="keywords" content="training,LLM,notes," />
 
-<link rel="canonical" href="//localhost:50950/blog/training_llm/">
+<link rel="canonical" href="https://heyyviv.github.io/blog/training_llm/">
 
 
-<meta property="og:url" content="//localhost:50950/blog/training_llm/">
+<meta property="og:url" content="https://heyyviv.github.io/blog/training_llm/">
   <meta property="og:site_name" content="Vivek&#39;s Field Notes">
   <meta property="og:title" content="Training_LLM">
   <meta property="og:description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism.">
@@ -25,11 +25,13 @@
     <meta property="article:tag" content="Training">
     <meta property="article:tag" content="LLM">
     <meta property="article:tag" content="Notes">
+    <meta property="og:image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
 
 
 
 
-  <meta name="twitter:card" content="summary">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
   <meta name="twitter:title" content="Training_LLM">
   <meta name="twitter:description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism.">
 
@@ -41,6 +43,7 @@
   <meta itemprop="datePublished" content="2025-05-23T15:12:55+05:30">
   <meta itemprop="dateModified" content="2025-05-23T15:12:55+05:30">
   <meta itemprop="wordCount" content="1096">
+  <meta itemprop="image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
   <meta itemprop="keywords" content="Training,LLM,Notes">
 <meta name="referrer" content="no-referrer-when-downgrade" />
 
@@ -425,69 +428,7 @@
         --blockquote-text-color: #A0AEC0;
     }
 
-     
-    .hero-container {
-        position: relative;
-        overflow: hidden;
-        height: 300px;
-        border-radius: 12px;
-        margin-bottom: 2rem;
-        background-image: url('/ghibli_hero.jpeg');
-        background-size: cover;
-        background-position: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
 
-    .clouds {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-    }
-
-    .cloud {
-        position: absolute;
-        background: white;
-        border-radius: 50%;
-        opacity: 0.3;
-        filter: blur(20px);
-        animation: drift linear infinite;
-    }
-
-    @keyframes drift {
-        from {
-            transform: translateX(-150px);
-        }
-
-        to {
-            transform: translateX(calc(100vw + 150px));
-        }
-    }
-
-    .cloud-1 {
-        width: 150px;
-        height: 60px;
-        top: 10%;
-        animation-duration: 60s;
-    }
-
-    .cloud-2 {
-        width: 200px;
-        height: 80px;
-        top: 25%;
-        animation-duration: 85s;
-        animation-delay: -20s;
-    }
-
-    .cloud-3 {
-        width: 120px;
-        height: 50px;
-        top: 15%;
-        animation-duration: 45s;
-        animation-delay: -10s;
-    }
 
     #theme-toggle {
         border: 1px solid var(--accent-secondary);
@@ -569,23 +510,28 @@
     }
     
     .blog-posts li {
-        margin-bottom: 0.75rem;
-        padding: 0.5rem 0;
+        margin-bottom: 0.5rem;
+        padding: 0.25rem 0;
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
     }
     
     .blog-posts time {
         display: inline-block;
-        width: 100px;
+        width: 110px;  
         color: var(--accent-secondary);
         font-feature-settings: "tnum";
         font-variant-numeric: tabular-nums;
         font-size: 0.9rem;
+        flex-shrink: 0;  
     }
     
      
     .blog-posts a {
         font-weight: 500;
         color: var(--body-text-color);
+        display: inline-block;
     }
     
     .blog-posts a:hover {
@@ -624,13 +570,7 @@
 </script></head>
 
 <body>
-  <header><div class="hero-container">
-    <div class="clouds">
-        <div class="cloud cloud-1"></div>
-        <div class="cloud cloud-2"></div>
-        <div class="cloud cloud-3"></div>
-    </div>
-</div>
+  <header>
 
 <a href="/" class="title">
     <h1>Vivek&#39;s Field Notes</h1>
@@ -767,11 +707,11 @@ Using a different micro-batch for each GPU means we’ll have different gradient
 
 <p>
     
-    <a href="//localhost:50950/tags/training/">#Training</a>
+    <a href="https://heyyviv.github.io/tags/training/">#Training</a>
     
-    <a href="//localhost:50950/tags/llm/">#LLM</a>
+    <a href="https://heyyviv.github.io/tags/llm/">#LLM</a>
     
-    <a href="//localhost:50950/tags/notes/">#Notes</a>
+    <a href="https://heyyviv.github.io/tags/notes/">#Notes</a>
     
 </p>
 
