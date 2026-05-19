@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en-us">
 
-<head>
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Database Part 1 | Vivek&#39;s Field Notes</title>
 <meta name="title" content="Database Part 1" />
-<meta name="description" content="Transaction manager
+<meta name="description" content="Introduction
+Transaction manager
 This manager schedules transactions and ensures they cannot leave the database in a logically inconsistent state.
 Lock manager
 This manager locks on the database objects for the running transactions, ensuring that concurrent operations do not violate physical data integrity.
@@ -19,13 +20,13 @@ Recovery manager
 This manager maintains the operation log and restoring the system state in case of a failure" />
 <meta name="keywords" content="blog,database,distributed_systems,sharding," />
 
-<link rel="canonical" href="https://heyyviv.github.io/blog/database-part-1/">
+<link rel="canonical" href="http://localhost:1313/blog/database-part-1/">
 
 
-<meta property="og:url" content="https://heyyviv.github.io/blog/database-part-1/">
+<meta property="og:url" content="http://localhost:1313/blog/database-part-1/">
   <meta property="og:site_name" content="Vivek&#39;s Field Notes">
   <meta property="og:title" content="Database Part 1">
-  <meta property="og:description" content="Transaction manager This manager schedules transactions and ensures they cannot leave the database in a logically inconsistent state.
+  <meta property="og:description" content="Introduction Transaction manager This manager schedules transactions and ensures they cannot leave the database in a logically inconsistent state.
 Lock manager This manager locks on the database objects for the running transactions, ensuring that concurrent operations do not violate physical data integrity.
 Access methods (storage structures) These manage access and organizing data on disk. Access methods include heap files and storage structures such as B-Trees Buffer manager This manager caches data pages in memory Recovery manager This manager maintains the operation log and restoring the system state in case of a failure">
   <meta property="og:locale" content="en_us">
@@ -37,15 +38,15 @@ Access methods (storage structures) These manage access and organizing data on d
     <meta property="article:tag" content="Database">
     <meta property="article:tag" content="Distributed_systems">
     <meta property="article:tag" content="Sharding">
-    <meta property="og:image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
+    <meta property="og:image" content="http://localhost:1313/ghibli_landscape_hero_1772177126257.png">
 
 
 
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
+  <meta name="twitter:image" content="http://localhost:1313/ghibli_landscape_hero_1772177126257.png">
   <meta name="twitter:title" content="Database Part 1">
-  <meta name="twitter:description" content="Transaction manager This manager schedules transactions and ensures they cannot leave the database in a logically inconsistent state.
+  <meta name="twitter:description" content="Introduction Transaction manager This manager schedules transactions and ensures they cannot leave the database in a logically inconsistent state.
 Lock manager This manager locks on the database objects for the running transactions, ensuring that concurrent operations do not violate physical data integrity.
 Access methods (storage structures) These manage access and organizing data on disk. Access methods include heap files and storage structures such as B-Trees Buffer manager This manager caches data pages in memory Recovery manager This manager maintains the operation log and restoring the system state in case of a failure">
 
@@ -53,13 +54,13 @@ Access methods (storage structures) These manage access and organizing data on d
 
 
   <meta itemprop="name" content="Database Part 1">
-  <meta itemprop="description" content="Transaction manager This manager schedules transactions and ensures they cannot leave the database in a logically inconsistent state.
+  <meta itemprop="description" content="Introduction Transaction manager This manager schedules transactions and ensures they cannot leave the database in a logically inconsistent state.
 Lock manager This manager locks on the database objects for the running transactions, ensuring that concurrent operations do not violate physical data integrity.
 Access methods (storage structures) These manage access and organizing data on disk. Access methods include heap files and storage structures such as B-Trees Buffer manager This manager caches data pages in memory Recovery manager This manager maintains the operation log and restoring the system state in case of a failure">
   <meta itemprop="datePublished" content="2026-04-16T19:57:36+05:30">
   <meta itemprop="dateModified" content="2026-04-16T19:57:36+05:30">
-  <meta itemprop="wordCount" content="448">
-  <meta itemprop="image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
+  <meta itemprop="wordCount" content="619">
+  <meta itemprop="image" content="http://localhost:1313/ghibli_landscape_hero_1772177126257.png">
   <meta itemprop="keywords" content="Blog,Database,Distributed_systems,Sharding">
 <meta name="referrer" content="no-referrer-when-downgrade" />
 
@@ -678,7 +679,8 @@ Access methods (storage structures) These manage access and organizing data on d
 
 
 
-<content> <p>Transaction manager
+<content> <h1 id="introduction">Introduction</h1>
+<p>Transaction manager
 This manager schedules transactions and ensures they cannot leave the database in a logically inconsistent state.</p>
 <p>Lock manager
 This manager locks on the database objects for the running transactions, ensuring that concurrent operations do not violate physical data integrity.</p>
@@ -716,17 +718,34 @@ mostly of point queries and range scans, the row-oriented approach is
 likely to yield better results. If scans span many rows, or compute
 aggregate over a subset of columns, it is worth considering a column-
 oriented approach.</p>
+<p>New records (insertions) and updates to the existing records are
+represented by key/value pairs. Most modern storage systems do not delete
+data from pages explicitly. Instead, they use deletion markers (also called
+tombstones), which contain deletion metadata, such as a key and a
+timestamp. Space occupied by the records shadowed by their updates or
+deletion markers is reclaimed during garbage collection, which reads the
+pages, writes the live (i.e., nonshadowed) records to the new place, and
+discards the shadowed ones.</p>
+<h1 id="b-tree">B Tree</h1>
+<p>If we wanted to maintain a BST on disk, we’d face several problems. One
+problem is locality: since elements are added in random order, there’s no
+guarantee that a newly created node is written close to its parent, which
+means that node child pointers may span across several disk pages. We can
+improve the situation to a certain extent by modifying the tree layout and
+using paged binary trees</p>
+<p>High fanout to improve locality of the neighboring keys.
+Low height to reduce the number of seeks during traversal.</p>
  </content>
 
 <p>
     
-    <a href="https://heyyviv.github.io/tags/blog/">#Blog</a>
+    <a href="http://localhost:1313/tags/blog/">#Blog</a>
     
-    <a href="https://heyyviv.github.io/tags/database/">#Database</a>
+    <a href="http://localhost:1313/tags/database/">#Database</a>
     
-    <a href="https://heyyviv.github.io/tags/distributed_systems/">#Distributed_systems</a>
+    <a href="http://localhost:1313/tags/distributed_systems/">#Distributed_systems</a>
     
-    <a href="https://heyyviv.github.io/tags/sharding/">#Sharding</a>
+    <a href="http://localhost:1313/tags/sharding/">#Sharding</a>
     
 </p>
 
