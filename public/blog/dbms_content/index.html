@@ -1291,7 +1291,7 @@ Executive Summary We propose a modular, project-driven curriculum focused on cor
 <p>These books should be read selectively (key chapters on B-Trees, Logging, Dist. Systems, etc.).</p>
 <h2 id="suggested-reading-order--prerequisites-graph">Suggested Reading Order &amp; Prerequisites Graph</h2>
 <p>We recommend a <strong>prerequisites graph</strong> guiding the order of topics. Fundamental modules (data models, storage) come first, then indexing/execution, then optimization, then transactions, and finally distributed and warehousing.  A sample dependency graph in mermaid:</p>
-<pre tabindex="0"><code class="language-mermaid" data-lang="mermaid">graph TB;
+<pre tabindex="0"><code class="language-mermaid" data-lang="mermaid">graph TB
   RelModel[&#34;Relational Model &amp; SQL&#34;] --&gt; Storage[&#34;Storage &amp; Data Layout&#34;];
   RelModel --&gt; Algebra[&#34;Relational Algebra&#34;];
   Storage --&gt; Indexing[&#34;Index Structures (B+Tree, Hash)&#34;];
@@ -1504,24 +1504,24 @@ Executive Summary We propose a modular, project-driven curriculum focused on cor
 <p><strong>Timeline for ~150–200 topics:</strong> Roughly 12–16 weeks as outlined, but learners might expand (esp. for interviews). No strict time/week; adapt to personal schedule. Each topic requires core reading (1-2 hours) plus code/exercise (2-4 hours).</p>
 <h2 id="prerequisite-graph-mermaid">Prerequisite Graph (Mermaid)</h2>
 <p>Below is a directed graph of topic prerequisites.  For readability, it’s abstracted to major topics/modules:</p>
-<pre tabindex="0"><code class="language-mermaid" data-lang="mermaid">graph LR;
-  A[Data Models (Relational)] --&gt; B[Storage Engines (Pages, Buffer Pool)];
-  A --&gt; C[Relational Algebra / SQL];
-  B --&gt; D[Indexing (B+Tree, Hash)];
-  B --&gt; E[Data Partitioning];
-  D --&gt; F[Query Execution (Scans, Joins)];
-  C --&gt; F;
-  E --&gt; F;
-  F --&gt; G[Query Optimization (Cost-based)];
-  G --&gt; H[Transactions &amp; Concurrency];
-  G --&gt; I[Distributed Databases];
-  H --&gt; J[Logging &amp; Recovery (WAL/ARIES)];
-  I --&gt; K[Distributed Transactions (Spanner, 2PC)];
-  K --&gt; L[Consensus &amp; Replication];
-  G --&gt; M[Data Warehousing &amp; DW Engines];
-  M --&gt; N[Modern Analytics Tools (Spark, Trino, dbt)];
-  I --&gt; N;
-  J --&gt; N;
+<pre tabindex="0"><code class="language-mermaid" data-lang="mermaid">graph LR
+  A[&#34;Data Models (Relational)&#34;] --&gt; B[&#34;Storage Engines (Pages, Buffer Pool)&#34;]
+  A --&gt; C[&#34;Relational Algebra / SQL&#34;]
+  B --&gt; D[&#34;Indexing (B+Tree, Hash)&#34;]
+  B --&gt; E[&#34;Data Partitioning&#34;]
+  D --&gt; F[&#34;Query Execution (Scans, Joins)&#34;]
+  C --&gt; F
+  E --&gt; F
+  F --&gt; G[&#34;Query Optimization (Cost-based)&#34;]
+  G --&gt; H[&#34;Transactions &amp; Concurrency&#34;]
+  G --&gt; I[&#34;Distributed Databases&#34;]
+  H --&gt; J[&#34;Logging &amp; Recovery (WAL/ARIES)&#34;]
+  I --&gt; K[&#34;Distributed Transactions (Spanner, 2PC)&#34;]
+  K --&gt; L[&#34;Consensus &amp; Replication&#34;]
+  G --&gt; M[&#34;Data Warehousing &amp; DW Engines&#34;]
+  M --&gt; N[&#34;Modern Analytics Tools (Spark, Trino, dbt)&#34;]
+  I --&gt; N
+  J --&gt; N
 </code></pre><p>This graph indicates e.g. that Storage &amp; Indexing should be learned before Query Execution, which comes before Optimization. Transactions/Recovery depend on understanding query processing and locking, etc.</p>
 <h2 id="visual-aids">Visual Aids</h2>
 <p>We have used tables above to compare resources. Additional charts (e.g. a timeline Gantt chart, or taxonomy diagrams) could help, but due to space we omit them here.  Readers are encouraged to sketch their own schemas (ERD, B-Tree diagrams, pipeline flows) as study aids.</p>

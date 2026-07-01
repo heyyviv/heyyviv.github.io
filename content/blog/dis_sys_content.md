@@ -24,37 +24,37 @@ The curriculum is organized into **phases** that build on each other. Foundation
 ```mermaid
 graph LR
     subgraph Foundations
-      Concurrency((Concurrency & Go))
-      Networking((Networking & RPC))
-      OSBasics((OS & I/O))
+      Concurrency(("Concurrency & Go"))
+      Networking(("Networking & RPC"))
+      OSBasics(("OS & I/O"))
     end
     subgraph Core
-      MapReduce((MapReduce & Batch Processing))
-      DFS((GFS/HDFS))
-      Partition((Sharding & Partitioning))
-      CAP((CAP & Consistency Models))
-      Clocks((Time & Ordering))
-      Paxos((Paxos))
-      Raft((Raft))
-      ZK((ZooKeeper/Chubby))
+      MapReduce(("MapReduce & Batch Processing"))
+      DFS(("GFS/HDFS"))
+      Partition(("Sharding & Partitioning"))
+      CAP(("CAP & Consistency Models"))
+      Clocks(("Time & Ordering"))
+      Paxos(("Paxos"))
+      Raft(("Raft"))
+      ZK(("ZooKeeper/Chubby"))
     end
     subgraph Storage
-      StorageEng((Storage Engines (B-tree/LSM)))
-      MVCC((MVCC & Concurrency Control))
-      Transactions((Transactions & 2PC))
-      DistTrans((Distributed Transactions & Spanner))
+      StorageEng(("Storage Engines (B-tree/LSM)"))
+      MVCC(("MVCC & Concurrency Control"))
+      Transactions(("Transactions & 2PC"))
+      DistTrans(("Distributed Transactions & Spanner"))
     end
     subgraph Systems
-      Cache((Caches: Memcached/Redis))
-      Streams((Streaming & Kafka))
-      Orchestration((Cloud/Orchestration))
-      Serverless((Serverless: AWS Lambda))
+      Cache(("Caches: Memcached/Redis"))
+      Streams(("Streaming & Kafka"))
+      Orchestration(("Cloud/Orchestration"))
+      Serverless(("Serverless: AWS Lambda"))
     end
     subgraph Advanced
-      BFT((Byzantine Fault Tolerance))
-      Blockchain((Blockchain (Bitcoin)))
-      Jepsen((Testing & Jepsen))
-      IronFleet((Formal Verification: IronFleet))
+      BFT(("Byzantine Fault Tolerance"))
+      Blockchain(("Blockchain (Bitcoin)"))
+      Jepsen(("Testing & Jepsen"))
+      IronFleet(("Formal Verification: IronFleet"))
     end
     Concurrency --> Networking
     Concurrency --> OSBasics

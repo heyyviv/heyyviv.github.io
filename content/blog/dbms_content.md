@@ -340,7 +340,7 @@ These books should be read selectively (key chapters on B-Trees, Logging, Dist. 
 We recommend a **prerequisites graph** guiding the order of topics. Fundamental modules (data models, storage) come first, then indexing/execution, then optimization, then transactions, and finally distributed and warehousing.  A sample dependency graph in mermaid:
 
 ```mermaid
-graph TB;
+graph TB
   RelModel["Relational Model & SQL"] --> Storage["Storage & Data Layout"];
   RelModel --> Algebra["Relational Algebra"];
   Storage --> Indexing["Index Structures (B+Tree, Hash)"];
@@ -427,24 +427,24 @@ We recommend **ongoing assessment** with graded quizzes, homeworks, and projects
 Below is a directed graph of topic prerequisites.  For readability, it’s abstracted to major topics/modules:
 
 ```mermaid
-graph LR;
-  A[Data Models (Relational)] --> B[Storage Engines (Pages, Buffer Pool)];
-  A --> C[Relational Algebra / SQL];
-  B --> D[Indexing (B+Tree, Hash)];
-  B --> E[Data Partitioning];
-  D --> F[Query Execution (Scans, Joins)];
-  C --> F;
-  E --> F;
-  F --> G[Query Optimization (Cost-based)];
-  G --> H[Transactions & Concurrency];
-  G --> I[Distributed Databases];
-  H --> J[Logging & Recovery (WAL/ARIES)];
-  I --> K[Distributed Transactions (Spanner, 2PC)];
-  K --> L[Consensus & Replication];
-  G --> M[Data Warehousing & DW Engines];
-  M --> N[Modern Analytics Tools (Spark, Trino, dbt)];
-  I --> N;
-  J --> N;
+graph LR
+  A["Data Models (Relational)"] --> B["Storage Engines (Pages, Buffer Pool)"]
+  A --> C["Relational Algebra / SQL"]
+  B --> D["Indexing (B+Tree, Hash)"]
+  B --> E["Data Partitioning"]
+  D --> F["Query Execution (Scans, Joins)"]
+  C --> F
+  E --> F
+  F --> G["Query Optimization (Cost-based)"]
+  G --> H["Transactions & Concurrency"]
+  G --> I["Distributed Databases"]
+  H --> J["Logging & Recovery (WAL/ARIES)"]
+  I --> K["Distributed Transactions (Spanner, 2PC)"]
+  K --> L["Consensus & Replication"]
+  G --> M["Data Warehousing & DW Engines"]
+  M --> N["Modern Analytics Tools (Spark, Trino, dbt)"]
+  I --> N
+  J --> N
 ```
 
 This graph indicates e.g. that Storage & Indexing should be learned before Query Execution, which comes before Optimization. Transactions/Recovery depend on understanding query processing and locking, etc.

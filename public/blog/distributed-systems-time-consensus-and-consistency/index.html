@@ -675,37 +675,37 @@
 <p><em>Figure: Topic dependency graph (modules 1→→ etc). Major arrows indicate “prerequisite of”. For example, Go Concurrency → RPC → Distributed Computation → Consensus → Distributed Transactions → Spanner. (Visualization created from module dependencies.)</em></p>
 <pre tabindex="0"><code class="language-mermaid" data-lang="mermaid">graph LR
     subgraph Foundations
-      Concurrency((Concurrency &amp; Go))
-      Networking((Networking &amp; RPC))
-      OSBasics((OS &amp; I/O))
+      Concurrency((&#34;Concurrency &amp; Go&#34;))
+      Networking((&#34;Networking &amp; RPC&#34;))
+      OSBasics((&#34;OS &amp; I/O&#34;))
     end
     subgraph Core
-      MapReduce((MapReduce &amp; Batch Processing))
-      DFS((GFS/HDFS))
-      Partition((Sharding &amp; Partitioning))
-      CAP((CAP &amp; Consistency Models))
-      Clocks((Time &amp; Ordering))
-      Paxos((Paxos))
-      Raft((Raft))
-      ZK((ZooKeeper/Chubby))
+      MapReduce((&#34;MapReduce &amp; Batch Processing&#34;))
+      DFS((&#34;GFS/HDFS&#34;))
+      Partition((&#34;Sharding &amp; Partitioning&#34;))
+      CAP((&#34;CAP &amp; Consistency Models&#34;))
+      Clocks((&#34;Time &amp; Ordering&#34;))
+      Paxos((&#34;Paxos&#34;))
+      Raft((&#34;Raft&#34;))
+      ZK((&#34;ZooKeeper/Chubby&#34;))
     end
     subgraph Storage
-      StorageEng((Storage Engines (B-tree/LSM)))
-      MVCC((MVCC &amp; Concurrency Control))
-      Transactions((Transactions &amp; 2PC))
-      DistTrans((Distributed Transactions &amp; Spanner))
+      StorageEng((&#34;Storage Engines (B-tree/LSM)&#34;))
+      MVCC((&#34;MVCC &amp; Concurrency Control&#34;))
+      Transactions((&#34;Transactions &amp; 2PC&#34;))
+      DistTrans((&#34;Distributed Transactions &amp; Spanner&#34;))
     end
     subgraph Systems
-      Cache((Caches: Memcached/Redis))
-      Streams((Streaming &amp; Kafka))
-      Orchestration((Cloud/Orchestration))
-      Serverless((Serverless: AWS Lambda))
+      Cache((&#34;Caches: Memcached/Redis&#34;))
+      Streams((&#34;Streaming &amp; Kafka&#34;))
+      Orchestration((&#34;Cloud/Orchestration&#34;))
+      Serverless((&#34;Serverless: AWS Lambda&#34;))
     end
     subgraph Advanced
-      BFT((Byzantine Fault Tolerance))
-      Blockchain((Blockchain (Bitcoin)))
-      Jepsen((Testing &amp; Jepsen))
-      IronFleet((Formal Verification: IronFleet))
+      BFT((&#34;Byzantine Fault Tolerance&#34;))
+      Blockchain((&#34;Blockchain (Bitcoin)&#34;))
+      Jepsen((&#34;Testing &amp; Jepsen&#34;))
+      IronFleet((&#34;Formal Verification: IronFleet&#34;))
     end
     Concurrency --&gt; Networking
     Concurrency --&gt; OSBasics
