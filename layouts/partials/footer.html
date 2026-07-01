@@ -31,3 +31,28 @@ Say hello via <a href="mailto:{{ .Site.Params.Author.email }}">email</a>.
 {{ end }}
 
 <button id="back-to-top" title="Go to top">↑</button>
+
+{{ if .Content }}
+{{ if or (strings.Contains .Content "class=\"language-mermaid\"") (strings.Contains .Content "language-mermaid") }}
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const codeBlocks = document.querySelectorAll('pre code.language-mermaid');
+        codeBlocks.forEach(function(codeBlock) {
+            const preBlock = codeBlock.parentNode;
+            const mermaidDiv = document.createElement('div');
+            mermaidDiv.className = 'mermaid';
+            mermaidDiv.textContent = codeBlock.textContent;
+            preBlock.parentNode.replaceChild(mermaidDiv, preBlock);
+        });
+
+        const isDark = document.body.classList.contains('dark-mode');
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: isDark ? 'dark' : 'default',
+            securityLevel: 'loose'
+        });
+    });
+</script>
+{{ end }}
+{{ end }}

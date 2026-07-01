@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Data build tool | Vivek&#39;s Field Notes</title>
+<meta name="title" content="Data build tool" />
+<meta name="description" content="dbt (data build tool) is an open-source analytics engineering framework that enables data teams to transform data inside the cloud data warehouse using SQL &#43; software engineering best practices.
+Key Points:
+
+It only does transformation (the “T” in ELT).
+It runs inside your warehouse (Snowflake, BigQuery, Redshift, Databricks, etc.).
+It turns raw data into analytics-ready data products.
+It brings version control, testing, modularity, documentation, and CI/CD to data work.
+
+How it Works in Practice:
+
+Raw data is loaded into the warehouse (by Fivetran, Airbyte, Stitch, custom scripts, etc.).
+dbt transforms it (staging → intermediate → marts).
+Clean data is consumed by BI tools, data science, applications, or AI models.
+
+
+A model is a single .sql file that contains a SELECT statement (plus optional configuration). When you run dbt run, dbt compiles that SQL and executes it in your data warehouse to create a table or view." />
+<meta name="keywords" content="blog,database,distributed_systems,llm,notes,sharding,tips,training," />
+
+<link rel="canonical" href="https://heyyviv.github.io/blog/data-build-tool/">
+
+
+<meta property="og:url" content="https://heyyviv.github.io/blog/data-build-tool/">
+  <meta property="og:site_name" content="Vivek&#39;s Field Notes">
+  <meta property="og:title" content="Data build tool">
+  <meta property="og:description" content="dbt (data build tool) is an open-source analytics engineering framework that enables data teams to transform data inside the cloud data warehouse using SQL &#43; software engineering best practices.
+Key Points: It only does transformation (the “T” in ELT). It runs inside your warehouse (Snowflake, BigQuery, Redshift, Databricks, etc.). It turns raw data into analytics-ready data products. It brings version control, testing, modularity, documentation, and CI/CD to data work. How it Works in Practice: Raw data is loaded into the warehouse (by Fivetran, Airbyte, Stitch, custom scripts, etc.). dbt transforms it (staging → intermediate → marts). Clean data is consumed by BI tools, data science, applications, or AI models. A model is a single .sql file that contains a SELECT statement (plus optional configuration). When you run dbt run, dbt compiles that SQL and executes it in your data warehouse to create a table or view.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2026-06-30T20:03:42+05:30">
+    <meta property="article:modified_time" content="2026-06-30T20:03:42+05:30">
+    <meta property="article:tag" content="Blog">
+    <meta property="article:tag" content="Database">
+    <meta property="article:tag" content="Distributed_systems">
+    <meta property="article:tag" content="LLM">
+    <meta property="article:tag" content="Notes">
+    <meta property="article:tag" content="Sharding">
+    <meta property="og:image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
+
+
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
+  <meta name="twitter:title" content="Data build tool">
+  <meta name="twitter:description" content="dbt (data build tool) is an open-source analytics engineering framework that enables data teams to transform data inside the cloud data warehouse using SQL &#43; software engineering best practices.
+Key Points: It only does transformation (the “T” in ELT). It runs inside your warehouse (Snowflake, BigQuery, Redshift, Databricks, etc.). It turns raw data into analytics-ready data products. It brings version control, testing, modularity, documentation, and CI/CD to data work. How it Works in Practice: Raw data is loaded into the warehouse (by Fivetran, Airbyte, Stitch, custom scripts, etc.). dbt transforms it (staging → intermediate → marts). Clean data is consumed by BI tools, data science, applications, or AI models. A model is a single .sql file that contains a SELECT statement (plus optional configuration). When you run dbt run, dbt compiles that SQL and executes it in your data warehouse to create a table or view.">
+
+
+
+
+  <meta itemprop="name" content="Data build tool">
+  <meta itemprop="description" content="dbt (data build tool) is an open-source analytics engineering framework that enables data teams to transform data inside the cloud data warehouse using SQL &#43; software engineering best practices.
+Key Points: It only does transformation (the “T” in ELT). It runs inside your warehouse (Snowflake, BigQuery, Redshift, Databricks, etc.). It turns raw data into analytics-ready data products. It brings version control, testing, modularity, documentation, and CI/CD to data work. How it Works in Practice: Raw data is loaded into the warehouse (by Fivetran, Airbyte, Stitch, custom scripts, etc.). dbt transforms it (staging → intermediate → marts). Clean data is consumed by BI tools, data science, applications, or AI models. A model is a single .sql file that contains a SELECT statement (plus optional configuration). When you run dbt run, dbt compiles that SQL and executes it in your data warehouse to create a table or view.">
+  <meta itemprop="datePublished" content="2026-06-30T20:03:42+05:30">
+  <meta itemprop="dateModified" content="2026-06-30T20:03:42+05:30">
+  <meta itemprop="wordCount" content="851">
+  <meta itemprop="image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
+  <meta itemprop="keywords" content="Blog,Database,Distributed_systems,LLM,Notes,Sharding,Tips,Training">
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+   
+  :root {
+    --width-max: 720px;
+    --font-primary: Verdana, sans-serif;
+    --font-secondary: monospace;
+    --font-size-primary: 1em;
+    --font-size-secondary: 0.8em;
+    --body-bg-color: #fcfcfc;
+    --bold-text-color: #222;
+    --body-text-color: #444;
+    --link-color: #3273dc;
+    --link-visited-color: #8b6fcb;
+    --table-border-color: #f2f2f2;
+    --table-th-bg-color: #f2f2f2;
+    --img-border-color: #f2f2f2;
+    --code-bg-color: #f2f2f2;
+    --code-text-color: #222;
+    --blockquote-border-color: #666;
+    --blockquote-text-color: #666;
+    --upvoted-color: #FA8072;
+  }
+
+  @media (prefers-color-scheme: dark) {
+     
+    :root {
+      --body-bg-color: #1c1c1c;
+      --bold-text-color: #eee;
+      --body-text-color: #ddd;
+      --link-color: #8cc2dd;
+      --link-visited-color: #c3b1ee;
+      --table-border-color: #999;
+      --table-th-bg-color: #999;
+      --img-border-color: #999;
+      --code-bg-color: #555;
+      --code-text-color: #ddd;
+      --blockquote-border-color: #ccc;
+      --blockquote-text-color: #ccc;
+    }
+  }
+
+  body {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-primary);
+    margin: auto;
+    padding: 20px;
+    max-width: var(--width-max);
+    text-align: left;
+    background-color: var(--body-bg-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: var(--body-text-color);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: var(--bold-text-color);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 16px 0;
+  }
+
+  a {
+    color: var(--link-color);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title:hover {
+    text-decoration: none;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 8px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 14px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--table-border-color);
+    border-radius: 4px;
+  }
+
+  th,
+  td {
+    border: 1px solid var(--table-border-color);
+    padding: 4px;
+  }
+
+  th {
+    background-color: var(--table-th-bg-color);
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px dashed;
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid var(--img-border-color);
+    border-radius: 4px;
+    content-visibility: auto;
+    loading: lazy;
+  }
+
+  img[src*="#minipic"] {
+    max-width: 50%;
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  i {
+    font-style: normal;
+  }
+
+  time {
+    font-family: var(--font-secondary);
+    font-size: 15px;
+  }
+
+  code {
+    font-family: var(--font-secondary);
+    background-color: var(--code-bg-color);
+    color: var(--code-text-color);
+    padding: 2px;
+    border-radius: 4px;
+  }
+
+  pre code {
+    display: block;
+    padding: 16px;
+    white-space: pre-wrap;
+    overflow-x: auto;
+  }
+
+  div.highlight pre {
+    border-radius: 4px;
+  }
+
+  div.highlight code {
+    background-color: var(--code-bg-color);
+    color: var(--code-text-color);
+  }
+
+  blockquote {
+    border-left: 2px solid var(--blockquote-border-color);
+    color: var(--blockquote-text-color);
+    margin: 0;
+    padding-left: 16px;
+    font-style: normal;
+  }
+
+  blockquote p {
+    margin: 0;
+  }
+
+  footer {
+    padding: 25px 0;
+    text-align: center;
+    font-size: var(--font-size-secondary);
+  }
+
+  ul li:has(input) {
+    list-style-type: none;
+    margin-left: -25.5px;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li span.grouped {
+    flex: 0 0 80px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: var(--link-visited-color);
+  }
+
+   
+  div.toc {
+    position: fixed;
+    top: 50%;
+    left: calc((100vw + var(--width-max)) / 2);
+    transform: translateY(-50%);
+    width: calc((90vw - var(--width-max)) / 2);
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 20px 8px;
+    z-index: 99;
+
+     
+    &::-webkit-scrollbar {
+        display: none;  
+    }
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+  }
+
+  div.toc ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  div.toc ul li {
+    margin: 8px 0;
+  }
+
+  div.toc ul li a {
+    text-decoration: none;
+    color: var(--blockquote-text-color);
+  }
+
+  div.toc ul li a:hover {
+    color: var(--link-color);
+  }
+
+   
+  button.upvote-btn {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--body-text-color);
+  }
+
+  button.upvoted {
+    color: var(--upvoted-color);
+  }
+
+  span.upvote-count {
+    margin-top: -4px;
+    font-size: smaller;
+  }
+
+  @media (max-width: 500px) {
+    img[src*="#minipic"] {
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    div.toc {
+      display: none;
+    }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap"
+    rel="stylesheet">
+
+<style>
+    :root {
+        --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        --font-serif: 'Playfair Display', Georgia, serif;
+        --bg-light: #FAFAFA;
+        --text-dark: #2D3748;
+        --accent-primary: #4A5568;
+        --accent-secondary: #718096;
+        --night-bg: #1A202C;
+        --night-text: #E2E8F0;
+        --night-accent: #A0AEC0;
+
+        --body-bg-color: var(--bg-light);
+        --bold-text-color: #1A202C;
+        --body-text-color: var(--text-dark);
+        --link-color: #3182CE;
+        --link-visited-color: #6B46C1;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        transition: background-color 0.4s ease, color 0.4s ease;
+        font-family: var(--font-primary);
+        line-height: 1.8;
+        background-color: var(--body-bg-color);
+        color: var(--body-text-color);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-serif);
+        color: var(--bold-text-color);
+        margin-top: 2em;
+        margin-bottom: 0.75em;
+        line-height: 1.3;
+        letter-spacing: -0.02em;
+    }
+
+     
+    body.light-mode {
+        --body-bg-color: var(--bg-light);
+        --bold-text-color: #1A202C;
+        --body-text-color: var(--text-dark);
+        --link-color: #3182CE;
+        --code-bg-color: #F7FAFC;
+        --code-text-color: #2D3748;
+        --blockquote-border-color: #E2E8F0;
+        --blockquote-text-color: #4A5568;
+    }
+
+     
+    body.dark-mode {
+        --body-bg-color: var(--night-bg);
+        --bold-text-color: #F7FAFC;
+        --body-text-color: var(--night-text);
+        --link-color: #63B3ED;
+        --code-bg-color: #2D3748;
+        --code-text-color: #E2E8F0;
+        --blockquote-border-color: #4A5568;
+        --blockquote-text-color: #A0AEC0;
+    }
+
+
+
+    #theme-toggle {
+        border: 1px solid var(--accent-secondary);
+        background: transparent;
+        color: var(--body-text-color);
+        cursor: pointer;
+        padding: 5px 12px;
+        border-radius: 20px;
+        margin-left: 10px;
+        font-family: var(--font-primary);
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    #theme-toggle:hover {
+        transform: scale(1.05);
+        border-color: var(--accent-sky);
+    }
+
+    #back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background-color: var(--accent-primary);
+        border: none;
+        color: white;
+        padding: 12px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: none;
+        z-index: 100;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    #back-to-top:hover {
+        transform: translateY(-5px);
+        background-color: var(--accent-sky);
+    }
+
+     
+    a {
+        text-decoration: none;
+        color: var(--link-color);
+        transition: color 0.2s ease, border-bottom-color 0.2s ease;
+        border-bottom: 1px solid transparent;
+    }
+
+    a:hover {
+        border-bottom-color: var(--link-color);
+    }
+    
+    .title h1 {
+        margin-top: 0;
+        color: var(--bold-text-color);
+        text-decoration: none;
+    }
+    
+    .title:hover {
+        border-bottom: none;
+    }
+    
+    nav a {
+        color: var(--body-text-color);
+        margin-right: 15px;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+    
+    nav a:hover {
+        color: var(--link-color);
+        border-bottom-color: transparent;
+    }
+    
+     
+    .blog-posts {
+        list-style: none;
+        padding-left: 0;
+    }
+    
+    .blog-posts li {
+        margin-bottom: 0.5rem;
+        padding: 0.25rem 0;
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+    }
+    
+    .blog-posts time {
+        display: inline-block;
+        width: 110px;  
+        color: var(--accent-secondary);
+        font-feature-settings: "tnum";
+        font-variant-numeric: tabular-nums;
+        font-size: 0.9rem;
+        flex-shrink: 0;  
+    }
+    
+     
+    .blog-posts a {
+        font-weight: 500;
+        color: var(--body-text-color);
+        display: inline-block;
+    }
+    
+    .blog-posts a:hover {
+        color: var(--link-color);
+    }
+
+    blockquote {
+        border-left: 4px solid var(--blockquote-border-color);
+        padding: 0.5rem 1.5rem;
+        background: var(--code-bg-color);
+        border-radius: 0 4px 4px 0;
+        font-style: italic;
+        margin-left: 0;
+        margin-right: 0;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const backToTopBtn = document.getElementById('back-to-top');
+        if (backToTopBtn) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    backToTopBtn.style.display = 'block';
+                } else {
+                    backToTopBtn.style.display = 'none';
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+    });
+</script></head>
+
+<body>
+  <header>
+
+<a href="/" class="title">
+    <h1>Vivek&#39;s Field Notes</h1>
+</a>
+<nav><a href="/">Home</a>
+
+<a href="/books/">Books</a>
+
+<a href="/feed/">Feed</a>
+
+<a href="/bookmarks/">Reading List</a>
+
+
+<a href="/blog/">Blog</a>
+
+<button id="theme-toggle" aria-label="Toggle Dark Mode">Theme</button>
+</nav>
+
+<script>
+    
+    (function () {
+        const toggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        const iconSun = "☀️";
+        const iconMoon = "🌙";
+
+        
+        function setIcon(isDark) {
+            toggleBtn.innerHTML = isDark ? iconSun : iconMoon;
+            toggleBtn.setAttribute('aria-label', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+        }
+
+        
+        let currentTheme = localStorage.getItem('theme');
+
+        
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (!currentTheme) {
+            currentTheme = systemPrefersDark ? 'dark' : 'light';
+        }
+
+        
+        if (currentTheme === 'dark') {
+            body.classList.add('dark-mode');
+            setIcon(true);
+        } else {
+            body.classList.add('light-mode');
+            setIcon(false);
+        }
+
+        
+        toggleBtn.addEventListener('click', function () {
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                localStorage.setItem('theme', 'light');
+                setIcon(false);
+            } else {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+                setIcon(true);
+            }
+        });
+    })();
+</script>
+
+<script>
+    window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }
+    };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script></header>
+  <main>
+
+
+<h1>Data build tool</h1>
+
+<p>
+    <i>
+        <time datetime='2026-06-30' pubdate>
+            30 Jun, 2026
+        </time>
+        • 4 min read
+    </i>
+</p>
+
+
+
+
+<content> <p>dbt (data build tool) is an open-source analytics engineering framework that enables data teams to transform data inside the cloud data warehouse using SQL + software engineering best practices.</p>
+<h3 id="key-points">Key Points:</h3>
+<ul>
+<li>It only does transformation (the “T” in ELT).</li>
+<li>It runs inside your warehouse (Snowflake, BigQuery, Redshift, Databricks, etc.).</li>
+<li>It turns raw data into analytics-ready data products.</li>
+<li>It brings version control, testing, modularity, documentation, and CI/CD to data work.</li>
+</ul>
+<h3 id="how-it-works-in-practice">How it Works in Practice:</h3>
+<ul>
+<li>Raw data is loaded into the warehouse (by Fivetran, Airbyte, Stitch, custom scripts, etc.).</li>
+<li>dbt transforms it (staging → intermediate → marts).</li>
+<li>Clean data is consumed by BI tools, data science, applications, or AI models.</li>
+</ul>
+<hr>
+<p>A model is a single <code>.sql</code> file that contains a <code>SELECT</code> statement (plus optional configuration). When you run <code>dbt run</code>, dbt compiles that SQL and executes it in your data warehouse to create a table or view.</p>
+<h3 id="key-characteristics-of-a-model">Key Characteristics of a Model:</h3>
+<ul>
+<li>One model = one logical transformation</li>
+<li>Written in pure SQL + Jinja templating</li>
+<li>Stored in the <code>models/</code> folder</li>
+<li>Can reference other models or raw sources</li>
+</ul>
+<hr>
+<h2 id="what-is-ref">What is <code>ref()</code>?</h2>
+<p><code>ref()</code> is a Jinja function that tells dbt: “I depend on another model. Please give me its final table/view name and build me after it.”</p>
+<h3 id="basic-syntax">Basic Syntax:</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#007020;font-weight:bold">select</span><span style="color:#bbb"> </span><span style="color:#666">*</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">from</span><span style="color:#bbb"> </span><span style="">{{</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">ref</span>(<span style="color:#4070a0">&#39;stg_orders&#39;</span>)<span style="color:#bbb"> </span><span style="">}}</span><span style="color:#bbb">
+</span></span></span></code></pre></div><h3 id="why-ref-is-revolutionary">Why <code>ref()</code> is Revolutionary:</h3>
+<ul>
+<li><strong>Automatic Dependency Management</strong>: dbt builds a Directed Acyclic Graph (DAG) based on every <code>ref()</code> call. It knows the exact order in which models must run.</li>
+<li><strong>No Hardcoded Table Names</strong>: You never write <code>from analytics.stg_orders</code>. You always use <code>ref()</code>.</li>
+<li><strong>Environment Awareness</strong>: In development vs production, dbt can use different schemas/databases automatically.</li>
+<li><strong>Lineage &amp; Documentation</strong>: Every <code>ref()</code> creates visible data lineage.</li>
+</ul>
+<hr>
+<h2 id="ref-vs-source"><code>ref()</code> vs <code>source()</code></h2>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Function</th>
+          <th style="text-align: left">Used For</th>
+          <th style="text-align: left">Example</th>
+          <th style="text-align: left">When to Use</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong><code>ref()</code></strong></td>
+          <td style="text-align: left">Referencing other models</td>
+          <td style="text-align: left"><code>{{ ref('stg_orders') }}</code></td>
+          <td style="text-align: left">Almost always for transformations</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong><code>source()</code></strong></td>
+          <td style="text-align: left">Referencing raw data</td>
+          <td style="text-align: left"><code>{{ source('raw', 'orders') }}</code></td>
+          <td style="text-align: left">Only for the very first layer (staging)</td>
+      </tr>
+  </tbody>
+</table>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="color:#60a0b0;font-style:italic">-- Referencing a model in a specific package
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#60a0b0;font-style:italic"></span><span style="">{{</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">ref</span>(<span style="color:#4070a0">&#39;package_name&#39;</span>,<span style="color:#bbb"> </span><span style="color:#4070a0">&#39;model_name&#39;</span>)<span style="color:#bbb"> </span><span style="">}}</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span><span style="color:#bbb"></span><span style="color:#60a0b0;font-style:italic">-- Using a variable
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span><span style="color:#60a0b0;font-style:italic"></span><span style="">{{</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">ref</span>(var(<span style="color:#4070a0">&#39;staging_prefix&#39;</span>)<span style="color:#bbb"> </span><span style="color:#666">~</span><span style="color:#bbb"> </span><span style="color:#4070a0">&#39;orders&#39;</span>)<span style="color:#bbb"> </span><span style="">}}</span><span style="color:#bbb">
+</span></span></span></code></pre></div><h3 id="how-the-dag-works">How the DAG Works:</h3>
+<ul>
+<li><strong>Nodes</strong> = Models, Sources, Snapshots, etc.</li>
+<li><strong>Arrows</strong> = Dependencies created by <code>ref()</code></li>
+<li>dbt always runs models in the correct topological order.</li>
+<li>If one model fails, downstream models are skipped.</li>
+</ul>
+<hr>
+<p>A materialization tells dbt how to create the output of a model. You define it like this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="">{{</span><span style="color:#bbb"> </span>config(materialized<span style="color:#666">=</span><span style="color:#4070a0">&#39;table&#39;</span>)<span style="color:#bbb"> </span><span style="">}}</span><span style="color:#bbb">
+</span></span></span></code></pre></div><h3 id="full-breakdown-of-materializations">Full Breakdown of Materializations:</h3>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Materialization</th>
+          <th style="text-align: left">What it Creates</th>
+          <th style="text-align: left">When to Use</th>
+          <th style="text-align: left">Pros</th>
+          <th style="text-align: left">Cons</th>
+          <th style="text-align: left">Performance</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong><code>view</code></strong></td>
+          <td style="text-align: left">Database View</td>
+          <td style="text-align: left">Lightweight transformations, frequently changing logic</td>
+          <td style="text-align: left">Fast to create, always up-to-date</td>
+          <td style="text-align: left">Slower query performance</td>
+          <td style="text-align: left">Fastest to build</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong><code>table</code></strong></td>
+          <td style="text-align: left">Physical Table</td>
+          <td style="text-align: left">Most final marts, heavy transformations</td>
+          <td style="text-align: left">Fastest queries</td>
+          <td style="text-align: left">Slower to build, more storage</td>
+          <td style="text-align: left">Slow to build</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong><code>incremental</code></strong></td>
+          <td style="text-align: left">Physical Table (smart)</td>
+          <td style="text-align: left">Large tables where only new/changed data matters</td>
+          <td style="text-align: left">Best of both worlds</td>
+          <td style="text-align: left">More complex to write</td>
+          <td style="text-align: left">Excellent for large data</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong><code>ephemeral</code></strong></td>
+          <td style="text-align: left">Nothing (CTE only)</td>
+          <td style="text-align: left">Intermediate logic you don’t want to persist</td>
+          <td style="text-align: left">No storage cost</td>
+          <td style="text-align: left">Cannot be referenced with <code>ref()</code> from other models easily</td>
+          <td style="text-align: left">N/A</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong><code>materialized_view</code></strong></td>
+          <td style="text-align: left">Materialized View</td>
+          <td style="text-align: left">Real-time-ish data with automatic refresh</td>
+          <td style="text-align: left">Auto-refresh</td>
+          <td style="text-align: left">Warehouse-specific support</td>
+          <td style="text-align: left">Varies</td>
+      </tr>
+  </tbody>
+</table>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1</span><span><span style="">{{</span><span style="color:#bbb"> </span>config(<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2</span><span><span style="color:#bbb">    </span>materialized<span style="color:#666">=</span><span style="color:#4070a0">&#39;incremental&#39;</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3</span><span><span style="color:#bbb">    </span>unique_key<span style="color:#666">=</span><span style="color:#4070a0">&#39;order_id&#39;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4</span><span><span style="color:#bbb"></span>)<span style="color:#bbb"> </span><span style="">}}</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5</span><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6</span><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">select</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7</span><span><span style="color:#bbb">    </span>order_id,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8</span><span><span style="color:#bbb">    </span>customer_id,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9</span><span><span style="color:#bbb">    </span>order_date,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10</span><span><span style="color:#bbb">    </span>amount<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11</span><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">from</span><span style="color:#bbb"> </span><span style="">{{</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">ref</span>(<span style="color:#4070a0">&#39;stg_orders&#39;</span>)<span style="color:#bbb"> </span><span style="">}}</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12</span><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13</span><span><span style="color:#bbb"></span><span style="">{</span><span style="color:#666">%</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">if</span><span style="color:#bbb"> </span>is_incremental()<span style="color:#bbb"> </span><span style="color:#666">%</span><span style="">}</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14</span><span><span style="color:#bbb">  </span><span style="color:#007020;font-weight:bold">where</span><span style="color:#bbb"> </span>order_date<span style="color:#bbb"> </span><span style="color:#666">&gt;</span><span style="color:#bbb"> </span>(<span style="color:#007020;font-weight:bold">select</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">max</span>(order_date)<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">from</span><span style="color:#bbb"> </span><span style="">{{</span><span style="color:#bbb"> </span>this<span style="color:#bbb"> </span><span style="">}}</span>)<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15</span><span><span style="color:#bbb"></span><span style="">{</span><span style="color:#666">%</span><span style="color:#bbb"> </span>endif<span style="color:#bbb"> </span><span style="color:#666">%</span><span style="">}</span><span style="color:#bbb">
+</span></span></span></code></pre></div><hr>
+<h2 id="35-how-models--ref--materialization-work-together">3.5 How Models + <code>ref()</code> + Materialization Work Together</h2>
+<p>This is the core mental model:</p>
+<ul>
+<li>You write a model (<code>.sql</code> file).</li>
+<li>You use <code>ref()</code> to declare dependencies.</li>
+<li>You choose a materialization to control how it gets created.</li>
+<li>dbt compiles everything into optimized SQL and runs it in the correct order.</li>
+</ul>
+<h3 id="real-example-flow">Real Example Flow:</h3>
+<p><code>stg_orders</code> (view) → <code>int_orders_enriched</code> (table) → <code>fct_sales</code> (incremental)</p>
+<p>When you run <code>dbt run</code>, dbt will:</p>
+<ol>
+<li>Build <code>stg_orders</code> first.</li>
+<li>Then <code>int_orders_enriched</code>.</li>
+<li>Then <code>fct_sales</code> (using incremental logic).</li>
+</ol>
+<hr>
+<h2 id="36-best-practices-for-models-ref-and-materializations">3.6 Best Practices for Models, <code>ref()</code>, and Materializations</h2>
+<h3 id="golden-rules">Golden Rules:</h3>
+<ul>
+<li><strong>One model = One business concept</strong></li>
+<li><strong>Always use <code>ref()</code></strong> — never hardcode table names.</li>
+<li><strong>Start with <code>view</code></strong> for staging and intermediate layers.</li>
+<li><strong>Use <code>table</code></strong> for most marts (unless data is huge).</li>
+<li><strong>Use <code>incremental</code></strong> only when it gives clear performance benefit.</li>
+</ul>
+<h3 id="name-models-clearly">Name Models Clearly:</h3>
+<ul>
+<li>
+<p><code>stg_</code> = Staging (raw cleaning)</p>
+</li>
+<li>
+<p><code>int_</code> = Intermediate (business logic)</p>
+</li>
+<li>
+<p><code>fct_</code> = Fact tables</p>
+</li>
+<li>
+<p><code>dim_</code> = Dimension tables</p>
+</li>
+<li>
+<p>Keep models small — ideally under 200–300 lines.</p>
+</li>
+<li>
+<p>Use <code>config()</code> block at the top for clarity.</p>
+</li>
+</ul>
+<h3 id="example-of-excellent-config-block">Example of Excellent Config Block:</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1</span><span><span style="">{{</span><span style="color:#bbb"> </span>config(<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2</span><span><span style="color:#bbb">    </span>materialized<span style="color:#666">=</span><span style="color:#4070a0">&#39;incremental&#39;</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3</span><span><span style="color:#bbb">    </span>unique_key<span style="color:#666">=</span><span style="color:#4070a0">&#39;order_id&#39;</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4</span><span><span style="color:#bbb">    </span>incremental_strategy<span style="color:#666">=</span><span style="color:#4070a0">&#39;merge&#39;</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5</span><span><span style="color:#bbb">    </span>on_schema_change<span style="color:#666">=</span><span style="color:#4070a0">&#39;sync_all_columns&#39;</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6</span><span><span style="color:#bbb">    </span>tags<span style="color:#666">=</span>[<span style="color:#4070a0">&#39;finance&#39;</span>,<span style="color:#bbb"> </span><span style="color:#4070a0">&#39;daily&#39;</span>]<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7</span><span><span style="color:#bbb"></span>)<span style="color:#bbb"> </span><span style="">}}</span><span style="color:#bbb">
+</span></span></span></code></pre></div><hr>
+<h3 id="1-stg_--staging-layer-raw-cleaning">1. <code>stg_</code> – Staging Layer (Raw Cleaning)</h3>
+<ul>
+<li><strong>Goal:</strong> Make raw data usable and consistent.</li>
+<li>This is usually the first layer after raw sources.</li>
+<li>You should not do heavy business logic here.</li>
+<li>Focus on: column renaming, data type casting, basic filtering, handling nulls.</li>
+</ul>
+<h3 id="2-int_--intermediate-layer-business-logic">2. <code>int_</code> – Intermediate Layer (Business Logic)</h3>
+<ul>
+<li><strong>Goal:</strong> Apply real business rules and combine data.</li>
+<li>This is where most complex logic lives.</li>
+<li>You can join multiple staging models here.</li>
+<li>Often contains calculations that will be reused.</li>
+</ul>
+<h3 id="3-fct_--fact-tables">3. <code>fct_</code> – Fact Tables</h3>
+<ul>
+<li><strong>Goal:</strong> Store measurable business events (transactions).</li>
+<li>These are the tables analysts and dashboards query most often.</li>
+<li>Usually contain foreign keys to dimensions + numeric metrics.</li>
+</ul>
+<h3 id="4-dim_--dimension-tables">4. <code>dim_</code> – Dimension Tables</h3>
+<ul>
+<li><strong>Goal:</strong> Store descriptive information.</li>
+<li>These answer “who”, “what”, “where”, “when”.</li>
+<li>Often use slowly changing dimension (SCD) logic.</li>
+</ul>
+ </content>
+
+<p>
+    
+    <a href="https://heyyviv.github.io/tags/blog/">#Blog</a>
+    
+    <a href="https://heyyviv.github.io/tags/database/">#Database</a>
+    
+    <a href="https://heyyviv.github.io/tags/distributed_systems/">#Distributed_systems</a>
+    
+    <a href="https://heyyviv.github.io/tags/llm/">#LLM</a>
+    
+    <a href="https://heyyviv.github.io/tags/notes/">#Notes</a>
+    
+    <a href="https://heyyviv.github.io/tags/sharding/">#Sharding</a>
+    
+    <a href="https://heyyviv.github.io/tags/tips/">#Tips</a>
+    
+    <a href="https://heyyviv.github.io/tags/training/">#Training</a>
+    
+</p>
+
+
+
+<div class="upvote-container">
+    <small class="upvote">
+        <button class="upvote-btn" id="upvote-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor"
+                stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                <polyline points="17 11 12 6 7 11"></polyline>
+                <polyline points="17 18 12 13 7 18"></polyline>
+            </svg>
+            <span class="upvote-count" id="upvote-count">0</span>
+        </button>
+    </small>
+</div>
+
+<script>
+    let hasUpvoted = false;
+    let upvoteBtn;
+    let upvoteCount;
+
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        const slug = '';
+        upvoteBtn = document.getElementById('upvote-btn');
+        upvoteCount = document.getElementById('upvote-count');
+        getCount(slug);
+
+        
+        upvoteBtn.addEventListener('click', handleUpvote);
+    });
+
+    
+    async function handleUpvote() {
+        if (hasUpvoted) {
+            console.log('You have already upvoted this post!');
+            return;
+        }
+        const slug = '';
+
+        
+        upvoteBtn.disabled = true;
+        
+        upvoteBtn.classList.add('upvoted');
+        
+        upvoteCount.innerText = parseInt(upvoteCount.innerText) + 1;
+
+        try {
+            const response = await fetch('https:\/\/upvote-api.random4hello.workers.dev\/upvote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ postId: slug, diff: 1 }),
+            });
+
+            if (response.ok) {
+                console.log('Upvote successful!');
+                hasUpvoted = true;
+                await getCount(slug, 3);
+            } else {
+                console.log('Upvote failed!');
+            }
+        } catch (error) {
+            console.error('Error: ', error);
+        } finally {
+            upvoteBtn.disabled = false;
+        }
+    }
+
+    
+    async function getCount(slug, retryCount = 0) {
+        try {
+            const response = await fetch('https:\/\/upvote-api.random4hello.workers.dev\/count?post=' + slug, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+
+            if (data.code === 0) {
+                const count = data.data.count;
+                upvoteCount.innerText = count;
+                hasUpvoted = data.data.hasUpvoted;
+                if (hasUpvoted) {
+                    upvoteBtn.classList.add('upvoted');
+                } else {
+                    upvoteBtn.classList.remove('upvoted');
+                }
+            } else {
+                console.error('Failed to get upvote count: ', data.msg);
+            }
+        } catch (error) {
+            console.error('Error: ', error);
+            if (retryCount > 0) {
+                setTimeout(() => {
+                    getCount(slug, retryCount - 1);
+                }, 1000);
+            }
+        }
+    }
+</script>
+
+
+
+
+
+<div class="toc">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#key-points">Key Points:</a></li>
+        <li><a href="#how-it-works-in-practice">How it Works in Practice:</a></li>
+        <li><a href="#key-characteristics-of-a-model">Key Characteristics of a Model:</a></li>
+      </ul>
+    </li>
+    <li><a href="#what-is-ref">What is <code>ref()</code>?</a>
+      <ul>
+        <li><a href="#basic-syntax">Basic Syntax:</a></li>
+        <li><a href="#why-ref-is-revolutionary">Why <code>ref()</code> is Revolutionary:</a></li>
+      </ul>
+    </li>
+    <li><a href="#ref-vs-source"><code>ref()</code> vs <code>source()</code></a>
+      <ul>
+        <li><a href="#how-the-dag-works">How the DAG Works:</a></li>
+        <li><a href="#full-breakdown-of-materializations">Full Breakdown of Materializations:</a></li>
+      </ul>
+    </li>
+    <li><a href="#35-how-models--ref--materialization-work-together">3.5 How Models + <code>ref()</code> + Materialization Work Together</a>
+      <ul>
+        <li><a href="#real-example-flow">Real Example Flow:</a></li>
+      </ul>
+    </li>
+    <li><a href="#36-best-practices-for-models-ref-and-materializations">3.6 Best Practices for Models, <code>ref()</code>, and Materializations</a>
+      <ul>
+        <li><a href="#golden-rules">Golden Rules:</a></li>
+        <li><a href="#name-models-clearly">Name Models Clearly:</a></li>
+        <li><a href="#example-of-excellent-config-block">Example of Excellent Config Block:</a></li>
+        <li><a href="#1-stg_--staging-layer-raw-cleaning">1. <code>stg_</code> – Staging Layer (Raw Cleaning)</a></li>
+        <li><a href="#2-int_--intermediate-layer-business-logic">2. <code>int_</code> – Intermediate Layer (Business Logic)</a></li>
+        <li><a href="#3-fct_--fact-tables">3. <code>fct_</code> – Fact Tables</a></li>
+        <li><a href="#4-dim_--dimension-tables">4. <code>dim_</code> – Dimension Tables</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+</div>
+
+
+
+  </main>
+  <footer>
+
+
+
+
+Subscribe via <a href="/index.xml">RSS</a>.
+<br />
+
+
+
+
+
+
+Made with
+<a href="https://github.com/rokcso/hugo-bearblog-neo/">Hugo Bear Neo</a>.
+<br />
+
+
+
+
+
+
+
+🗺️ <a href="/sitemap.xml">Sitemap</a>.
+
+
+<button id="back-to-top" title="Go to top">↑</button>
+
+
+
+</footer>
+
+    
+
+
+</body>
+
+</html>
