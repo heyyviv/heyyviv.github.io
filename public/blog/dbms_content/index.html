@@ -5,11 +5,47 @@
   <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Dbms_content | Vivek&#39;s Field Notes</title>
-<meta name="title" content="Dbms_content" />
-<meta name="description" content="A# Database Engineering Roadmap (Self-Study Curriculum)
-Executive Summary
-We propose a modular, project-driven curriculum focused on core database systems concepts and how they underpin modern data platforms (Snowflake, Spark, Trino, etc.).  The roadmap covers ~150–200 topics across 12–16 weeks (5–10 hours/week assumed), organized by modules.  Each module groups related topics (with learning objectives), and for each topic we list: a seminal paper, a book chapter, a top-notch blog post, a lecture, a code reading, a hands-on exercise, advanced interview questions, and relevant connections to Snowflake/dbt/Cube/Spark/Trino.  We emphasize concepts over products (Snowflake, dbt, Cube are discussed as examples) and primary sources (original papers, official docs) whenever possible." />
+<title>DBMS Content | Vivek&#39;s Field Notes</title>
+<meta name="title" content="DBMS Content" />
+<meta name="description" content="Database Systems Engineering and Modern Cloud Platforms: The Exhaustive Master Syllabus
+This is a comprehensive, production-grade self-study curriculum designed to build world-class database systems knowledge. It bridges the engineering of core database kernels (written in C&#43;&#43; and Rust) with modern, disaggregated cloud analytics platform operations (Snowflake, dbt, and Cube).
+
+🗺️ Program Architecture Overview
+To achieve deep mastery without cognitive burnout, this curriculum is explicitly structured into two phases:
+🔬 Phase 1: Database Kernel Internals (Weeks 1 to 7)
+
+Focus: Bare-metal storage layouts, hardware-aligned vector compression, execution engines, JIT query compilation, NUMA-aware multi-core scheduling, join algorithms, and rule/cost-based query planning.
+Repository Targets: duckdb/duckdb, facebookincubator/velox, apache/datafusion, and ClickHouse/ClickHouse.
+
+☁️ Phase 2: High-Performance Distributed Analytics &amp; Corporate Stack (Weeks 8 to 14)
+
+Focus: Decoupled storage-compute environments, Snowflake micro-partition pruning mechanics, optimized dbt incremental transformations, change data capture, and high-concurrency semantic caching with Cube Store.
+
+
+🔬 Phase 1: Database Kernel Internals
+📅 Week 1: Analytical Storage Layouts &amp; PAX Hybrid Storage
+🎯 Core Concepts Checklist
+
+ NSM (N-ary Storage Model / Row-Store): CPU cache performance constraints under heavy projection scans.
+ DSM (Decomposed Storage Model / Column-Store): Metadata lookups and row reconstruction overhead during multi-column joins.
+ PAX (Partition Attributes Across) Hybrid Storage Paradigm: Organizing rows into contiguous &ldquo;row groups&rdquo; (e.g., Parquet, ORC, CarbonData) while storing columns independently inside each group.
+ Zero-Copy Deserialization: Memory-aligned layouts and zero-copy deserialization buffers.
+
+📚 Required Academic &amp; Textbook Readings
+
+📄 Lakehouse: A New Generation of Open Platforms that Unify Data Warehousing and Advanced Analytics (Armbrust et al.)1
+📄 An Empirical Evaluation of Columnar Storage Formats (Zeng et al.)1
+📖 Database Internals (Alex Petrov) – Chapters 1 &amp; 22
+
+📂 Codebase Paths to Inspect
+
+🔍 duckdb/duckdb: Target /src/storage/ (Inspect how physical pages, row group boundaries, and column metrics are written to disk)3
+🔍 facebookincubator/velox: Target /velox/vector/ (Trace how in-memory columnar vectors are structured, aligned with the Apache Arrow specification)4
+
+💻 Hands-On Implementation Task
+
+Binary Metadata Parser
+Using C&#43;&#43; or Rust, write a binary parser that reads a local Apache Parquet file, extracts the file metadata headers, maps the column chunk offsets, and prints out the min/max statistics for each RowGroup without reading or decompressing the actual rows." />
 <meta name="keywords" content="blog,database,distributed_systems,llm,notes,sharding,tips,training," />
 
 <link rel="canonical" href="https://heyyviv.github.io/blog/dbms_content/">
@@ -17,9 +53,10 @@ We propose a modular, project-driven curriculum focused on core database systems
 
 <meta property="og:url" content="https://heyyviv.github.io/blog/dbms_content/">
   <meta property="og:site_name" content="Vivek&#39;s Field Notes">
-  <meta property="og:title" content="Dbms_content">
-  <meta property="og:description" content="A# Database Engineering Roadmap (Self-Study Curriculum)
-Executive Summary We propose a modular, project-driven curriculum focused on core database systems concepts and how they underpin modern data platforms (Snowflake, Spark, Trino, etc.). The roadmap covers ~150–200 topics across 12–16 weeks (5–10 hours/week assumed), organized by modules. Each module groups related topics (with learning objectives), and for each topic we list: a seminal paper, a book chapter, a top-notch blog post, a lecture, a code reading, a hands-on exercise, advanced interview questions, and relevant connections to Snowflake/dbt/Cube/Spark/Trino. We emphasize concepts over products (Snowflake, dbt, Cube are discussed as examples) and primary sources (original papers, official docs) whenever possible.">
+  <meta property="og:title" content="DBMS Content">
+  <meta property="og:description" content="Database Systems Engineering and Modern Cloud Platforms: The Exhaustive Master Syllabus This is a comprehensive, production-grade self-study curriculum designed to build world-class database systems knowledge. It bridges the engineering of core database kernels (written in C&#43;&#43; and Rust) with modern, disaggregated cloud analytics platform operations (Snowflake, dbt, and Cube).
+🗺️ Program Architecture Overview To achieve deep mastery without cognitive burnout, this curriculum is explicitly structured into two phases:
+🔬 Phase 1: Database Kernel Internals (Weeks 1 to 7) Focus: Bare-metal storage layouts, hardware-aligned vector compression, execution engines, JIT query compilation, NUMA-aware multi-core scheduling, join algorithms, and rule/cost-based query planning. Repository Targets: duckdb/duckdb, facebookincubator/velox, apache/datafusion, and ClickHouse/ClickHouse. ☁️ Phase 2: High-Performance Distributed Analytics &amp; Corporate Stack (Weeks 8 to 14) Focus: Decoupled storage-compute environments, Snowflake micro-partition pruning mechanics, optimized dbt incremental transformations, change data capture, and high-concurrency semantic caching with Cube Store. 🔬 Phase 1: Database Kernel Internals 📅 Week 1: Analytical Storage Layouts &amp; PAX Hybrid Storage 🎯 Core Concepts Checklist NSM (N-ary Storage Model / Row-Store): CPU cache performance constraints under heavy projection scans. DSM (Decomposed Storage Model / Column-Store): Metadata lookups and row reconstruction overhead during multi-column joins. PAX (Partition Attributes Across) Hybrid Storage Paradigm: Organizing rows into contiguous “row groups” (e.g., Parquet, ORC, CarbonData) while storing columns independently inside each group. Zero-Copy Deserialization: Memory-aligned layouts and zero-copy deserialization buffers. 📚 Required Academic &amp; Textbook Readings 📄 Lakehouse: A New Generation of Open Platforms that Unify Data Warehousing and Advanced Analytics (Armbrust et al.)1 📄 An Empirical Evaluation of Columnar Storage Formats (Zeng et al.)1 📖 Database Internals (Alex Petrov) – Chapters 1 &amp; 22 📂 Codebase Paths to Inspect 🔍 duckdb/duckdb: Target /src/storage/ (Inspect how physical pages, row group boundaries, and column metrics are written to disk)3 🔍 facebookincubator/velox: Target /velox/vector/ (Trace how in-memory columnar vectors are structured, aligned with the Apache Arrow specification)4 💻 Hands-On Implementation Task Binary Metadata Parser Using C&#43;&#43; or Rust, write a binary parser that reads a local Apache Parquet file, extracts the file metadata headers, maps the column chunk offsets, and prints out the min/max statistics for each RowGroup without reading or decompressing the actual rows.">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="blog">
@@ -38,19 +75,21 @@ Executive Summary We propose a modular, project-driven curriculum focused on cor
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
-  <meta name="twitter:title" content="Dbms_content">
-  <meta name="twitter:description" content="A# Database Engineering Roadmap (Self-Study Curriculum)
-Executive Summary We propose a modular, project-driven curriculum focused on core database systems concepts and how they underpin modern data platforms (Snowflake, Spark, Trino, etc.). The roadmap covers ~150–200 topics across 12–16 weeks (5–10 hours/week assumed), organized by modules. Each module groups related topics (with learning objectives), and for each topic we list: a seminal paper, a book chapter, a top-notch blog post, a lecture, a code reading, a hands-on exercise, advanced interview questions, and relevant connections to Snowflake/dbt/Cube/Spark/Trino. We emphasize concepts over products (Snowflake, dbt, Cube are discussed as examples) and primary sources (original papers, official docs) whenever possible.">
+  <meta name="twitter:title" content="DBMS Content">
+  <meta name="twitter:description" content="Database Systems Engineering and Modern Cloud Platforms: The Exhaustive Master Syllabus This is a comprehensive, production-grade self-study curriculum designed to build world-class database systems knowledge. It bridges the engineering of core database kernels (written in C&#43;&#43; and Rust) with modern, disaggregated cloud analytics platform operations (Snowflake, dbt, and Cube).
+🗺️ Program Architecture Overview To achieve deep mastery without cognitive burnout, this curriculum is explicitly structured into two phases:
+🔬 Phase 1: Database Kernel Internals (Weeks 1 to 7) Focus: Bare-metal storage layouts, hardware-aligned vector compression, execution engines, JIT query compilation, NUMA-aware multi-core scheduling, join algorithms, and rule/cost-based query planning. Repository Targets: duckdb/duckdb, facebookincubator/velox, apache/datafusion, and ClickHouse/ClickHouse. ☁️ Phase 2: High-Performance Distributed Analytics &amp; Corporate Stack (Weeks 8 to 14) Focus: Decoupled storage-compute environments, Snowflake micro-partition pruning mechanics, optimized dbt incremental transformations, change data capture, and high-concurrency semantic caching with Cube Store. 🔬 Phase 1: Database Kernel Internals 📅 Week 1: Analytical Storage Layouts &amp; PAX Hybrid Storage 🎯 Core Concepts Checklist NSM (N-ary Storage Model / Row-Store): CPU cache performance constraints under heavy projection scans. DSM (Decomposed Storage Model / Column-Store): Metadata lookups and row reconstruction overhead during multi-column joins. PAX (Partition Attributes Across) Hybrid Storage Paradigm: Organizing rows into contiguous “row groups” (e.g., Parquet, ORC, CarbonData) while storing columns independently inside each group. Zero-Copy Deserialization: Memory-aligned layouts and zero-copy deserialization buffers. 📚 Required Academic &amp; Textbook Readings 📄 Lakehouse: A New Generation of Open Platforms that Unify Data Warehousing and Advanced Analytics (Armbrust et al.)1 📄 An Empirical Evaluation of Columnar Storage Formats (Zeng et al.)1 📖 Database Internals (Alex Petrov) – Chapters 1 &amp; 22 📂 Codebase Paths to Inspect 🔍 duckdb/duckdb: Target /src/storage/ (Inspect how physical pages, row group boundaries, and column metrics are written to disk)3 🔍 facebookincubator/velox: Target /velox/vector/ (Trace how in-memory columnar vectors are structured, aligned with the Apache Arrow specification)4 💻 Hands-On Implementation Task Binary Metadata Parser Using C&#43;&#43; or Rust, write a binary parser that reads a local Apache Parquet file, extracts the file metadata headers, maps the column chunk offsets, and prints out the min/max statistics for each RowGroup without reading or decompressing the actual rows.">
 
 
 
 
-  <meta itemprop="name" content="Dbms_content">
-  <meta itemprop="description" content="A# Database Engineering Roadmap (Self-Study Curriculum)
-Executive Summary We propose a modular, project-driven curriculum focused on core database systems concepts and how they underpin modern data platforms (Snowflake, Spark, Trino, etc.). The roadmap covers ~150–200 topics across 12–16 weeks (5–10 hours/week assumed), organized by modules. Each module groups related topics (with learning objectives), and for each topic we list: a seminal paper, a book chapter, a top-notch blog post, a lecture, a code reading, a hands-on exercise, advanced interview questions, and relevant connections to Snowflake/dbt/Cube/Spark/Trino. We emphasize concepts over products (Snowflake, dbt, Cube are discussed as examples) and primary sources (original papers, official docs) whenever possible.">
+  <meta itemprop="name" content="DBMS Content">
+  <meta itemprop="description" content="Database Systems Engineering and Modern Cloud Platforms: The Exhaustive Master Syllabus This is a comprehensive, production-grade self-study curriculum designed to build world-class database systems knowledge. It bridges the engineering of core database kernels (written in C&#43;&#43; and Rust) with modern, disaggregated cloud analytics platform operations (Snowflake, dbt, and Cube).
+🗺️ Program Architecture Overview To achieve deep mastery without cognitive burnout, this curriculum is explicitly structured into two phases:
+🔬 Phase 1: Database Kernel Internals (Weeks 1 to 7) Focus: Bare-metal storage layouts, hardware-aligned vector compression, execution engines, JIT query compilation, NUMA-aware multi-core scheduling, join algorithms, and rule/cost-based query planning. Repository Targets: duckdb/duckdb, facebookincubator/velox, apache/datafusion, and ClickHouse/ClickHouse. ☁️ Phase 2: High-Performance Distributed Analytics &amp; Corporate Stack (Weeks 8 to 14) Focus: Decoupled storage-compute environments, Snowflake micro-partition pruning mechanics, optimized dbt incremental transformations, change data capture, and high-concurrency semantic caching with Cube Store. 🔬 Phase 1: Database Kernel Internals 📅 Week 1: Analytical Storage Layouts &amp; PAX Hybrid Storage 🎯 Core Concepts Checklist NSM (N-ary Storage Model / Row-Store): CPU cache performance constraints under heavy projection scans. DSM (Decomposed Storage Model / Column-Store): Metadata lookups and row reconstruction overhead during multi-column joins. PAX (Partition Attributes Across) Hybrid Storage Paradigm: Organizing rows into contiguous “row groups” (e.g., Parquet, ORC, CarbonData) while storing columns independently inside each group. Zero-Copy Deserialization: Memory-aligned layouts and zero-copy deserialization buffers. 📚 Required Academic &amp; Textbook Readings 📄 Lakehouse: A New Generation of Open Platforms that Unify Data Warehousing and Advanced Analytics (Armbrust et al.)1 📄 An Empirical Evaluation of Columnar Storage Formats (Zeng et al.)1 📖 Database Internals (Alex Petrov) – Chapters 1 &amp; 22 📂 Codebase Paths to Inspect 🔍 duckdb/duckdb: Target /src/storage/ (Inspect how physical pages, row group boundaries, and column metrics are written to disk)3 🔍 facebookincubator/velox: Target /velox/vector/ (Trace how in-memory columnar vectors are structured, aligned with the Apache Arrow specification)4 💻 Hands-On Implementation Task Binary Metadata Parser Using C&#43;&#43; or Rust, write a binary parser that reads a local Apache Parquet file, extracts the file metadata headers, maps the column chunk offsets, and prints out the min/max statistics for each RowGroup without reading or decompressing the actual rows.">
   <meta itemprop="datePublished" content="2026-07-02T00:30:31+05:30">
   <meta itemprop="dateModified" content="2026-07-02T00:30:31+05:30">
-  <meta itemprop="wordCount" content="5798">
+  <meta itemprop="wordCount" content="4330">
   <meta itemprop="image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
   <meta itemprop="keywords" content="Blog,Database,Distributed_systems,LLM,Notes,Sharding,Tips,Training">
 <meta name="referrer" content="no-referrer-when-downgrade" />
@@ -656,877 +695,674 @@ Executive Summary We propose a modular, project-driven curriculum focused on cor
   <main>
 
 
-<h1>Dbms_content</h1>
+<h1>DBMS Content</h1>
 
 <p>
     <i>
         <time datetime='2026-07-02' pubdate>
             02 Jul, 2026
         </time>
-        • 28 min read
+        • 21 min read
     </i>
 </p>
 
 
 
 
-<content> <p>A# Database Engineering Roadmap (Self-Study Curriculum)</p>
-<h2 id="executive-summary">Executive Summary</h2>
-<p>We propose a <strong>modular, project-driven curriculum</strong> focused on core database systems concepts and how they underpin modern data platforms (Snowflake, Spark, Trino, etc.).  The roadmap covers ~150–200 topics across 12–16 weeks (5–10 hours/week assumed), organized by modules.  Each module groups related topics (with learning objectives), and for <strong>each topic</strong> we list: a seminal paper, a book chapter, a top-notch blog post, a lecture, a code reading, a hands-on exercise, advanced interview questions, and relevant connections to Snowflake/dbt/Cube/Spark/Trino.  We emphasize <strong>concepts over products</strong> (Snowflake, dbt, Cube are discussed as examples) and primary sources (original papers, official docs) whenever possible.</p>
-<p>Key features include:</p>
+<content> <h1 id="database-systems-engineering-and-modern-cloud-platforms-the-exhaustive-master-syllabus">Database Systems Engineering and Modern Cloud Platforms: The Exhaustive Master Syllabus</h1>
+<p>This is a comprehensive, production-grade self-study curriculum designed to build world-class database systems knowledge. It bridges the engineering of core database kernels (written in C++ and Rust) with modern, disaggregated cloud analytics platform operations (Snowflake, dbt, and Cube).</p>
+<hr>
+<h2 id="-program-architecture-overview">🗺️ Program Architecture Overview</h2>
+<p>To achieve deep mastery without cognitive burnout, this curriculum is explicitly structured into two phases:</p>
+<h3 id="-phase-1-database-kernel-internals-weeks-1-to-7">🔬 Phase 1: Database Kernel Internals (Weeks 1 to 7)</h3>
 <ul>
-<li>
-<p><strong>Curriculum Structure:</strong> Modules on Data Models, Storage Engines, Indexing, Query Execution, Optimization, Transactions, Concurrency, Distributed Systems, Data Warehousing, and Modern Data Tools.  Each module has specific learning goals.  For example, <em>Storage Engines</em> covers pages, buffer pool, file formats; <em>Query Optimization</em> covers System-R/Cascades algorithms and cost models.</p>
-</li>
-<li>
-<p><strong>Topic Resources:</strong> For each topic we identify one seminal paper (e.g. Selinger’s System R optimizer, ARIES recovery, etc.), one canonical book chapter (e.g. Petrov’s <em>Database Internals</em> or Kleppmann’s <em>Data-Intensive</em>), one high-quality blog post or article (e.g. Databricks’ Spark CBO, Trino docs, etc.), one lecture (CMU/Stanford/MIT), one relevant source code excerpt (e.g. BusTub’s B+Tree code), a coding exercise (e.g. implement a B+Tree or hash join), and advanced interview questions (e.g. “How does the ARIES log protocol ensure atomicity?”).  We also note how each topic relates to platforms like Snowflake, Spark, Trino, dbt, or Cube when relevant (for example, Snowflake’s micro-partitioning as a case of zone-maps).</p>
-</li>
-<li>
-<p><strong>Syllabus &amp; Milestones:</strong> We provide a sample 12–16 week syllabus with weekly topics, project deliverables, and reverse-engineering/code-reading tasks.  For instance, <em>Week 3</em> might cover indexes: reading BusTub’s B+Tree code, implementing a simple B+Tree insertion, and answering design questions.  Milestones include coding exercises (e.g. building a mini-column store) and concept check-ins.</p>
-</li>
-<li>
-<p><strong>Resources Tables:</strong> We include tables of <em>candidate open-source repos</em> (e.g. DuckDB, Postgres, SQLite, Velox, DataFusion, ClickHouse, BusTub, Trino, Spark, dbt-core, Cube), <em>seminal papers</em> (System R, ARIES, MapReduce, Spanner, Parquet, etc.), and <em>books</em> (Petrov’s <em>Database Internals</em>, Kleppmann’s <em>Designing Data-Intensive Apps</em>, ACM Red Book, SQLite/Postgres architecture). Each entry has a description and URL.</p>
-</li>
-<li>
-<p><strong>Assessments &amp; Rubric:</strong> Suggested assessments include weekly quizzes, coding homeworks, and a capstone project. We outline a grading rubric (assignments, projects, quizzes, participation) similar to top CSDB courses.  We assume no strict time-per-week; learners may go faster or slower.</p>
-</li>
-<li>
-<p><strong>Prerequisite Graph:</strong> A mermaid diagram shows topic dependencies (e.g. “Storage” → “Indexes” → “Query Execution” → “Query Optimization” → “Distributed Systems”).</p>
-</li>
+<li><strong>Focus:</strong> Bare-metal storage layouts, hardware-aligned vector compression, execution engines, JIT query compilation, NUMA-aware multi-core scheduling, join algorithms, and rule/cost-based query planning.</li>
+<li><strong>Repository Targets:</strong> <code>duckdb/duckdb</code>, <code>facebookincubator/velox</code>, <code>apache/datafusion</code>, and <code>ClickHouse/ClickHouse</code>.</li>
 </ul>
-<p>This curriculum leverages authoritative materials. For example, CMU/MIT/Stanford DB course syllabi cover many topics, Alex Petrov’s <em>Database Internals</em> outlines the crucial subsystems, and modern platforms like Snowflake illustrate advanced concepts in practice.   We avoid treating products as stand-alone topics; instead, we tie them into core concepts (e.g. Snowflake’s micro-partitions illustrate “zone-maps” for pruning, Spark’s Catalyst optimizer exemplifies cost-based planning, etc.).  By focusing on fundamentals and then connecting them to industry systems, learners will build a robust understanding that survives tool churn.</p>
-<h2 id="curriculum-structure">Curriculum Structure</h2>
-<p>We organize the material into <strong>modules</strong>, each with a set of topics and learning objectives.  Below is an example structure. Each topic (listed indented) includes an illustrative list of resources (paper, book, etc.):</p>
+<h3 id="-phase-2-high-performance-distributed-analytics--corporate-stack-weeks-8-to-14">☁️ Phase 2: High-Performance Distributed Analytics &amp; Corporate Stack (Weeks 8 to 14)</h3>
 <ul>
-<li>
-<p><strong>Module 1: Data Models &amp; Relational Theory</strong><br>
-<em>Topics:</em> Relational model &amp; algebra; ER modeling; SQL (relational algebra vs SQL)<br>
-<em>Objectives:</em> Understand tables, keys, normalization, relational algebra vs SQL.<br>
-<em>Resources:</em></p>
+<li><strong>Focus:</strong> Decoupled storage-compute environments, Snowflake micro-partition pruning mechanics, optimized dbt incremental transformations, change data capture, and high-concurrency semantic caching with Cube Store.</li>
+</ul>
+<hr>
+<h2 id="-phase-1-database-kernel-internals">🔬 Phase 1: Database Kernel Internals</h2>
+<h3 id="-week-1-analytical-storage-layouts--pax-hybrid-storage">📅 Week 1: Analytical Storage Layouts &amp; PAX Hybrid Storage</h3>
+<h4 id="-core-concepts-checklist">🎯 Core Concepts Checklist</h4>
 <ul>
-<li><strong>Paper:</strong> Codd’s original relational model or System R intro.</li>
-<li><strong>Book:</strong> <em>Database System Concepts</em> (Korth/Silberschatz) chapter on data models; Petrov ch.1 overview.</li>
-<li><strong>Blog:</strong> Tutorial on normalization and functional dependencies.</li>
-<li><strong>Lecture:</strong> Stanford or CMU intro database lecture (e.g. SQL semantics).</li>
-<li><strong>Code:</strong> SQLite schema code or Postgres planner code.</li>
-<li><strong>Exercise:</strong> Write a simple SQL-to-algebra translator; design normalized schemas.</li>
-<li><strong>Interview Qs:</strong> “Explain Boyce-Codd Normal Form” or “What is an inner vs outer join?”</li>
-<li><strong>Connections:</strong> Show that Snowflake, Spark, Trino all use SQL, and discuss dbt (which transforms SQL) in data pipelines.</li>
+<li><input disabled="" type="checkbox"> <strong>NSM (N-ary Storage Model / Row-Store)</strong>: CPU cache performance constraints under heavy projection scans.</li>
+<li><input disabled="" type="checkbox"> <strong>DSM (Decomposed Storage Model / Column-Store)</strong>: Metadata lookups and row reconstruction overhead during multi-column joins.</li>
+<li><input disabled="" type="checkbox"> <strong>PAX (Partition Attributes Across) Hybrid Storage Paradigm</strong>: Organizing rows into contiguous &ldquo;row groups&rdquo; (e.g., Parquet, ORC, CarbonData) while storing columns independently inside each group.</li>
+<li><input disabled="" type="checkbox"> <strong>Zero-Copy Deserialization</strong>: Memory-aligned layouts and zero-copy deserialization buffers.</li>
+</ul>
+<h4 id="-required-academic--textbook-readings">📚 Required Academic &amp; Textbook Readings</h4>
+<ul>
+<li>📄 <em>Lakehouse: A New Generation of Open Platforms that Unify Data Warehousing and Advanced Analytics</em> (Armbrust et al.)<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+<li>📄 <em>An Empirical Evaluation of Columnar Storage Formats</em> (Zeng et al.)<sup id="fnref1:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+<li>📖 <em>Database Internals</em> (Alex Petrov) – Chapters 1 &amp; 2<sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></li>
+</ul>
+<h4 id="-codebase-paths-to-inspect">📂 Codebase Paths to Inspect</h4>
+<ul>
+<li>🔍 <a href="https://github.com/duckdb/duckdb"><code>duckdb/duckdb</code></a>: Target <code>/src/storage/</code> (Inspect how physical pages, row group boundaries, and column metrics are written to disk)<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup></li>
+<li>🔍 <a href="https://github.com/facebookincubator/velox"><code>facebookincubator/velox</code></a>: Target <code>/velox/vector/</code> (Trace how in-memory columnar vectors are structured, aligned with the Apache Arrow specification)<sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup></li>
+</ul>
+<h4 id="-hands-on-implementation-task">💻 Hands-On Implementation Task</h4>
+<blockquote>
+<p><strong>Binary Metadata Parser</strong>
+Using C++ or Rust, write a binary parser that reads a local Apache Parquet file, extracts the file metadata headers, maps the column chunk offsets, and prints out the min/max statistics for each <code>RowGroup</code> without reading or decompressing the actual rows.</p></blockquote>
+<h4 id="-technical-blogs-from-big-companies">🏢 Technical Blogs from Big Companies</h4>
+<ul>
+<li>📰 <strong>Meta Engineering:</strong> <a href="https://engineering.fb.com/2023/03/09/open-source/velox-open-source-execution-engine/">Introducing Velox: An open source unified execution engine</a><sup id="fnref1:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup></li>
+<li>📰 <strong>Databricks Engineering:</strong> <a href="https://15721.courses.cs.cmu.edu/spring2024/schedule.html">Delta Lake: High-Performance ACID Table Storage over Cloud Object Stores</a><sup id="fnref2:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+</ul>
+<hr>
+<h3 id="-week-2-hardware-aligned-integer-vector-compression">📅 Week 2: Hardware-Aligned Integer Vector Compression</h3>
+<h4 id="-core-concepts-checklist-1">🎯 Core Concepts Checklist</h4>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>CPU Memory Bus Bottleneck</strong>: Bandwidth limitations in modern disaggregated database clusters.</li>
+<li><input disabled="" type="checkbox"> <strong>Bit-Packing Mechanics</strong>: Unpacking arbitrary bit-width integers using logical shifts and bitwise AND masks without byte-boundary stalls.</li>
+<li><input disabled="" type="checkbox"> <strong>Compression Algorithms</strong>: Run-Length Encoding (RLE) and Frame of Reference (FOR) compression algorithms.</li>
+<li><input disabled="" type="checkbox"> <strong>The FastLanes Layout</strong>: Unrolling compression loops to execute scalar integer decompression at over 100 billion integers per second.</li>
+<li><input disabled="" type="checkbox"> <strong>SIMD-Friendly Design</strong>: Compression layouts aligned with vector registers and instruction pipelining.</li>
+</ul>
+<h4 id="-required-academic--textbook-readings-1">📚 Required Academic &amp; Textbook Readings</h4>
+<ul>
+<li>📄 <em>The FastLanes Compression Layout: Decoding &gt; 100 Billion Integers per Second with Scalar Code</em> (Afroozeh et al.)<sup id="fnref3:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+<li>📄 <em>BtrBlocks: Efficient Columnar Compression for Data Lakes</em> (Kuschewski et al.)<sup id="fnref4:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+</ul>
+<h4 id="-codebase-paths-to-inspect-1">📂 Codebase Paths to Inspect</h4>
+<ul>
+<li>🔍 <a href="https://github.com/facebookincubator/velox"><code>facebookincubator/velox</code></a>: Target <code>/velox/vector/DecodedVector.h</code> (Study how arbitrarily encoded vector formats—such as flat, dictionary, and constant—are decoded into flat logical arrays without memory copies)<sup id="fnref:5"><a href="#fn:5" class="footnote-ref" role="doc-noteref">5</a></sup></li>
+<li>🔍 <a href="https://github.com/apache/datafusion"><code>apache/datafusion</code></a>: Target <code>/datafusion/common/</code> (Review memory allocation strategies for data blocks)<sup id="fnref:6"><a href="#fn:6" class="footnote-ref" role="doc-noteref">6</a></sup></li>
+</ul>
+<h4 id="-hands-on-implementation-task-1">💻 Hands-On Implementation Task</h4>
+<blockquote>
+<p><strong>SIMD-Friendly Bit-Packer</strong>
+Implement a high-performance bit-packing and bit-unpacking algorithm in C++ or Rust. Decompress an array of packed 5-bit integers into standard 32-bit registers using manual bitmasking and shift operations. Measure throughput in millions of operations per second.</p></blockquote>
+<h4 id="-technical-blogs-from-big-companies-1">🏢 Technical Blogs from Big Companies</h4>
+<ul>
+<li>📰 <strong>Alibaba Cloud Storage Team:</strong> <a href="https://www.alibabacloud.com/blog/600689">Research on the Computing Principle of Velox Expressions</a><sup id="fnref:7"><a href="#fn:7" class="footnote-ref" role="doc-noteref">7</a></sup></li>
+<li>📰 <strong>ClickHouse Blog:</strong> <a href="https://clickhouse.com/docs/academic_overview">ClickHouse Compression: The physical mechanics of compressing columnar blocks</a><sup id="fnref:8"><a href="#fn:8" class="footnote-ref" role="doc-noteref">8</a></sup></li>
+</ul>
+<hr>
+<h3 id="-week-3-vectorized-execution-and-cache-locality">📅 Week 3: Vectorized Execution and Cache Locality</h3>
+<h4 id="-core-concepts-checklist-2">🎯 Core Concepts Checklist</h4>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Volcano Iterator Model</strong>: Virtual function call overhead, compiler optimization barriers, and CPU instruction cache thrashing.</li>
+<li><input disabled="" type="checkbox"> <strong>Vectorized Execution (MonetDB/X100 Model)</strong>: Processing batches of 1024 to 4096 values through pre-compiled, static loops.</li>
+<li><input disabled="" type="checkbox"> <strong>Cache Reuse</strong>: Intermediate vector cache-buffering strategies to maximize L1/L2 data cache reuse.</li>
+<li><input disabled="" type="checkbox"> <strong>Hardware Pipelining</strong>: Hardware-level branch prediction and CPU execution pipelines.</li>
+</ul>
+<h4 id="-required-academic--textbook-readings-2">📚 Required Academic &amp; Textbook Readings</h4>
+<ul>
+<li>📄 <em>MonetDB/X100: Hyper-Pipelining Query Execution</em> (Boncz et al.)<sup id="fnref5:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+<li>📄 <em>Everything You Always Wanted to Know About Compiled and Vectorized Queries But Were Afraid to Ask</em> (Kersten et al.)<sup id="fnref6:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+</ul>
+<h4 id="-codebase-paths-to-inspect-2">📂 Codebase Paths to Inspect</h4>
+<ul>
+<li>🔍 <a href="https://github.com/duckdb/duckdb"><code>duckdb/duckdb</code></a>: Target <code>/src/execution/</code> (Trace how <code>DataChunk</code> blocks of vectors are pushed up through physical operators)<sup id="fnref1:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup></li>
+<li>🔍 <a href="https://github.com/facebookincubator/velox"><code>facebookincubator/velox</code></a>: Target <code>/velox/expression/</code> (Inspect vectorized expression evaluation loops)<sup id="fnref:9"><a href="#fn:9" class="footnote-ref" role="doc-noteref">9</a></sup></li>
+</ul>
+<h4 id="-hands-on-implementation-task-2">💻 Hands-On Implementation Task</h4>
+<blockquote>
+<p><strong>Volcano vs. Vectorized Benchmark</strong>
+Write two implementations of a math projection and filter step (e.g., <code>value * 2 &gt; 100</code>) in C++ or Rust:</p>
+<ol>
+<li>Volcano-style row-by-row virtual iterator loop.</li>
+<li>Vectorized execution loop that operates on pre-allocated blocks of integers.
+Benchmark the two approaches and inspect the generated assembly output to analyze branch instructions and compiler optimizations.</li>
+</ol></blockquote>
+<h4 id="-technical-blogs-from-big-companies-2">🏢 Technical Blogs from Big Companies</h4>
+<ul>
+<li>📰 <strong>ClickHouse Docs:</strong> <a href="https://clickhouse.com/docs/academic_overview">ClickHouse Architecture Overview: Vectorized Query Execution</a><sup id="fnref1:8"><a href="#fn:8" class="footnote-ref" role="doc-noteref">8</a></sup></li>
+<li>📰 <strong>Tinybird Blog:</strong> <a href="https://www.tinybird.co/blog/clickhouse-vs-duckdb-nodes">ClickHouse vs. DuckDB: A performance and operational architectural comparison</a><sup id="fnref:10"><a href="#fn:10" class="footnote-ref" role="doc-noteref">10</a></sup></li>
+</ul>
+<hr>
+<h3 id="-week-4-just-in-time-jit-query-compilation">📅 Week 4: Just-In-Time (JIT) Query Compilation</h3>
+<h4 id="-core-concepts-checklist-3">🎯 Core Concepts Checklist</h4>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Code Gen vs. Vectorization</strong>: CPU instruction registers vs. L1/L2 cache storage trade-offs.</li>
+<li><input disabled="" type="checkbox"> <strong>Operator Fusion</strong>: Combining multiple relational operations (e.g., Scan -&gt; Filter -&gt; Project) into a single dynamically compiled execution loop.</li>
+<li><input disabled="" type="checkbox"> <strong>LLVM Integration</strong>: Compiling query trees to native machine code at runtime inside the database kernel.</li>
+<li><input disabled="" type="checkbox"> <strong>SIMD Instruction Alignment</strong>: Hardware vector alignment in compiled codebases.</li>
+<li><input disabled="" type="checkbox"> <strong>Compilation Latency</strong>: The performance cost of compilation overhead on short-running queries.</li>
+</ul>
+<h4 id="-required-academic--textbook-readings-3">📚 Required Academic &amp; Textbook Readings</h4>
+<ul>
+<li>📄 <em>Efficiently Compiling Efficient Query Plans for Modern Hardware</em> (Thomas Neumann)<sup id="fnref7:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+<li>📄 <em>Make the Most out of Your SIMD Investments: Counter Control Flow Divergence in Compiled Query Pipelines</em> (Lang et al.)<sup id="fnref8:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+</ul>
+<h4 id="-codebase-paths-to-inspect-3">📂 Codebase Paths to Inspect</h4>
+<ul>
+<li>🔍 <a href="https://github.com/ClickHouse/ClickHouse"><code>ClickHouse/ClickHouse</code></a>: Target <code>/src/Interpreters/JIT/</code> (Analyze how the runtime environment utilizes LLVM to generate and compile relational functions on the fly)<sup id="fnref:11"><a href="#fn:11" class="footnote-ref" role="doc-noteref">11</a></sup></li>
+</ul>
+<h4 id="-hands-on-implementation-task-3">💻 Hands-On Implementation Task</h4>
+<blockquote>
+<p><strong>JIT Compiler Expression Evaluator</strong>
+Build a simple program in Rust or C++ that parses a basic mathematical string expression (e.g., <code>x * y + 10</code>). Using a runtime compiler framework (such as LLVM or Cranelift), compile this expression into native x86/ARM machine code at runtime, load it into a function pointer, and execute it over an array of integers.</p></blockquote>
+<h4 id="-technical-blogs-from-big-companies-3">🏢 Technical Blogs from Big Companies</h4>
+<ul>
+<li>📰 <strong>SingleStore Engineering:</strong> <a href="https://davidgomes.com/advanced-database-systems-part-1/">How Query Compilation Works: Fusing SQL into native machine code</a><sup id="fnref:12"><a href="#fn:12" class="footnote-ref" role="doc-noteref">12</a></sup></li>
+<li>📰 <strong>Databricks Engineering:</strong> <a href="https://15721.courses.cs.cmu.edu/spring2024/schedule.html">Photon: A Fast Query Engine for Lakehouse Systems</a><sup id="fnref9:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+</ul>
+<hr>
+<h3 id="-week-5-morsel-driven-parallelism--numa-scheduling">📅 Week 5: Morsel-Driven Parallelism &amp; NUMA Scheduling</h3>
+<h4 id="-core-concepts-checklist-4">🎯 Core Concepts Checklist</h4>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Static vs. Dynamic Scheduling</strong>: Limitations of static thread scheduling (assigning rigid database regions to specific worker threads).</li>
+<li><input disabled="" type="checkbox"> <strong>Morsel-Driven Parallelism</strong>: Carving datasets into small, dynamic execution units (morsels) containing roughly 100,000 to 1,000,000 rows.</li>
+<li><input disabled="" type="checkbox"> <strong>NUMA (Non-Uniform Memory Access) Awareness</strong>: Scheduling execution threads to prioritize processing local physical memory banks to avoid high-latency cross-socket memory bus routing.</li>
+<li><input disabled="" type="checkbox"> <strong>Concurrency Coordination</strong>: Work-stealing thread pools and lock-free execution coordination.</li>
+</ul>
+<h4 id="-required-academic--textbook-readings-4">📚 Required Academic &amp; Textbook Readings</h4>
+<ul>
+<li>📄 <em>Morsel-Driven Parallelism: A NUMA-Aware Query Evaluation Framework for the Many-Core Age</em> (Leis et al.)<sup id="fnref10:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+<li>📖 <em>Designing Data-Intensive Applications</em> (Martin Kleppmann) – Chapter 6 (Partitioning and parallel query execution)<sup id="fnref1:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></li>
+</ul>
+<h4 id="-codebase-paths-to-inspect-4">📂 Codebase Paths to Inspect</h4>
+<ul>
+<li>🔍 <a href="https://github.com/duckdb/duckdb"><code>duckdb/duckdb</code></a>: Target <code>/src/execution/physical_operator/</code> (Inspect the push-based dynamic task schedulers and worker threads)<sup id="fnref:13"><a href="#fn:13" class="footnote-ref" role="doc-noteref">13</a></sup></li>
+<li>🔍 <a href="https://github.com/apache/datafusion"><code>apache/datafusion</code></a>: Target <code>/datafusion/execution/</code> (Analyze parallel execution configurations)<sup id="fnref1:6"><a href="#fn:6" class="footnote-ref" role="doc-noteref">6</a></sup></li>
+</ul>
+<h4 id="-hands-on-implementation-task-4">💻 Hands-On Implementation Task</h4>
+<blockquote>
+<p><strong>NUMA-Aware Morsel Scheduler</strong>
+Write a multi-threaded execution queue in Rust or C++. Given a mock table divided into 1,000 &ldquo;morsel&rdquo; arrays, write a dynamic work-stealing scheduler that assigns morsels to a pinned thread pool. Ensure that each worker thread pulls tasks locally, keeping memory allocations aligned with its simulated NUMA zone.</p></blockquote>
+<h4 id="-technical-blogs-from-big-companies-4">🏢 Technical Blogs from Big Companies</h4>
+<ul>
+<li>📰 <strong>Meta Open Source:</strong> <a href="https://velox-lib.io/blog/page/2/">Task Barriers and Memory Arbitration in Velox</a><sup id="fnref:14"><a href="#fn:14" class="footnote-ref" role="doc-noteref">14</a></sup></li>
+<li>📰 <strong>Intel / Gluten:</strong> <a href="https://www.ibm.com/new/product-blog/veloxcon-2024-innovation-in-data-management">Gluten: Offloading JVM-based query engine execution to native vector execution runtimes</a><sup id="fnref:15"><a href="#fn:15" class="footnote-ref" role="doc-noteref">15</a></sup></li>
+</ul>
+<hr>
+<h3 id="-week-6-vectorized-hash-join-algorithms">📅 Week 6: Vectorized Hash Join Algorithms</h3>
+<h4 id="-core-concepts-checklist-5">🎯 Core Concepts Checklist</h4>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Main-Memory Hash Joins</strong>: Structuring hash joins for high-concurrency memory-centric systems.</li>
+<li><input disabled="" type="checkbox"> <strong>The Build Phase</strong>: Constructing cache-friendly bucket hash tables from build-side inputs using vectorized pipelines.</li>
+<li><input disabled="" type="checkbox"> <strong>The Probe Phase</strong>: Streaming probe vectors through hash lookup filters to evaluate candidate matches.</li>
+<li><input disabled="" type="checkbox"> <strong>Dynamic Join-Filter Pushdown</strong>: Runtime min/max statistics generation from build tables to prune probe-side file scans.</li>
+<li><input disabled="" type="checkbox"> <strong>Out-of-Core Spilling</strong>: Partitioning and writing memory blocks to disk when query memory caps are reached.</li>
+</ul>
+<h4 id="-required-academic--textbook-readings-5">📚 Required Academic &amp; Textbook Readings</h4>
+<ul>
+<li>📄 <em>An Experimental Comparison of Thirteen Relational Equi-Joins in Main Memory</em> (Schuh et al.)<sup id="fnref11:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+<li>📄 <em>To Partition, or Not to Partition, That is the Join Question in a Real System</em> (Bandle et al.)<sup id="fnref12:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+</ul>
+<h4 id="-codebase-paths-to-inspect-5">📂 Codebase Paths to Inspect</h4>
+<ul>
+<li>🔍 <a href="https://github.com/apache/datafusion"><code>apache/datafusion</code></a>: Target <code>/datafusion/physical-plan/src/joins/</code> (Analyze the physical implementation of vectorized Hash, Cross, and Merge joins in Rust)<sup id="fnref:16"><a href="#fn:16" class="footnote-ref" role="doc-noteref">16</a></sup></li>
+<li>🔍 <a href="https://github.com/duckdb/duckdb"><code>duckdb/duckdb</code></a>: Target <code>/src/common/types/column_data_collection.cpp</code> (Trace physical serialization and layout of join data columns)<sup id="fnref1:13"><a href="#fn:13" class="footnote-ref" role="doc-noteref">13</a></sup></li>
+</ul>
+<h4 id="-hands-on-implementation-task-5">💻 Hands-On Implementation Task</h4>
+<blockquote>
+<p><strong>Vectorized Hash Join Operator</strong>
+Build a vectorized in-memory hash join operator in Rust or C++. Your operator must take two datasets (build and probe tables), construct a custom flat hash table using a thread-safe parallel build phase, and execute a multi-threaded probe phase. Maintain strict peak-memory consumption logs.</p></blockquote>
+<h4 id="-technical-blogs-from-big-companies-5">🏢 Technical Blogs from Big Companies</h4>
+<ul>
+<li>📰 <strong>Snowflake Engineering:</strong> <a href="https://www.snowflake.com/en/blog/engineering/apache-iceberg-queries-adaptive-execution/">Apache Iceberg Queries: Adaptive Scan and Dynamic Memory Control</a><sup id="fnref:17"><a href="#fn:17" class="footnote-ref" role="doc-noteref">17</a></sup></li>
+<li>📰 <strong>CockroachDB Blog:</strong> <a href="https://davidgomes.com/advanced-database-systems-part-1/">How CockroachDB implements memory-efficient hash joins</a><sup id="fnref1:12"><a href="#fn:12" class="footnote-ref" role="doc-noteref">12</a></sup></li>
+</ul>
+<hr>
+<h3 id="-week-7-query-optimizers-cbo--rule-based-plan-pruning">📅 Week 7: Query Optimizers (CBO &amp; Rule-Based Plan Pruning)</h3>
+<h4 id="-core-concepts-checklist-6">🎯 Core Concepts Checklist</h4>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Parsing &amp; Binding</strong>: Abstract Syntax Tree (AST) compilation, logical binder loops, and metadata validation.</li>
+<li><input disabled="" type="checkbox"> <strong>Plan Trees</strong>: Logical Query Plan trees vs. physical relational operator trees.</li>
+<li><input disabled="" type="checkbox"> <strong>Rule-Based Optimization (RBO)</strong>: Constant folding, predicate pushdowns, and subquery unnesting.</li>
+<li><input disabled="" type="checkbox"> <strong>Cost-Based Optimization (CBO)</strong>: Dynamic programming join-ordering using cardinality and selectivity metrics.</li>
+<li><input disabled="" type="checkbox"> <strong>Adaptive Query Execution</strong>: Dynamic plan optimization based on live run-time statistics.</li>
+</ul>
+<h4 id="-required-academic--textbook-readings-6">📚 Required Academic &amp; Textbook Readings</h4>
+<ul>
+<li>📄 <em>An Overview of Query Optimization in Relational Systems</em> (Surajit Chaudhuri)<sup id="fnref13:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+<li>📄 <em>Unnesting Arbitrary Queries</em> (Thomas Neumann)<sup id="fnref14:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+<li>📖 <em>Readings in Database Systems (Red Book)</em> (Bailis, Hellerstein, Stonebraker) – Chapter 8 (Query Optimization)<sup id="fnref:18"><a href="#fn:18" class="footnote-ref" role="doc-noteref">18</a></sup></li>
+</ul>
+<h4 id="-codebase-paths-to-inspect-6">📂 Codebase Paths to Inspect</h4>
+<ul>
+<li>🔍 <a href="https://github.com/duckdb/duckdb"><code>duckdb/duckdb</code></a>: Target <code>/src/optimizer/</code> (Read <code>filter_pushdown.cpp</code>, <code>statistics_propagator.cpp</code>, and <code>join_order_optimizer.cpp</code> to understand how plan optimizations are sequentially applied)<sup id="fnref2:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup></li>
+<li>🔍 <a href="https://github.com/apache/datafusion"><code>apache/datafusion</code></a>: Target <code>/datafusion/expr/</code> (Trace how logical expressions are recursively rewritten using physical planning traits)<sup id="fnref:19"><a href="#fn:19" class="footnote-ref" role="doc-noteref">19</a></sup></li>
+</ul>
+<h4 id="-hands-on-implementation-task-6">💻 Hands-On Implementation Task</h4>
+<blockquote>
+<p><strong>AST Plan Optimizer Pass</strong>
+Write a logical optimizer compiler pass in Python or Rust. Define an object-based AST query plan representation (e.g., <code>Join(Filter(Scan(A)), Scan(B))</code>). Write a program that parses this plan, detects filtering patterns, and outputs an optimized plan with the <code>Filter</code> pushed down directly into the scanner step.</p></blockquote>
+<h4 id="-technical-blogs-from-big-companies-6">🏢 Technical Blogs from Big Companies</h4>
+<ul>
+<li>📰 <strong>Metaplane:</strong> <a href="https://www.metaplane.dev/blog/optimize-your-snowflake-query-performance">Optimize Your Snowflake Query Performance: A Guide to EXPLAIN and Compilation Bottlenecks</a><sup id="fnref:20"><a href="#fn:20" class="footnote-ref" role="doc-noteref">20</a></sup></li>
+<li>📰 <strong>SQL Server Blog:</strong> <a href="https://15721.courses.cs.cmu.edu/spring2024/schedule.html">Froid: Optimization of Imperative Programs in a Relational Database</a><sup id="fnref15:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+</ul>
+<hr>
+<h2 id="-phase-2-distributed-analytical-storage--corporate-stack">☁️ Phase 2: Distributed Analytical Storage &amp; Corporate Stack</h2>
+<h3 id="-week-8-disaggregated-storage--query-planning-snowflake-internals">📅 Week 8: Disaggregated Storage &amp; Query Planning (Snowflake Internals)</h3>
+<h4 id="-core-concepts-checklist-7">🎯 Core Concepts Checklist</h4>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Storage-Compute Separation</strong>: Shared-nothing database clusters vs. shared-disk storage-compute separation architectures.</li>
+<li><input disabled="" type="checkbox"> <strong>Snowflake Micro-Partitions</strong>: Immutable micro-partition files storing columnar blocks of uncompressed size 50 MB to 500 MB.</li>
+<li><input disabled="" type="checkbox"> <strong>Metadata-Driven Pruning</strong>: How the Cloud Services layer queries statistics (min/max ranges, null counts, distinct values) stored in the metadata catalog to skip non-matching micro-partitions before allocating virtual warehouses.</li>
+<li><input disabled="" type="checkbox"> <strong>Cloning &amp; Time Travel</strong>: Leveraging micro-partition immutability to clone datasets or query historical states via metadata pointer catalog rewrites.</li>
+</ul>
+<h4 id="-required-academic--textbook-readings-7">📚 Required Academic &amp; Textbook Readings</h4>
+<ul>
+<li>📄 <em>The Snowflake Elastic Data Warehouse</em> (Dageville et al.)<sup id="fnref16:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+<li>📄 <em>Building An Elastic Query Engine on Disaggregated Storage</em> (Vuppalapati et al.)<sup id="fnref17:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li>
+</ul>
+<h4 id="-codebase-paths-to-inspect-7">📂 Codebase Paths to Inspect</h4>
+<ul>
+<li>🔍 <a href="https://github.com/cube-js/cube"><code>cube-js/cube</code></a>: Target <code>/rust/cubestore/cubestore/src/parquet/</code> (Inspect how the cache engine coordinates file indexing and reads Parquet statistical ranges directly from remote cloud object storage)<sup id="fnref:21"><a href="#fn:21" class="footnote-ref" role="doc-noteref">21</a></sup></li>
+</ul>
+<h4 id="-hands-on-implementation-task-7">💻 Hands-On Implementation Task</h4>
+<blockquote>
+<p><strong>Snowflake Pruning &amp; Clustering Monitor</strong>
+Using Snowflake SQL, build a performance monitoring process. Write queries against the metadata tables in <code>ACCOUNT_USAGE</code> to identify queries with poor partition pruning<sup id="fnref:22"><a href="#fn:22" class="footnote-ref" role="doc-noteref">22</a></sup>. Use <code>SYSTEM$CLUSTERING_INFORMATION</code> to write an automated script that flags tables larger than 100 GB that suffer from deep partition overlap, notifying you when automatic re-clustering is required to prevent runaway compute costs<sup id="fnref:23"><a href="#fn:23" class="footnote-ref" role="doc-noteref">23</a></sup>.</p></blockquote>
+<h4 id="-technical-blogs-from-big-companies-7">🏢 Technical Blogs from Big Companies</h4>
+<ul>
+<li>📰 <strong>Snowflake Engineering:</strong> <a href="https://medium.com/snowflake/super-charge-snowflake-query-performance-with-micro-partitions-3d8ef927890d">Super-charge Snowflake query performance with Micro-Partitions</a><sup id="fnref:24"><a href="#fn:24" class="footnote-ref" role="doc-noteref">24</a></sup></li>
+<li>📰 <strong>Keebo Blog:</strong> <a href="https://keebo.ai/blog/snowflake-micropartitions-clustering/">Demystifying Snowflake Micro-Partitions &amp; Clustering</a><sup id="fnref1:23"><a href="#fn:23" class="footnote-ref" role="doc-noteref">23</a></sup></li>
+</ul>
+<hr>
+<h3 id="-week-9-snowflake-workload-acceleration-sos-qas-and-materialized-views">📅 Week 9: Snowflake Workload Acceleration (SOS, QAS, and Materialized Views)</h3>
+<h4 id="-core-concepts-checklist-8">🎯 Core Concepts Checklist</h4>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Needle-in-a-Haystack Lookups</strong>: The computational and financial cost of micro-partition scans for point lookup queries.</li>
+<li><input disabled="" type="checkbox"> <strong>Search Optimization Service (SOS)</strong>: How Snowflake builds and maintains an out-of-band search path index to pinpoint specific values in high-cardinality columns (e.g., UUIDs, tracking IDs).</li>
+<li><input disabled="" type="checkbox"> <strong>Query Acceleration Service (QAS)</strong>: Offloading highly selective, scan-heavy, and aggregate-heavy execution steps to a shared, dynamic, serverless compute pool.</li>
+<li><input disabled="" type="checkbox"> <strong>Materialized Views on Snowflake</strong>: Dynamic, automatic background compute maintenance costs and the write-amplification risks of frequent base table DML updates.</li>
+</ul>
+<h4 id="-required-snowflake-architecture--performance-documentation">📚 Required Snowflake Architecture &amp; Performance Documentation</h4>
+<ul>
+<li>📖 <a href="https://docs.snowflake.com/en/user-guide/performance-query-options">Snowflake Documentation: Optimizing Query Performance</a><sup id="fnref:25"><a href="#fn:25" class="footnote-ref" role="doc-noteref">25</a></sup></li>
+<li>📖 <a href="https://docs.snowflake.com/en/guides-overview-performance">Snowflake Documentation: Choosing Automatic Clustering, Search Optimization, and Materialized Views</a><sup id="fnref1:22"><a href="#fn:22" class="footnote-ref" role="doc-noteref">22</a></sup></li>
+</ul>
+<h4 id="-codebase-paths-to-inspect-8">📂 Codebase Paths to Inspect</h4>
+<ul>
+<li>🔍 Create a permanent table on Snowflake, populate it with millions of randomized UUID records, and run selective queries. Access the Snowflake Query Profile console and compare the query execution graph of a cold table scan with a query utilizing the Search Optimization Service (SOS).</li>
+</ul>
+<h4 id="-hands-on-implementation-task-8">💻 Hands-On Implementation Task</h4>
+<blockquote>
+<p><strong>Workload Acceleration Profiler</strong>
+Build a profiling harness in Python or SQL. Write script tests that trigger three distinct query shapes over a target table: point lookups, dense range aggregations, and wide joins. Use the Snowflake query history APIs to log execution times, bytes scanned, and partition pruning metrics. Generate a programmatic recommendation report mapping each query profile to the optimal acceleration feature (SOS, QAS, or Materialized Views).</p></blockquote>
+<h4 id="-technical-blogs-from-big-companies-8">🏢 Technical Blogs from Big Companies</h4>
+<ul>
+<li>📰 <strong>Snowflake Engineering:</strong> <a href="https://www.snowflake.com/en/blog/engineering/sql-performance-improvements-2026/">Snowflake Optima: Real-world results of Autonomous Workload Optimization</a><sup id="fnref:26"><a href="#fn:26" class="footnote-ref" role="doc-noteref">26</a></sup></li>
+<li>📰 <strong>United Techno:</strong> <a href="https://www.unitedtechno.com/13-snowflake-performance-optimizations-you-should-know/">13 Snowflake Performance Optimizations You Should Know</a><sup id="fnref:27"><a href="#fn:27" class="footnote-ref" role="doc-noteref">27</a></sup></li>
+</ul>
+<hr>
+<h3 id="-week-10-high-performance-data-transformations-dbt-advanced-modeling">📅 Week 10: High-Performance Data Transformations (dbt Advanced Modeling)</h3>
+<h4 id="-core-concepts-checklist-9">🎯 Core Concepts Checklist</h4>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Modular Pipeline Design</strong>: Compiling and organizing dbt projects using multi-layered Directed Acyclic Graphs (DAGs)<sup id="fnref:28"><a href="#fn:28" class="footnote-ref" role="doc-noteref">28</a></sup>.</li>
+<li><input disabled="" type="checkbox"> <strong>Staging Layer Constraints</strong>: Single-source projections, datatype casting, and renaming (strictly zero joins, aggregations, or business logic)<sup id="fnref1:28"><a href="#fn:28" class="footnote-ref" role="doc-noteref">28</a></sup>.</li>
+<li><input disabled="" type="checkbox"> <strong>Intermediate Layer Processing</strong>: Joining staging schemas, resolving multi-source domain logic, and structuring entity hierarchies<sup id="fnref:29"><a href="#fn:29" class="footnote-ref" role="doc-noteref">29</a></sup>.</li>
+<li><input disabled="" type="checkbox"> <strong>Marts Layer Denormalization</strong>: Materializing fact and dimension schemas optimized for end-consumer analytics<sup id="fnref:30"><a href="#fn:30" class="footnote-ref" role="doc-noteref">30</a></sup>.</li>
+<li><input disabled="" type="checkbox"> <strong>Slowly Changing Dimensions (SCD)</strong>: Techniques for designing and managing SCD Type 1 vs. SCD Type 2 tables.</li>
+</ul>
+<h4 id="-required-readings--best-practices">📚 Required Readings &amp; Best Practices</h4>
+<ul>
+<li>📖 <a href="https://www.getdbt.com/blog/modular-data-modeling-techniques">dbt Developer Guide: Modular Data Modeling Techniques</a><sup id="fnref1:30"><a href="#fn:30" class="footnote-ref" role="doc-noteref">30</a></sup></li>
+<li>📖 <a href="https://www.datadoghq.com/blog/understanding-dbt/">dbt Design Conventions: Staging, Intermediate, and Marts directories</a><sup id="fnref2:28"><a href="#fn:28" class="footnote-ref" role="doc-noteref">28</a></sup></li>
+</ul>
+<h4 id="-codebase-paths-to-inspect-9">📂 Codebase Paths to Inspect</h4>
+<ul>
+<li>🔍 <a href="https://github.com/dbt-labs/dbt-core"><code>dbt-labs/dbt-core</code></a>: Target <code>/core/dbt/adapters/</code> (Study how database-specific SQL templates are compiled and resolved at runtime during model executions).</li>
+</ul>
+<h4 id="-hands-on-implementation-task-9">💻 Hands-On Implementation Task</h4>
+<blockquote>
+<p><strong>Monolith-to-Modular DAG Refactoring</strong>
+In your dbt repository, refit an existing monolithic transform SQL model into a clean, modular DAG:</p>
+<ol>
+<li>Create decoupled source definitions and staging files materialized as standard database views<sup id="fnref3:28"><a href="#fn:28" class="footnote-ref" role="doc-noteref">28</a></sup>.</li>
+<li>Build an intermediate transactional processing view<sup id="fnref4:28"><a href="#fn:28" class="footnote-ref" role="doc-noteref">28</a></sup>.</li>
+<li>Materialize the final mart model as an optimized table<sup id="fnref5:28"><a href="#fn:28" class="footnote-ref" role="doc-noteref">28</a></sup>. Validate the complete transform using the compiled SQL output.</li>
+</ol></blockquote>
+<h4 id="-technical-blogs-from-big-companies-9">🏢 Technical Blogs from Big Companies</h4>
+<ul>
+<li>📰 <strong>dbt Labs Blog:</strong> <a href="https://www.datadoghq.com/blog/understanding-dbt/">Design patterns for modern analytics engineering layout topologies</a><sup id="fnref6:28"><a href="#fn:28" class="footnote-ref" role="doc-noteref">28</a></sup></li>
+<li>📰 <strong>Stellans Blog:</strong> <a href="https://stellans.io/dbt-merge-vs-deleteinsert/">Analyzing the physical limits of SQL transformations inside cloud data lakes</a><sup id="fnref:31"><a href="#fn:31" class="footnote-ref" role="doc-noteref">31</a></sup></li>
+</ul>
+<hr>
+<h3 id="-week-11-optimized-dbt-incremental-strategies-on-snowflake">📅 Week 11: Optimized dbt Incremental Strategies on Snowflake</h3>
+<h4 id="-core-concepts-checklist-10">🎯 Core Concepts Checklist</h4>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>State Tracking</strong>: Incremental compilation and processing transaction deltas via <code>is_incremental()</code><sup id="fnref:32"><a href="#fn:32" class="footnote-ref" role="doc-noteref">32</a></sup>.</li>
+<li><input disabled="" type="checkbox"> <strong>Incremental Strategy Mechanics on Snowflake</strong>:
+<ul>
+<li><strong>Append:</strong> Inserts new records directly (lowest compute overhead, high duplicate risk)<sup id="fnref:33"><a href="#fn:33" class="footnote-ref" role="doc-noteref">33</a></sup>.</li>
+<li><strong>Merge:</strong> Evaluates standard <code>MERGE INTO</code> clauses; scans the destination table to compare matched unique keys<sup id="fnref1:31"><a href="#fn:31" class="footnote-ref" role="doc-noteref">31</a></sup>.</li>
+<li><strong>Delete+Insert:</strong> Deletes target rows matching incoming unique keys, then inserts staging records<sup id="fnref2:31"><a href="#fn:31" class="footnote-ref" role="doc-noteref">31</a></sup>.</li>
+<li><strong>Insert Overwrite:</strong> Swaps out target partitions entirely rather than validating individual keys (optimal for daily/weekly ranges)<sup id="fnref1:33"><a href="#fn:33" class="footnote-ref" role="doc-noteref">33</a></sup>.</li>
 </ul>
 </li>
-<li>
-<p><strong>Module 2: Storage Engines &amp; Data Layout</strong><br>
-<em>Topics:</em> Disk pages and slotted page formats; row vs column layouts; file formats (Parquet, ORC); compression (dictionary encoding, run-length, etc.); buffer pool caching (LRU, clock).<br>
-<em>Objectives:</em> Learn how data is laid out on disk and in memory, and how caching works.<br>
-<em>Resources:</em></p>
+<li><input disabled="" type="checkbox"> <strong>Pruning Optimization</strong>: Mitigating MERGE scaling problems on massive unclustered tables.</li>
+</ul>
+<h4 id="-required-readings--benchmarks">📚 Required Readings &amp; Benchmarks</h4>
 <ul>
-<li><strong>Paper:</strong> Ailamaki et al. on PAX layout (SOSP 1999) (row vs column layouts); Orzelek et al. on column store (C-Store 2008).</li>
-<li><strong>Book:</strong> Petrov, ch.1–3 (data layouts, column vs row); <em>DBIS</em> by Papadimitriou.</li>
-<li><strong>Blog:</strong> <em>O’Reilly Blog</em> or <em>LinksBlog</em> on row vs column, or “Columnar storage explained.”</li>
-<li><strong>Lecture:</strong> CMU 15-445 lecture on Storage Models; MIT 6.830 notes on file formats.</li>
-<li><strong>Code:</strong> SQLite’s B-tree pager code; DuckDB’s <em>DataChunk</em> storage code; BusTub’s <code>src/storage/page</code> (e.g. slotted page implementation) or B+Tree page code (see BusTub B+Tree internal page).</li>
-<li><strong>Exercise:</strong> Implement a simple slotted page (insert/delete variable-size records); add LRU/clock buffer cache.</li>
-<li><strong>Interview Qs:</strong> “What are PAX and N-ary storage layouts?”; “How does a slotted page manage free space?”; “Explain the clock algorithm.”</li>
-<li><strong>Connections:</strong> Snowflake micro-partitions store column slices with min/max stats (a form of columnar chunk). Parquet and ORC are common columnar file formats used by Spark and Trino. dbt generates SQL that ultimately hits these storage formats.</li>
+<li>📖 <a href="https://docs.getdbt.com/docs/build/incremental-strategy">dbt Documentation: Understanding built-in incremental model strategies</a><sup id="fnref2:33"><a href="#fn:33" class="footnote-ref" role="doc-noteref">33</a></sup></li>
+<li>📖 <a href="https://docs.getdbt.com/best-practices/how-we-handle-real-time-data/2-incremental-patterns">dbt Best Practices: How to manage time-series datasets using microbatching</a><sup id="fnref:34"><a href="#fn:34" class="footnote-ref" role="doc-noteref">34</a></sup></li>
 </ul>
-</li>
-<li>
-<p><strong>Module 3: Indexing and Data Partitioning</strong><br>
-<em>Topics:</em> B+ trees (node split/merge, fill factor, sibling pointers); Hash indexes; Zone maps and min-max indexes; Bitmap indexes; Trie and other indexes; Secondary indexes and covering indexes; Clustering vs indexing.<br>
-<em>Objectives:</em> Understand tree vs hash indexes, index maintenance, and advanced indexes for analytics.<br>
-<em>Resources:</em></p>
+<h4 id="-codebase-paths-to-inspect-10">📂 Codebase Paths to Inspect</h4>
 <ul>
-<li><strong>Paper:</strong> Comer’s B-Tree paper (1979); Abadi et al. on C-Store (2008, column-store with imprints); ORC/Parquet spec for min-max metadata.</li>
-<li><strong>Book:</strong> Petrov, ch.2–4 (B-Tree basics and implementation).</li>
-<li><strong>Blog:</strong> UseTheIndexLuke (though it’s SQL-focused); “Zone Maps &amp; Data Skipping” blog.</li>
-<li><strong>Lecture:</strong> CMU 15-445 lecture on indexing (B+Trees, hashing).</li>
-<li><strong>Code:</strong> BusTub’s <code>b_plus_tree_internal_page.cpp</code> and <code>b_plus_tree_leaf_page.cpp</code> (see stub at). DuckDB’s index code.</li>
-<li><strong>Exercise:</strong> Implement B+Tree insert/delete with splits/merges; build a simple min-max index for a column.</li>
-<li><strong>Interview Qs:</strong> “How does a B+Tree split and rebalance?”; “Explain leaf-linking in B+Trees.”; “How do zone maps accelerate scans?”; “What is a clustered index?”</li>
-<li><strong>Connections:</strong> Snowflake micro-partition metadata is effectively a per-partition min-max index. Cube (analytics) may push queries into database indexes. Spark/Trino can benefit from Parquet/ORC stats (e.g. skipping via metadata).</li>
+<li>🔍 Examine the generated <code>.sql</code> files in your dbt project&rsquo;s <code>/target/run/</code> directory. Trace the exact SQL statements Snowflake executes for both <code>merge</code> and <code>insert_overwrite</code> models.</li>
 </ul>
-</li>
-<li>
-<p><strong>Module 4: Query Execution (Operators)</strong><br>
-<em>Topics:</em> Selection and projection; join algorithms (nested-loop, sort-merge, hash-join); grouping and aggregation; index scan vs table scan; pipelining vs blocking operators; vectorized execution; filter pushdown.<br>
-<em>Objectives:</em> Learn how queries are executed physically.<br>
-<em>Resources:</em></p>
+<h4 id="-hands-on-implementation-task-10">💻 Hands-On Implementation Task</h4>
+<blockquote>
+<p><strong>Sliding Window Incremental Model</strong>
+Configure a dbt model utilizing the <code>merge</code> incremental strategy over a massive historical table. Limit your scanning logic by adding a 3-hour sliding lookback window filter (using the <code>is_incremental()</code> macro)<sup id="fnref1:34"><a href="#fn:34" class="footnote-ref" role="doc-noteref">34</a></sup>. Measure execution times and verify that the database engine successfully prunes non-matching micro-partitions<sup id="fnref2:34"><a href="#fn:34" class="footnote-ref" role="doc-noteref">34</a></sup>. Contrast these run performance metrics against a standard full-refresh baseline run.</p></blockquote>
+<h4 id="-technical-blogs-from-big-companies-10">🏢 Technical Blogs from Big Companies</h4>
 <ul>
-<li><strong>Paper:</strong> Neumann on Vectorized execution (HyPer 2011) (fast analytical DB); E.V. Hillery “Volcano” (1994) for iterator model; Accelerate by X100 (MonetDB/X100 2009).</li>
-<li><strong>Book:</strong> Hellerstein &amp; Stonebraker, <em>Readings in Database Systems</em> chapters on query operators; Petrov (DB Internals) on execution pipelines.</li>
-<li><strong>Blog:</strong> Kevin Sookocheff on Volcano and vectorized execution; Trino blog on join algorithms.</li>
-<li><strong>Lecture:</strong> MIT 6.830 lecture on Operators; CMU on Query Processing.</li>
-<li><strong>Code:</strong> DataFusion source for hash join or aggregation; Velox vector operators (FlatVector, DictionaryVector); ClickHouse’s MergeTree engine.</li>
-<li><strong>Exercise:</strong> Implement a hash join and sort-merge join in code; simulate a query pipeline that “pulls” data.</li>
-<li><strong>Interview Qs:</strong> “Compare nested-loop, hash-join, and merge-join.”; “What is pipelining in query processing?”; “Explain vectorized processing.”</li>
-<li><strong>Connections:</strong> Spark’s Catalyst optimizer chooses join implementations (e.g. broadcast vs shuffle) based on data size. Trino similarly chooses build/probe sides cost-based. Snowflake’s query engine uses vectorized operators underneath.</li>
+<li>📰 <strong>Reliable Data Engineering:</strong> <a href="https://medium.com/@reliabledataengineering/i-tested-dbts-incremental-strategies-on-1m-rows-here-s-what-actually-happened-1628cf03931f">I tested dbt&rsquo;s incremental strategies on 1M rows: Here&rsquo;s what actually happened</a><sup id="fnref:35"><a href="#fn:35" class="footnote-ref" role="doc-noteref">35</a></sup></li>
+<li>📰 <strong>OneUptime Tech Hub:</strong> <a href="https://oneuptime.com/blog/post/2026-01-27-dbt-incremental-models/view">How to configure dbt incremental models at enterprise scale</a><sup id="fnref:36"><a href="#fn:36" class="footnote-ref" role="doc-noteref">36</a></sup></li>
 </ul>
-</li>
-<li>
-<p><strong>Module 5: Query Optimization</strong><br>
-<em>Topics:</em> Cost-based optimization; join order enumeration; dynamic programming (System R); Volcano/Cascades framework; interesting orders; statistics and selectivity estimation; heuristics and adaptive query processing.<br>
-<em>Objectives:</em> Master how DBMS choose efficient query plans.<br>
-<em>Resources:</em></p>
+<hr>
+<h3 id="-week-12-near-real-time-cdc-via-snowflake-streams">📅 Week 12: Near Real-Time CDC via Snowflake Streams</h3>
+<h4 id="-core-concepts-checklist-11">🎯 Core Concepts Checklist</h4>
 <ul>
-<li><strong>Paper:</strong> Selinger et al. (System R, SIGMOD 1979); Cohen/Castro (Volcano, 1994) or IEEE TPODS;  Graefe (Cascades framework, 1993); “How Good Are Query Optimizers?” (VLDB 2014).</li>
-<li><strong>Book:</strong> <em>Readings in DB Systems</em> (Red Book) chapter on System R optimizer; Petrov (DB Internals ch. on SQL and optimization).</li>
-<li><strong>Blog:</strong> Slides by CMU on System R algorithm; Sookocheff Volcano review.</li>
-<li><strong>Lecture:</strong> Stanford CS145 “optimizer” lectures; CMU 15-445 lecture on cost-based optimization.</li>
-<li><strong>Code:</strong> DuckDB or PostgreSQL optimizer source (e.g. plan generation); DataFusion’s optimizer rules; Velox’s optimizer (for logical-physical).</li>
-<li><strong>Exercise:</strong> Implement a simple cost-based join enumerator for 2–3 tables; experiment with different cost models.</li>
-<li><strong>Interview Qs:</strong> “How does the System-R optimizer enumerate plans?”; “What is an interesting order?”; “Why is query optimization NP-hard?”; “How does a Volcano/Cascades optimizer work?”</li>
-<li><strong>Connections:</strong> Trino and Spark both implement cost-based join reordering and choose join methods using stats (Trino auto-enumerates join order; Spark CBO collects stats to pick build side). Snowflake’s optimizer (Optima) builds on these principles.</li>
+<li><input disabled="" type="checkbox"> <strong>Change Data Capture (CDC)</strong>: Ingestion paradigms in modern high-throughput analytical ingestion.</li>
+<li><input disabled="" type="checkbox"> <strong>Snowflake Streams</strong>: Lightweight, metadata-driven change tracking engines placed on base tables that log inserts, updates, and deletes<sup id="fnref:37"><a href="#fn:37" class="footnote-ref" role="doc-noteref">37</a></sup>.</li>
+<li><input disabled="" type="checkbox"> <strong>Stream Columns Evaluation</strong>: Analyzing <code>METADATA$ACTION</code> (Insert vs. Delete), <code>METADATA$ISUPDATE</code> (differentiating standard inserts from update actions), and <code>METADATA$ROW_ID</code> (tracking unique records)<sup id="fnref1:37"><a href="#fn:37" class="footnote-ref" role="doc-noteref">37</a></sup>.</li>
+<li><input disabled="" type="checkbox"> <strong>Delta-Only Processing</strong>: Eliminating expensive time-based query sweeps (e.g., <code>WHERE updated_at &gt; last_processed_at</code>) by running dbt transformations directly over active Snowflake stream tables<sup id="fnref2:37"><a href="#fn:37" class="footnote-ref" role="doc-noteref">37</a></sup>.</li>
 </ul>
-</li>
-<li>
-<p><strong>Module 6: Transactions &amp; Concurrency</strong><br>
-<em>Topics:</em> ACID properties; Two-Phase Locking (2PL); Deadlocks and detection; Multi-Version Concurrency Control (MVCC); snapshot isolation; anomalies (lost updates, phantoms); optimistic concurrency.<br>
-<em>Objectives:</em> Understand how DBMS ensure consistency under concurrent workloads.<br>
-<em>Resources:</em></p>
+<h4 id="-required-snowflake-architecture-documentation">📚 Required Snowflake Architecture Documentation</h4>
 <ul>
-<li><strong>Paper:</strong> Gray &amp; Reuter (Transaction Book) chapters on 2PL; Cahill (SI anomalies) or Papadimitriou on isolation.</li>
-<li><strong>Book:</strong> Petrov ch.5 on Transactions and Recovery; <em>Database Systems: The Complete Book</em> concurrency chapter.</li>
-<li><strong>Blog:</strong> CMU’s MVCC lecture notes; postgresql or Oracle MVCC blogs.</li>
-<li><strong>Lecture:</strong> CMU 15-445 MVCC lecture; MIT transactional lecture.</li>
-<li><strong>Code:</strong> Postgres MVCC implementation (heap tuple xmin/xmax logic); BusTub concurrency (Lock Manager); SQLite concurrency.</li>
-<li><strong>Exercise:</strong> Implement simple two-phase locking (shared/exclusive locks) and deadlock detection; or implement MVCC snapshot logic for reads.</li>
-<li><strong>Interview Qs:</strong> “Explain MVCC and how snapshots work”; “What anomalies does Repeatable Read allow? Serializable?”; “How does 2PL enforce serializability?”; “What is snapshot isolation?”</li>
-<li><strong>Connections:</strong> Snowflake is an OLAP system with snapshots (time travel), conceptually MVCC under the hood. Trino and Spark read from distributed snapshots (e.g. Delta Lake’s snapshots).</li>
+<li>📖 <a href="https://docs.snowflake.com/en/user-guide/streams-intro">Snowflake Documentation: Using Streams and Tasks for near real-time CDC</a><sup id="fnref3:37"><a href="#fn:37" class="footnote-ref" role="doc-noteref">37</a></sup></li>
+<li>📖 <a href="https://docs.snowflake.com/en/user-guide/streams-intro">dbt Integration Guide: Designing incremental models from Snowflake streams</a><sup id="fnref4:37"><a href="#fn:37" class="footnote-ref" role="doc-noteref">37</a></sup></li>
 </ul>
-</li>
-<li>
-<p><strong>Module 7: Logging and Recovery</strong><br>
-<em>Topics:</em> Write-Ahead Logging (WAL) rules; ARIES recovery algorithm (REDO/UNDO); checkpoints; buffer flush policies (steal/no-force); recovery protocols (fuzzy checkpointing).<br>
-<em>Objectives:</em> Learn how crashes are recovered safely.<br>
-<em>Resources:</em></p>
+<h4 id="-codebase-paths-to-inspect-11">📂 Codebase Paths to Inspect</h4>
 <ul>
-<li><strong>Paper:</strong> ARIES (VLDB 1992) by Mohan et al..</li>
-<li><strong>Book:</strong> Petrov ch.5 (covers ARIES and WAL); <em>Transaction Processing</em> by Gray/Reuter.</li>
-<li><strong>Blog:</strong> “Notes on ARIES” (tutorial style); Percona or DatabaseTopics blog on WAL.</li>
-<li><strong>Lecture:</strong> CMU 15-445 Recovery lecture (often combined with transactions).</li>
-<li><strong>Code:</strong> PostgreSQL Write-Ahead Log (xlog.c); BusTub recovery module.</li>
-<li><strong>Exercise:</strong> Simulate a mini-log and implement ARIES redo/undo for simple updates.</li>
-<li><strong>Interview Qs:</strong> “State the Write-Ahead Logging rules”; “Outline ARIES’s REDO and UNDO phases.”; “What are ARIES CLRs?”; “What is a fuzzy checkpoint?”</li>
-<li><strong>Connections:</strong> Delta Lake and data lakes use a transaction log (like ARIES) to achieve ACID over object stores. Snowflake’s metadata service also relies on transaction logs.</li>
+<li>🔍 Examine adapter configuration modules to inspect how custom stream macro functions are parsed during model compilation.</li>
 </ul>
-</li>
-<li>
-<p><strong>Module 8: Distributed Systems for Databases</strong><br>
-<em>Topics:</em> Distributed consistency models (CAP, linearizability); Two-Phase Commit (2PC) and variants (3PC, Paxos-based commit); Distributed transactions (Spanner, Calvin, Percolator); Replication and consensus (Paxos, Raft); Partitioning and sharding (consistent hashing); Distributed SQL (CockroachDB, Google F1).<br>
-<em>Objectives:</em> Understand how databases work across multiple nodes and data centers.<br>
-<em>Resources:</em></p>
+<h4 id="-hands-on-implementation-task-11">💻 Hands-On Implementation Task</h4>
+<blockquote>
+<p><strong>Stream-Sourced Incremental DAG</strong>
+Create a Snowflake stream on an active transactional staging table in your Snowflake warehouse<sup id="fnref5:37"><a href="#fn:37" class="footnote-ref" role="doc-noteref">37</a></sup>. Build a dbt incremental model that targets this stream as its source, parsing <code>METADATA$ACTION</code> and <code>METADATA$ISUPDATE</code> rows to execute high-performance delta-only inserts and updates<sup id="fnref6:37"><a href="#fn:37" class="footnote-ref" role="doc-noteref">37</a></sup>. Verify that your transformation uses minimal warehouse compute credits compared to traditional timestamp comparisons<sup id="fnref3:34"><a href="#fn:34" class="footnote-ref" role="doc-noteref">34</a></sup>.</p></blockquote>
+<h4 id="-technical-blogs-from-big-companies-11">🏢 Technical Blogs from Big Companies</h4>
 <ul>
-<li><strong>Paper:</strong> Google’s Spanner (2012) and F1 (2013) papers; Calvin (SoCC 2012) by Thomson et al.; Percolator (OSDI 2010); Raft consensus (2014).</li>
-<li><strong>Book:</strong> Kleppmann <em>Designing Data-Intensive Apps</em> chapters on CAP, transactions, consensus.</li>
-<li><strong>Blog:</strong> Google Research blog on Spanner; Jepsen blog on distributed safety; Cockroach blog on Raft.</li>
-<li><strong>Lecture:</strong> MIT 6.5830 (DB at Scale) distributed lectures; Stanford distributed databases.</li>
-<li><strong>Code:</strong> CockroachDB source (KV store, Raft); Velox connector for Presto; BusTub has a distributed project module.</li>
-<li><strong>Exercise:</strong> Implement a two-phase commit coordinator; or simulate a simple Paxos election; partition a table and run distributed join.</li>
-<li><strong>Interview Qs:</strong> “Explain 2PC and its failure modes.”; “What is the CAP theorem?”; “How do Spanner and Calvin differ?”; “When to use synchronous vs asynchronous replication?”</li>
-<li><strong>Connections:</strong> Snowflake, Spark, Trino all run on clusters. Trino’s query coordinator distributes tasks across workers. Spark’s shuffle is partitioned hash join. dbt often orchestrates tasks on Spark.</li>
+<li>📰 <strong>dbt Developer Blog:</strong> <a href="https://docs.getdbt.com/best-practices/how-we-handle-real-time-data/2-incremental-patterns">Incremental patterns for near real-time data streaming</a><sup id="fnref4:34"><a href="#fn:34" class="footnote-ref" role="doc-noteref">34</a></sup></li>
+<li>📰 <strong>Snowflakemasters Publication:</strong> <a href="https://snowflakemasters.in/performance-optimization-techniques-in-snowflake/">Advanced CDC pipelines and stream processing in Snowflake architectures</a><sup id="fnref:38"><a href="#fn:38" class="footnote-ref" role="doc-noteref">38</a></sup></li>
 </ul>
-</li>
-<li>
-<p><strong>Module 9: Data Warehousing &amp; Analytics</strong><br>
-<em>Topics:</em> OLAP vs OLTP; Columnar DBs (Vertica, ClickHouse); Star schema and dimension modeling; ETL/ELT pipelines; Materialized views; Search and OLAP indexes (Bitmap, inverted, H3).<br>
-<em>Objectives:</em> Learn systems and techniques for analytical workloads.<br>
-<em>Resources:</em></p>
+<hr>
+<h3 id="-week-13-left-shifting-data-governance--cicd-guardrails">📅 Week 13: Left-Shifting Data Governance &amp; CI/CD Guardrails</h3>
+<h4 id="-core-concepts-checklist-12">🎯 Core Concepts Checklist</h4>
 <ul>
-<li><strong>Paper:</strong> Abadi et al., C-Store (2008) on column store; Parquet/ORC format papers; Iceberg or Delta Lake papers on data lakes.</li>
-<li><strong>Book:</strong> <em>DWRevisited</em> by Inmon/Kimball (conceptual); <em>Database Systems: The Complete Book</em> chapter on DW.</li>
-<li><strong>Blog:</strong> Snowflake whitepapers on micro-partitioning; Cube.js docs on OLAP cubes.</li>
-<li><strong>Lecture:</strong> CMU or Stanford on data warehousing architecture.</li>
-<li><strong>Code:</strong> Cube.js repository (schemas, SQL generation); Apache Iceberg source; dbt-core repo (transformation logic).</li>
-<li><strong>Exercise:</strong> Design a star schema and implement basic aggregation queries; build a simple materialized view and maintain it.</li>
-<li><strong>Interview Qs:</strong> “What is a star schema?”; “Explain columnar compression.”; “How do bitmap indexes work?”; “What is a data cube?”</li>
-<li><strong>Connections:</strong> Snowflake is an advanced cloud DW (discuss its <strong>micro-partition + clustering</strong> model). dbt is used for managing analytical transformations atop such DWs. Cube.js enables building OLAP cubes on data warehouses. Spark’s Catalyst and Parquet/ORC are foundational in modern DW architectures.</li>
+<li><input disabled="" type="checkbox"> <strong>Schema Drift Mitigation</strong>: The cost of schema divergence and silent upstream data failures in production analytics environments<sup id="fnref:39"><a href="#fn:39" class="footnote-ref" role="doc-noteref">39</a></sup>.</li>
+<li><input disabled="" type="checkbox"> <strong>Unit Testing SQL</strong>: Validating compiled SQL parsing and logical case statements against mock input tables in isolation<sup id="fnref:40"><a href="#fn:40" class="footnote-ref" role="doc-noteref">40</a></sup>.</li>
+<li><input disabled="" type="checkbox"> <strong>Pre-commit Automation</strong>: Validating and enforcing repository rules (schema documentation, descriptions, YAML compliance) before commits reach remote branches<sup id="fnref1:39"><a href="#fn:39" class="footnote-ref" role="doc-noteref">39</a></sup>.</li>
+<li><input disabled="" type="checkbox"> <strong>CI/CD Build Checks</strong>: Scanning compiled dbt query manifests to block deployment of non-compliant DAG dependencies<sup id="fnref2:39"><a href="#fn:39" class="footnote-ref" role="doc-noteref">39</a></sup>.</li>
 </ul>
-</li>
-<li>
-<p><strong>Module 10: Data Lakes &amp; Lakehouse</strong><br>
-<em>Topics:</em> Lakehouse architectures (Databricks Delta, Apache Iceberg, Hudi); ACID over object stores; Metadata layers; Streaming ingestion (Kafka, Kinesis) into lakes.<br>
-<em>Objectives:</em> Understand modern big-data storage.<br>
-<em>Resources:</em></p>
+<h4 id="-required-tooling-guides--packages">📚 Required Tooling Guides &amp; Packages</h4>
 <ul>
-<li><strong>Paper:</strong> Delta Lake (VLDB 2020); Iceberg (CIDR 2020) paper; Hudi (VLDB 2018).</li>
-<li><strong>Book:</strong> Kleppmann’s streaming chapters; Databricks’ blogposts on Delta.</li>
-<li><strong>Blog:</strong> Databricks Delta introduction; AWS blog on Data Lakehouses.</li>
-<li><strong>Lecture:</strong> Emerging topics in big-data systems (some MIT or industry talks).</li>
-<li><strong>Code:</strong> Delta Lake repo; Apache Iceberg code; Kafka Streams example.</li>
-<li><strong>Exercise:</strong> Use Spark to write to a Delta table and query historical versions; experiment with Iceberg partitioning.</li>
-<li><strong>Interview Qs:</strong> “How does Delta Lake achieve atomicity on S3?”; “What is time travel?”; “Compare Data Lake vs Lakehouse.”</li>
-<li><strong>Connections:</strong> Databricks (Spark) uses Delta Lake for ACID tables on S3. dbt can target Delta/Snowflake. Trino and Spark can both read Iceberg tables.</li>
+<li>🛠️ <a href="https://datacoves.com/post/dbt-test-options">dbt-checkpoint pre-commit hook configuration</a><sup id="fnref3:39"><a href="#fn:39" class="footnote-ref" role="doc-noteref">39</a></sup></li>
+<li>🛠️ <a href="https://datacoves.com/post/dbt-test-options">dbt-bouncer artifact analyzer documentation</a><sup id="fnref4:39"><a href="#fn:39" class="footnote-ref" role="doc-noteref">39</a></sup></li>
+<li>📦 <a href="https://datacoves.com/post/dbt-test-options">dbt-expectations generic test coverage libraries</a><sup id="fnref5:39"><a href="#fn:39" class="footnote-ref" role="doc-noteref">39</a></sup></li>
 </ul>
-</li>
-<li>
-<p><strong>Module 11: Distributed Query Engines</strong><br>
-<em>Topics:</em> MPP query engines (Spark SQL, Trino/Presto, Dremio); LLVM vectorization; cost-based vs rule-based optimizers; Pushdown to storage (Parquet pushdown, predicates).<br>
-<em>Objectives:</em> Explore large-scale SQL engines.<br>
-<em>Resources:</em></p>
+<h4 id="-codebase-paths-to-inspect-12">📂 Codebase Paths to Inspect</h4>
 <ul>
-<li><strong>Paper:</strong> Spark SQL’s Tungsten (2015); Trino (Presto) on high concurrency; Apache Drill paper.</li>
-<li><strong>Book:</strong> <em>Streaming Systems</em> by Kleppmann for micro-batch vs streaming.</li>
-<li><strong>Blog:</strong> Spark Catalyst deep dive; Trino docs on query planning.</li>
-<li><strong>Lecture:</strong> Chicago Databricks Spark training videos; Uber’s Presto talk.</li>
-<li><strong>Code:</strong> Spark’s Catalyst optimizer rules; Trino’s planner; Velox vectors (FlatVector etc) – see Velox docs.</li>
-<li><strong>Exercise:</strong> Write a multi-node query via Spark or Trino on a sample dataset; profile the query plan.</li>
-<li><strong>Interview Qs:</strong> “How does Spark’s Catalyst differ from System R?”; “Explain Trino’s connector-based stats and broadcast join logic.”</li>
-<li><strong>Connections:</strong> Direct discussion of Spark (for Databricks jobs) and Trino (like a distributed SQL engine, used at Meta for petabytes). dbt jobs often run on these platforms; Cube can generate queries for Trino/Spark.</li>
+<li>🔍 Explore a production dbt manifest file <code>/target/manifest.json</code>. Review how dbt maps the entire lineage graph, node relationships, metadata, and testing configs as a structured JSON catalog.</li>
 </ul>
-</li>
-<li>
-<p><strong>Module 12: Production Engineering &amp; Misc</strong><br>
-<em>Topics:</em> Monitoring and profiling databases; Index tuning; Backup strategies; Sharding strategies; Security (RBAC, encryption); Cloud services (AWS RDS/Athena, GCP BigQuery).<br>
-<em>Objectives:</em> Practical skills for running DBs in production.<br>
-<em>Resources:</em></p>
+<h4 id="-hands-on-implementation-task-12">💻 Hands-On Implementation Task</h4>
+<blockquote>
+<p><strong>CI/CD Quality Gates &amp; Hooks</strong>
+Implement comprehensive CI/CD automated guardrails for your dbt repository:</p>
+<ol>
+<li>Write and run generic tests (asserting column uniqueness, null constraints, and relationship integrity) over all raw sources<sup id="fnref6:39"><a href="#fn:39" class="footnote-ref" role="doc-noteref">39</a></sup>.</li>
+<li>Configure a dynamic unit test verifying complex <code>CASE-WHEN</code> logic in an intermediate model<sup id="fnref1:40"><a href="#fn:40" class="footnote-ref" role="doc-noteref">40</a></sup>.</li>
+<li>Install a local <code>.pre-commit-config.yaml</code> using <code>dbt-checkpoint</code> to automatically reject commits if SQL scripts bypass source-staging declarations or lack matching YAML documentation<sup id="fnref7:39"><a href="#fn:39" class="footnote-ref" role="doc-noteref">39</a></sup>.</li>
+</ol></blockquote>
+<h4 id="-technical-blogs-from-big-companies-12">🏢 Technical Blogs from Big Companies</h4>
 <ul>
-<li><strong>Paper:</strong> Google Borg paper (for context on cloud infra); “Autopilot” (MOLAP index tuning, maybe).</li>
-<li><strong>Book:</strong> <em>High Performance MySQL</em> or <em>Streaming Systems</em>.</li>
-<li><strong>Blog:</strong> PagerDuty/Datadog blog on DB metrics; Uber’s index recommendations.</li>
-<li><strong>Lecture:</strong> Guest lectures on SRE for databases.</li>
-<li><strong>Code:</strong> pg_stat_statements extension; Prometheus exporters.</li>
-<li><strong>Exercise:</strong> Simulate a bug (disk failure) and restore from backup; write performance regression test.</li>
-<li><strong>Interview Qs:</strong> “How do you monitor database health?”; “Explain physical vs logical backup.”; “What is an execution plan cache?”</li>
-<li><strong>Connections:</strong> Outline how major cloud providers offer managed Snowflake/Azure SQL/etc, and how dbt jobs are scheduled (e.g. dbt Cloud). Cube monitoring queries.</li>
+<li>📰 <strong>Datafold Engineering Blog:</strong> <a href="https://www.datafold.com/blog/7-dbt-testing-best-practices/">7 dbt testing best practices: shifting testing left</a><sup id="fnref2:40"><a href="#fn:40" class="footnote-ref" role="doc-noteref">40</a></sup></li>
+<li>📰 <strong>Datacoves Engineering:</strong> <a href="https://datacoves.com/post/dbt-test-options">Enforcing project governance standards automatically using pre-commit loops</a><sup id="fnref8:39"><a href="#fn:39" class="footnote-ref" role="doc-noteref">39</a></sup></li>
 </ul>
-</li>
-</ul>
-<p>This modular structure (depth ~150–200 topics) ensures <strong>conceptual continuity</strong>.  It is influenced by CMU 15-445/645 and MIT 6.5830 syllabi, but reorganized for self-study: first core CS topics, then applied platforms.</p>
-<h2 id="topic-resources-examples">Topic Resources (Examples)</h2>
-<p>Below are examples of the required resources for selected topics.</p>
+<hr>
+<h3 id="-week-14-headless-semantic-modeling--caching-cube-store-mpp-architecture">📅 Week 14: Headless Semantic Modeling &amp; Caching (Cube Store MPP Architecture)</h3>
+<h4 id="-core-concepts-checklist-13">🎯 Core Concepts Checklist</h4>
 <ul>
-<li>
-<p><strong>System R Query Optimization (Topic: Cost-Based Optimization):</strong></p>
+<li><input disabled="" type="checkbox"> <strong>Centralized Metrics</strong>: Defining and governing business metrics (KPIs) in an API-first semantic layer that decouples metric definitions from BI visual mapping tools<sup id="fnref:41"><a href="#fn:41" class="footnote-ref" role="doc-noteref">41</a></sup>.</li>
+<li><input disabled="" type="checkbox"> <strong>Memory Storage Limits</strong>: The scalability limits of Redis: why in-memory key-value engines fail at multi-tenant, high-cardinality analytical grouping and aggregation queries<sup id="fnref:42"><a href="#fn:42" class="footnote-ref" role="doc-noteref">42</a></sup>.</li>
+<li><input disabled="" type="checkbox"> <strong>Cube Store Engine</strong>: Cube Store&rsquo;s high-concurrency architecture: a Rust-engineered distributed engine utilizing Apache DataFusion for query planning, Apache Arrow for zero-copy vectorized data buffers, and Apache Parquet for column caching<sup id="fnref1:42"><a href="#fn:42" class="footnote-ref" role="doc-noteref">42</a></sup>.</li>
+<li><input disabled="" type="checkbox"> <strong>Two-Level Cache Topology</strong>: In-Memory query result caching (L1) and Pre-Aggregation Rollups (L2) stored in high-performance storage<sup id="fnref1:21"><a href="#fn:21" class="footnote-ref" role="doc-noteref">21</a></sup>.</li>
+<li><input disabled="" type="checkbox"> <strong>Dynamic Cache Invalidation</strong>: Evaluating table-level transaction logs in the data warehouse to automatically recompile outdated pre-aggregations with zero downtime<sup id="fnref2:21"><a href="#fn:21" class="footnote-ref" role="doc-noteref">21</a></sup>.</li>
+</ul>
+<h4 id="-required-academic--architecture-readings">📚 Required Academic &amp; Architecture Readings</h4>
 <ul>
-<li><em>Seminal paper:</em> Selinger <em>et al.</em>, “Access path selection in a relational DBMS” (SIGMOD 1979). This paper describes the cost-based join ordering algorithm in System R (“the optimizer chooses &hellip; the one which minimizes total access cost”).</li>
-<li><em>Book:</em> <em>Readings in Database Systems</em> (Red Book) or Petrov <em>DB Internals</em> (ch. on SQL).</li>
-<li><em>Blog:</em> CMU slides on System R optimizer.</li>
-<li><em>Lecture:</em> CMU 15-445 (Charlies) or Stanford DB class lecture on optimization (Selinger).</li>
-<li><em>Code:</em> DuckDB’s optimizer source (e.g. <code>duckdb/optimizer/cascade/cascade_optimizer.cpp</code>).</li>
-<li><em>Exercise:</em> Implement a DP-based join enumerator in Python for 3 tables.</li>
-<li><em>Interview Qs:</em> “How does dynamic programming find the best join order?”; “What are interesting orders in query planning?”</li>
-<li><em>Connections:</em> Modern engines (Trino, Spark) also do cost-based planning. Spark 2.2+ collects statistics for joins. Trino auto-reorders joins based on connector stats.</li>
+<li>📄 <a href="https://cube.dev/blog/introducing-cubestore">Introducing Cube Store: Sub-second latency for analytical applications at scale</a><sup id="fnref:43"><a href="#fn:43" class="footnote-ref" role="doc-noteref">43</a></sup></li>
+<li>📖 <em>Readings in Database Systems (Red Book)</em> (Bailis, Hellerstein, Stonebraker) – Chapter 10 (Interactive Analytics)<sup id="fnref1:18"><a href="#fn:18" class="footnote-ref" role="doc-noteref">18</a></sup></li>
 </ul>
-</li>
-<li>
-<p><strong>MVCC (Topic: Concurrency Control):</strong></p>
+<h4 id="-codebase-paths-to-inspect-13">📂 Codebase Paths to Inspect</h4>
 <ul>
-<li><em>Seminal paper:</em> Stonebraker’s early papers on multiversion concurrency (e.g., “The Case for MVCC”). (If not found, see Mitzenmacher’s blog.)</li>
-<li><em>Book:</em> Petrov <em>DB Internals</em>, chapter on Transaction/Recovery; HPT by Hellerstein/Reuter.</li>
-<li><em>Blog:</em> CMU lecture notes “Multi-Version Concurrency Control”. This notes that <em>“MVCC is now used in almost every new DBMS of the last 10 years”</em> and that with MVCC <em>“writers do not block writers and readers do not block readers”</em>.</li>
-<li><em>Lecture:</em> CMU 15-445 Lecture #18 MVCC; MIT concurrency lecture.</li>
-<li><em>Code:</em> PostgreSQL MVCC (tuple xmin/xmax logic in heapam.c) or DuckDB’s MVCC manager.</li>
-<li><em>Exercise:</em> Simulate MVCC snapshot reads: given a log of writes, show which version each transaction sees.</li>
-<li><em>Interview Qs:</em> “Explain snapshot isolation. Why do writes not block reads with MVCC?”.</li>
-<li><em>Connections:</em> Snowflake and most cloud DBs use MVCC (time-travel is built on MVCC snapshots). dbt transformations on PostgreSQL or DuckDB rely on MVCC as well.</li>
+<li>🔍 <a href="https://github.com/cube-js/cube"><code>cube-js/cube</code></a>: Target <code>/rust/cubestore/cubestore/src/queryplanner/</code> (Study how incoming API calls are compiled into logical physical execution steps via DataFusion)<sup id="fnref3:21"><a href="#fn:21" class="footnote-ref" role="doc-noteref">21</a></sup></li>
+<li>🔍 <a href="https://github.com/cube-js/cube"><code>cube-js/cube</code></a>: Target <code>/rust/cubestore/cubestore/src/parquet/</code> (Analyze how pre-aggregated data results are serialized to Apache Parquet files)<sup id="fnref4:21"><a href="#fn:21" class="footnote-ref" role="doc-noteref">21</a></sup></li>
 </ul>
-</li>
-<li>
-<p><strong>ARIES Recovery (Topic: Logging &amp; Recovery):</strong></p>
+<h4 id="-hands-on-implementation-task-13">💻 Hands-On Implementation Task</h4>
+<blockquote>
+<p><strong>Cube Semantic Layer and Rollup Pre-Aggregation</strong>
+Deploy Cube Core locally pointing to your analytical data warehouse<sup id="fnref:44"><a href="#fn:44" class="footnote-ref" role="doc-noteref">44</a></sup>. Define a simple metric schema model with explicit dimensions and revenue calculations<sup id="fnref:45"><a href="#fn:45" class="footnote-ref" role="doc-noteref">45</a></sup>. Configure an active rollup pre-aggregation materialized daily and assign an active database refresh key<sup id="fnref1:25"><a href="#fn:25" class="footnote-ref" role="doc-noteref">25</a></sup>. Run parallel metrics queries, access the system execution console, and verify that Cube successfully intercepts the query traffic, serving sub-second results directly from local Cube Store Parquet files without hitting the base database warehouse<sup id="fnref5:21"><a href="#fn:21" class="footnote-ref" role="doc-noteref">21</a></sup>.</p></blockquote>
+<h4 id="-technical-blogs-from-big-companies-13">🏢 Technical Blogs from Big Companies</h4>
 <ul>
-<li><em>Seminal paper:</em> Mohan <em>et al.</em>, “ARIES: A Transaction Recovery Method&hellip;” (TODS 1992).</li>
-<li><em>Book:</em> Petrov <em>DB Internals</em> (TXN/Recovery section); Gray &amp; Reuter chapters.</li>
-<li><em>Blog:</em> “Notes on ARIES” by Garrod (“These rules are known as the Write-Ahead Logging protocol.”).</li>
-<li><em>Lecture:</em> CMU 15-445 Recovery lecture (ARIES).</li>
-<li><em>Code:</em> PostgreSQL WAL code (xlog), or BusTub’s simple recovery code.</li>
-<li><em>Exercise:</em> Write a mini-WAL: given a log and a crash scenario, perform redo and undo passes.</li>
-<li><em>Interview Qs:</em> “What is the WAL protocol? (Why must log records be flushed before dirty pages?)”; “What are CLRs in ARIES?”</li>
-<li><em>Connections:</em> Delta Lake’s transaction log is analogous to ARIES logs to enable ACID on S3.</li>
+<li>📰 <strong>Cube Engineering Blog:</strong> <a href="https://github.com/duckdb/duckdb/blob/main/src/optimizer/optimizer.cpp">Replacing Redis With Cube Store: High concurrency and sub-second latency for any database</a><sup id="fnref1:16"><a href="#fn:16" class="footnote-ref" role="doc-noteref">16</a></sup></li>
+<li>📰 <strong>Rittman Analytics:</strong> <a href="https://rittmananalytics.com/partners/cube">Unifying modern analytics stack architectures: Snowflake, dbt, and Cube</a><sup id="fnref2:13"><a href="#fn:13" class="footnote-ref" role="doc-noteref">13</a></sup></li>
 </ul>
-</li>
-<li>
-<p><strong>Snowflake Micro-Partitions (Topic: Data Partitioning &amp; Pruning):</strong></p>
-<ul>
-<li><em>Seminal reference:</em> Snowflake Docs and blogs.</li>
-<li><em>Book:</em> Petrov’s discussion of columnar store.</li>
-<li><em>Blog:</em> Snowflake blog “Optima Metadata” or Medium “Architecture of Speed”.</li>
-<li><em>Lecture:</em> None formal, but Snowflake webinars.</li>
-<li><em>Code:</em> Snowflake is closed-source, so use documentation.</li>
-<li><em>Exercise:</em> Given sorted data, write code to chunk it into 100MB “partitions” and record min/max per column.</li>
-<li><em>Interview Qs:</em> “How do Snowflake micro-partitions work? What metadata do they store?”.</li>
-<li><em>Connections:</em> Micro-partitions are an example of <em>min-max zone maps</em>. Parquet/ORC have similar column stats. dbt queries on Snowflake rely heavily on this pruning for speed.</li>
-</ul>
-</li>
-</ul>
-<h2 id="sample-1216-week-syllabus">Sample 12–16 Week Syllabus</h2>
-<p>Below is a <strong>sample 12-week schedule</strong> (assuming ~8–10 hours/week). Each week mixes readings, coding tasks, and deliverables. (Adjust pacing for 16 weeks if needed.)</p>
+<hr>
+<h2 id="-technical-synthesis-curriculum">📊 Technical Synthesis Curriculum</h2>
+<p>To support your line-by-line studies, keep this consolidated reference matrix handy. It lists the core academic papers, database repos, and technical blogs to target across all topics:</p>
 <table>
   <thead>
       <tr>
-          <th>Week</th>
-          <th>Topics &amp; Activities</th>
-          <th>Deliverables</th>
+          <th style="text-align: left">Target Domain</th>
+          <th style="text-align: left">Seminal Academic Papers to Study</th>
+          <th style="text-align: left">Primary Database Repos &amp; Target Files</th>
+          <th style="text-align: left">Top-Tier Engineering Blogs</th>
       </tr>
   </thead>
   <tbody>
       <tr>
-          <td><strong>1</strong></td>
-          <td><strong>Intro &amp; Data Models:</strong> Relational model vs SQL; ER &amp; normalization; Relational algebra; Basic SQL (select/join).<br>- <strong>Read:</strong> Codd relational model (if available), <em>DBIS</em> chap on data models.<br>- <strong>Lecture:</strong> Review Stanford/CMU intro videos or notes on the relational model.<br>- <strong>Code:</strong> Set up a simple SQL engine (like <a href="https://github.com/sqlite/sqlite">sqlite/sqlite</a> repo, or use DuckDB).<br>- <strong>Exercise:</strong> Implement a mini-SQL parser (or SQL-to-algebra translator). <strong>Interview:</strong> Questions on primary keys, normalization, relational algebra expressions.<br>- <strong>Snowflake/dbt:</strong> Explore how dbt builds SQL against Snowflake or Postgres.</td>
-          <td>Mini-project: Normalize a given data set to 3NF. A script or report on relational vs graph/JSON models. Quiz on ER vs relational concepts.</td>
+          <td style="text-align: left"><strong>Storage Layouts</strong></td>
+          <td style="text-align: left"><ul><li>Armbrust et al. (Lakehouse Layouts)<sup id="fnref18:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li><li>Zeng et al. (Evaluating Columnar Formats)<sup id="fnref19:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li></ul></td>
+          <td style="text-align: left"><ul><li><code>duckdb/duckdb</code>: <a href="https://github.com/duckdb/duckdb/tree/main/src/storage"><code>/src/storage/</code></a><sup id="fnref3:13"><a href="#fn:13" class="footnote-ref" role="doc-noteref">13</a></sup></li><li><code>facebookincubator/velox</code>: <a href="https://github.com/facebookincubator/velox/tree/main/velox/vector"><code>/velox/vector/</code></a><sup id="fnref2:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup> <sup id="fnref1:5"><a href="#fn:5" class="footnote-ref" role="doc-noteref">5</a></sup></li></ul></td>
+          <td style="text-align: left"><ul><li>Meta Eng: <a href="https://engineering.fb.com/2023/03/09/open-source/velox-open-source-execution-engine/">Introducing Velox Execution</a><sup id="fnref3:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup></li><li>ClickHouse Docs: <a href="https://clickhouse.com/docs/academic_overview">Compression &amp; Decompression</a><sup id="fnref2:8"><a href="#fn:8" class="footnote-ref" role="doc-noteref">8</a></sup></li></ul></td>
       </tr>
       <tr>
-          <td><strong>2</strong></td>
-          <td><strong>Storage Basics:</strong> File I/O, pages and slotted-page format; Row vs Column store (PAX, etc). Buffer pool (LRU/Clock).<br>- <strong>Read:</strong> Petrov ch.3 on file formats (slotted pages).<br>- <strong>Paper:</strong> PAX (SOSP ’99) or MonetDB col-store (for column layout).<br>- <strong>Lecture:</strong> CMU 15-445 Storage lecture.<br>- <strong>Code:</strong> Read <a href="https://github.com/cmu-db/bustub/tree/master/src/storage/page">BusTub page code</a> (e.g. slotted page skeleton).<br>- <strong>Exercise:</strong> Implement a slotted page: insert/delete fixed and variable-length records. Implement an LRU or CLOCK cache for pages.<br>- <strong>Interview:</strong> How does a buffer pool work? What is write-back vs write-through?<strong>Snowflake:</strong> Show that Snowflake stores in columnar micro-partitions with per-column compression.</td>
-          <td>Code: Slotted-page and buffer pool implementation (in Go or Python). Writeups: Explain row vs columnar tradeoffs.</td>
+          <td style="text-align: left"><strong>Compression Systems</strong></td>
+          <td style="text-align: left"><ul><li>Afroozeh et al. (FastLanes SIMD)<sup id="fnref20:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li><li>Kuschewski et al. (BtrBlocks Lakes)<sup id="fnref21:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li></ul></td>
+          <td style="text-align: left"><ul><li><code>apache/datafusion</code>: <a href="https://github.com/apache/datafusion/tree/main/datafusion/common"><code>/datafusion/common/</code></a><sup id="fnref2:6"><a href="#fn:6" class="footnote-ref" role="doc-noteref">6</a></sup></li><li><code>facebookincubator/velox</code>: <a href="https://github.com/facebookincubator/velox/blob/main/velox/vector/DecodedVector.h"><code>DecodedVector.h</code></a><sup id="fnref2:5"><a href="#fn:5" class="footnote-ref" role="doc-noteref">5</a></sup></li></ul></td>
+          <td style="text-align: left"><ul><li>Alibaba Storage: <a href="https://www.alibabacloud.com/blog/600689">Computing Velox Expressions</a><sup id="fnref1:7"><a href="#fn:7" class="footnote-ref" role="doc-noteref">7</a></sup></li></ul></td>
       </tr>
       <tr>
-          <td><strong>3</strong></td>
-          <td><strong>Indexes I:</strong> B+Tree fundamentals. Tree structure, node split/merge, fill factors, leaf pointers, range scans.<br>- <strong>Read:</strong> Petrov ch.2 on B-Trees; <em>Database Systems</em> textbook chapter on B+ Trees.<br>- <strong>Paper:</strong> Comer’s B-Tree (1979).<br>- <strong>Lecture:</strong> CMU B-Tree lecture, or MIT 6.5830 slides on indexing.<br>- <strong>Code:</strong> Study BusTub’s <code>b_plus_tree_internal_page.cpp</code> (even though methods are unimplemented, see class structure).<br>- <strong>Exercise:</strong> Implement a B+Tree (write-only insert) on pages; support search and range scan. Write unit tests. <br>- <strong>Interview:</strong> Describe B+Tree split/merge. What is fill factor? What happens on node underflow? <strong>Connections:</strong> Snowflake doesn’t use B+Trees in engine (it uses column scans), but many systems (DuckDB, Postgres) do.</td>
-          <td></td>
+          <td style="text-align: left"><strong>Execution Engines</strong></td>
+          <td style="text-align: left"><ul><li>Boncz et al. (MonetDB/X100 Vectors)<sup id="fnref22:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li><li>Thomas Neumann (Efficient compiling)<sup id="fnref23:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li></ul></td>
+          <td style="text-align: left"><ul><li><code>facebookincubator/velox</code>: <a href="https://github.com/facebookincubator/velox/tree/main/velox/expression"><code>/velox/expression/</code></a><sup id="fnref1:9"><a href="#fn:9" class="footnote-ref" role="doc-noteref">9</a></sup></li><li><code>ClickHouse/ClickHouse</code>: <a href="https://github.com/ClickHouse/ClickHouse/tree/main/src/Interpreters/JIT"><code>/src/Interpreters/JIT/</code></a><sup id="fnref1:11"><a href="#fn:11" class="footnote-ref" role="doc-noteref">11</a></sup></li></ul></td>
+          <td style="text-align: left"><ul><li>ClickHouse Eng: <a href="https://clickhouse.com/docs/academic_overview">Runtime compilation</a><sup id="fnref3:8"><a href="#fn:8" class="footnote-ref" role="doc-noteref">8</a></sup></li><li>Databricks Blog: <a href="https://15721.courses.cs.cmu.edu/spring2024/schedule.html">Photon execution</a><sup id="fnref24:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li></ul></td>
       </tr>
       <tr>
-          <td><strong>4</strong></td>
-          <td><strong>Indexes II &amp; Partitions:</strong> Hash indexes, bitmap indexes, tries. Zone maps/min-max indexes for analytic queries. Partitioning strategies.<br>- <strong>Read:</strong> DBMS textbooks on hash indexes and bitmap indexes; Snowflake documentation on micro-partitions.<br>- <strong>Blog:</strong> “Zone maps and data skipping in column stores.”<br>- <strong>Code:</strong> Explore DuckDB or ClickHouse creating an index or table with partitions. Examine Trino or Iceberg code for partition pruning.<br>- <strong>Exercise:</strong> Build a simple in-memory min-max index for a column (store min/max for each block and use it to skip blocks).<br>- <strong>Interview:</strong> When use a bitmap vs B-Tree index? How do zone maps speed up scanning?<strong>Connections:</strong> Relate to Snowflake’s min/max per micro-partition and Parquet file footers storing column stats.</td>
-          <td></td>
+          <td style="text-align: left"><strong>NUMA Scheduling</strong></td>
+          <td style="text-align: left"><ul><li>Leis et al. (Morsel-Driven Scheduling)<sup id="fnref25:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li><li>Psaroudakis et al. (Adaptive Scans)<sup id="fnref26:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li></ul></td>
+          <td style="text-align: left"><ul><li><code>duckdb/duckdb</code>: <a href="https://github.com/duckdb/duckdb/tree/main/src/execution/physical_operator"><code>/src/execution/physical_operator/</code></a><sup id="fnref4:13"><a href="#fn:13" class="footnote-ref" role="doc-noteref">13</a></sup> <sup id="fnref:46"><a href="#fn:46" class="footnote-ref" role="doc-noteref">46</a></sup></li></ul></td>
+          <td style="text-align: left"><ul><li>Meta Open Source: <a href="https://velox-lib.io/blog/page/2/">Task boundaries in Velox</a><sup id="fnref1:14"><a href="#fn:14" class="footnote-ref" role="doc-noteref">14</a></sup></li></ul></td>
       </tr>
       <tr>
-          <td><strong>5</strong></td>
-          <td><strong>Query Execution:</strong> Operators – scans, filters, joins, aggregations.<br>- <strong>Read:</strong> Papers on query operators: “Volcano: Extensible optimizer” (1989); HyPer (2011) for vectorized exec.<br>- <strong>Lecture:</strong> MIT 6.830 on Query Processing (joins, grouping). CMU lecture on join algorithms.<br>- <strong>Code:</strong> Examine DataFusion’s physical hash join (in Rust) or Velox’s FlatVector for scan. Try simple queries on DuckDB and view plans (e.g. <code>EXPLAIN</code>).<br>- <strong>Exercise:</strong> Code a nested-loop join and a hash join on two arrays of rows. Time and compare. Implement a simple group-by aggregator. <br>- <strong>Interview:</strong> When is a merge join better than hash join? How do you implement GROUP BY?<strong>Connections:</strong> Note that Spark’s Catalyst will vectorize operations (see Databricks Spark blog on CBO). Trino’s documentation explains partitioned vs broadcast join selection.</td>
-          <td></td>
+          <td style="text-align: left"><strong>Main-Memory Joins</strong></td>
+          <td style="text-align: left"><ul><li>Schuh et al. (Comparing 13 Joins)<sup id="fnref27:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li><li>Richter et al. (7-Dimensional Analysis)<sup id="fnref28:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li></ul></td>
+          <td style="text-align: left"><ul><li><code>apache/datafusion</code>: <a href="https://github.com/apache/datafusion/tree/main/datafusion/physical-plan/src/joins"><code>/datafusion/physical-plan/src/joins/</code></a><sup id="fnref2:16"><a href="#fn:16" class="footnote-ref" role="doc-noteref">16</a></sup></li></ul></td>
+          <td style="text-align: left"><ul><li>Snowflake Blog: <a href="https://www.snowflake.com/en/blog/engineering/apache-iceberg-queries-adaptive-execution/">Adaptive Scan memory boundaries</a><sup id="fnref1:17"><a href="#fn:17" class="footnote-ref" role="doc-noteref">17</a></sup></li></ul></td>
       </tr>
       <tr>
-          <td><strong>6</strong></td>
-          <td><strong>Query Optimization:</strong> System R &amp; Volcano algorithms; statistics and cardinality estimation; heuristic vs cost-based reordering.<br>- <strong>Read:</strong> Selinger 1979; Volcano paper (Graefe 1993).<br>- <strong>Lecture:</strong> CMU 15-445 on optimization; Stanford lectures on cost estimation.<br>- <strong>Code:</strong> Try using Spark’s CBO (run <code>ANALYZE TABLE</code> and compare plans) or inspect Trino’s plan with/without stats.<br>- <strong>Exercise:</strong> Given 3 tables with row counts and join predicates, enumerate left-deep join orders and compute costs to find best order. Implement dynamic-programming join reordering.<br>- <strong>Interview:</strong> Explain dynamic programming in System R; what is join enumeration? What if statistics are wrong?<br>- <strong>Snowflake/dbt:</strong> Discuss how Snowflake’s optimizer (Optima) automatically clusters data based on query patterns (from Snowflake docs) and how dbt’s models rely on correct join order.</td>
-          <td></td>
+          <td style="text-align: left"><strong>Data Warehousing</strong></td>
+          <td style="text-align: left"><ul><li>Dageville et al. (Elastic Data Warehouse)<sup id="fnref29:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li><li>Vuppalapati et al. (Disaggregated Lake)<sup id="fnref30:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup></li></ul></td>
+          <td style="text-align: left"><ul><li><code>cube-js/cube</code>: <a href="https://github.com/cube-js/cube/tree/master/rust/cubestore/cubestore/src/parquet"><code>/rust/cubestore/cubestore/src/parquet/</code></a><sup id="fnref6:21"><a href="#fn:21" class="footnote-ref" role="doc-noteref">21</a></sup> <sup id="fnref1:45"><a href="#fn:45" class="footnote-ref" role="doc-noteref">45</a></sup></li></ul></td>
+          <td style="text-align: left"><ul><li>Snowflake Eng: <a href="https://medium.com/snowflake/super-charge-snowflake-query-performance-with-micro-partitions-3d8ef927890d">Power of micro-partitioning</a><sup id="fnref1:24"><a href="#fn:24" class="footnote-ref" role="doc-noteref">24</a></sup></li><li>Keebo Blog: <a href="https://keebo.ai/blog/snowflake-micropartitions-clustering/">Demystifying Clustering key stats</a><sup id="fnref2:23"><a href="#fn:23" class="footnote-ref" role="doc-noteref">23</a></sup></li></ul></td>
       </tr>
       <tr>
-          <td><strong>7</strong></td>
-          <td><strong>Transactions &amp; Concurrency:</strong> 2PL locking protocols; isolation levels (Read Committed, Repeatable Read, Serializable); MVCC and snapshot isolation; deadlocks.<br>- <strong>Read:</strong> Petrov ch.5 on concurrency; “Concurrency Control and Recovery” from DB textbooks.<br>- <strong>Paper:</strong> Bernstein/Ghandeharizadeh on serialization anomalies (1981).<br>- <strong>Lecture:</strong> CMU on MVCC (Lecture 17/18); MIT transactional lecture. <br>- <strong>Code:</strong> Examine Postgres’s locking (relation.c) or MVCC (heapam visibility).<br>- <strong>Exercise:</strong> Simulate two transactions interleaving with locks; detect deadlock. Or implement MVCC snapshot visibility in a mini-DB.<br>- <strong>Interview:</strong> What anomalies can occur at Read Committed? How does Serializable level work? Why do writers not block readers in MVCC? <br>- <strong>Connections:</strong> Many data warehouses (Snowflake, BigQuery) effectively run queries in single statements, avoiding concurrency issues; but Snowflake does multi-cluster to handle simultaneous loads and queries (internally manages isolation).</td>
-          <td></td>
+          <td style="text-align: left"><strong>Transformation Layer</strong></td>
+          <td style="text-align: left"><ul><li>dbt Labs (Modular modeling architectures)<sup id="fnref2:30"><a href="#fn:30" class="footnote-ref" role="doc-noteref">30</a></sup></li><li>Kimball et al. (Dimension modeling toolkit)</li></ul></td>
+          <td style="text-align: left"><ul><li><code>dbt-labs/dbt-core</code>: <a href="https://github.com/dbt-labs/dbt-core/tree/main/core/dbt/adapters"><code>/core/dbt/adapters/</code></a></li></ul></td>
+          <td style="text-align: left"><ul><li>dbt Developer Blog: <a href="https://docs.getdbt.com/best-practices/how-we-handle-real-time-data/2-incremental-patterns">Incremental patterns for real-time data</a><sup id="fnref5:34"><a href="#fn:34" class="footnote-ref" role="doc-noteref">34</a></sup></li><li>Reliable Data Eng: <a href="https://medium.com/@reliabledataengineering/i-tested-dbts-incremental-strategies-on-1m-rows-here-s-what-actually-happened-1628cf03931f">I benchmarked dbt&rsquo;s 4 strategies on 1M rows</a><sup id="fnref1:35"><a href="#fn:35" class="footnote-ref" role="doc-noteref">35</a></sup></li></ul></td>
       </tr>
       <tr>
-          <td><strong>8</strong></td>
-          <td><strong>Logging &amp; Recovery:</strong> WAL rules and ARIES phases; checkpoints and crash recovery.<br>- <strong>Read:</strong> ARIES paper (skim); Petrov ch.5; Database system concepts on recovery.<br>- <strong>Lecture:</strong> CMU recovery (often combined with transactions).<br>- <strong>Code:</strong> Peek at Postgres WAL (<code>pg_wal</code>, commit log design).<br>- <strong>Exercise:</strong> Write a simple logger: log record (tx, old value, new value), then given a crash recovery algorithm, apply redo/undo. <br>- <strong>Interview:</strong> State the two WAL rules and why they guarantee atomicity/durability; describe the ARIES redo/undo pass. <br>- <strong>Connections:</strong> Delta Lake’s WAL (commit log) is ARIES-like; Snowflake’s metadata service logs changes to enable zero-copy cloning.</td>
-          <td></td>
-      </tr>
-      <tr>
-          <td><strong>9</strong></td>
-          <td><strong>Distributed Databases (I): Basics:</strong> Replication vs sharding; CAP theorem; consistency models (linearizability, eventual consistency); failover and gossip.<br>- <strong>Read:</strong> Kleppmann ch. 6 (Consistency and Consensus); Brewer CAP theorem; Netflix/Cockroach blog on distributed SQL. <br>- <strong>Lecture:</strong> MIT or Stanford distributed databases intro. <br>- <strong>Code:</strong> Study Cockroach’s 2PC (github.com/cockroachdb).<br>- <strong>Exercise:</strong> Simulate a network partition and vote-based commit (two-phase commit). Write a toy key-value service with Raft (you can use an existing library).<br>- <strong>Interview:</strong> Explain the CAP theorem. What is linearizability vs eventual consistency? When to use synchronous replication? <br>- <strong>Connections:</strong> Snowflake globally replicates in “virtual warehouses”; Spark’s driver/tracker; Trino’s workers coordinate.</td>
-          <td></td>
-      </tr>
-      <tr>
-          <td><strong>10</strong></td>
-          <td><strong>Distributed Transactions and Consistency:</strong> 2PC/3PC; consensus (Paxos, Raft); distributed transactions (Spanner’s TrueTime, Calvin).<br>- <strong>Read:</strong> Spanner (OSDI 2012); Calvin (SIGMOD 2012); Percolator (OSDI 2010). <br>- <strong>Lecture:</strong> Cornell/CMU on distributed transactions. <br>- <strong>Code:</strong> Explore Google/F1 design or Cockroach’s distributed SQL. <br>- <strong>Exercise:</strong> Implement a coordinator that uses Paxos to agree on a value (maybe using a Python Raft library).<br>- <strong>Interview:</strong> Compare Spanner vs Calvin (synchronous commit vs deterministic scheduling). How does Raft ensure safety? <br>- <strong>Connections:</strong> Spark’s shuffle ensures data consistency via resilient RDD lineage. dbt might use Spark or Snowflake with ACID.</td>
-          <td></td>
-      </tr>
-      <tr>
-          <td><strong>11</strong></td>
-          <td><strong>Columnar &amp; Data-Warehouse Systems:</strong> Star/snowflake schemas; columnar execution; massively parallel processing (MPP); ETL/ELT pipelines; cube and OLAP. <br>- <strong>Read:</strong> C-Store (VLDB 2008); Parquet format docs; Iceberg paper. <br>- <strong>Lecture:</strong> Data warehousing class (e.g. Inmon/Kimball lectures). <br>- <strong>Code:</strong> Try creating tables in Apache Iceberg or implement a small cube aggregation. <br>- <strong>Exercise:</strong> Given a star schema, write SQL to answer roll-up queries; create a materialized view and query it. <br>- <strong>Interview:</strong> What is a star schema? How do column stores achieve compression? <br>- <strong>Connections:</strong> Show how Snowflake uses micro-partitions and clustering keys for DW. dbt is often used to define and run data warehouse transformations.</td>
-          <td></td>
-      </tr>
-      <tr>
-          <td><strong>12</strong></td>
-          <td><strong>Modern Platforms &amp; Review:</strong> Spark SQL and Catalyst (vectorized CBO); Trino/Presto architecture and optimizer; introduction to dbt and Cube.js; performance tuning; course review. <br>- <strong>Read:</strong> Spark 2.2 CBO blog; Trino docs on optimizer and partitioning. <br>- <strong>Lecture:</strong> Databricks Spark course; Trino training videos. <br>- <strong>Code:</strong> Run sample queries on Spark and Trino; inspect execution plans. <br>- <strong>Exercise:</strong> Final project: e.g. pick a source (CSV/JSON), build a mini-warehouse with tools (dbt+DuckDB), benchmark queries, and propose optimizations. <br>- <strong>Interview:</strong> Mixed review questions. <br>- <strong>Deliverable:</strong> Capstone report and code.</td>
-          <td></td>
+          <td style="text-align: left"><strong>Semantic API Layer</strong></td>
+          <td style="text-align: left"><ul><li>Stonebraker (Red Book Chapter 10)<sup id="fnref2:18"><a href="#fn:18" class="footnote-ref" role="doc-noteref">18</a></sup></li><li>Hellerstein (Interactive query engines)<sup id="fnref3:18"><a href="#fn:18" class="footnote-ref" role="doc-noteref">18</a></sup></li></ul></td>
+          <td style="text-align: left"><ul><li><code>cube-js/cube</code>: <a href="https://github.com/cube-js/cube/tree/master/rust/cubestore/cubestore/src/queryplanner"><code>/rust/cubestore/cubestore/src/queryplanner/</code></a><sup id="fnref7:21"><a href="#fn:21" class="footnote-ref" role="doc-noteref">21</a></sup> <sup id="fnref2:45"><a href="#fn:45" class="footnote-ref" role="doc-noteref">45</a></sup></li></ul></td>
+          <td style="text-align: left"><ul><li>Cube Blog: <a href="https://github.com/duckdb/duckdb/blob/main/src/optimizer/optimizer.cpp">Replacing Redis with Cube Store MPP engine</a><sup id="fnref3:16"><a href="#fn:16" class="footnote-ref" role="doc-noteref">16</a></sup></li></ul></td>
       </tr>
   </tbody>
 </table>
-<p>This syllabus blends reading <strong>original research</strong> (papers, lectures) with hands-on code (repo reading, exercises) and regular self-assessment (interview-style questions).  It is inspired by CMU/MIT course structures but oriented to self-learners.</p>
-<h2 id="learning-outcomes-and-assessment">Learning Outcomes and Assessment</h2>
-<p>Upon completion, learners will be able to: explain and implement core DBMS components; critically analyze design trade-offs; read and critique database source code; and apply concepts to modern systems.  For assessment, we recommend:</p>
-<ul>
-<li><strong>Weekly quizzes:</strong> short (10–20 min) quizzes on readings.</li>
-<li><strong>Homework assignments:</strong> essays or short coding tasks per topic.</li>
-<li><strong>Projects:</strong> e.g. implementing key components (mini B+Tree, buffer pool, join).</li>
-<li><strong>Capstone project:</strong> integrate multiple concepts, e.g. build a tiny column-store DB or an end-to-end pipeline using Spark and Delta.</li>
-<li><strong>Interview questions practice:</strong> Weekly “advanced questions” as listed, to deepen understanding.</li>
-</ul>
-<p><strong>Grading Rubric (example)</strong>: Projects/homework (60%), quizzes (20%), capstone (15%), participation (5%).  The rubric would emphasize correctness, code quality, documentation, and conceptual clarity.</p>
-<p>Since this is self-study, learners can adapt the pacing. A <strong>recommended timeline</strong> for 150–200 topics might be ~4 topics/week (to cover ~50 topics over 12 weeks, with additional review/spare weeks for stretch topics).  More advanced learners could accelerate.</p>
-<h2 id="resources-repos-papers-books">Resources: Repos, Papers, Books</h2>
-<p>We list key resources in tables. Each URL is included for convenience.</p>
-<p><strong>Open-Source Repositories:</strong> Use these for code reading and experiments.</p>
-<table>
-  <thead>
-      <tr>
-          <th>Category</th>
-          <th>Project</th>
-          <th>URL</th>
-          <th>Notes</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Storage Engines</td>
-          <td>DuckDB</td>
-          <td><a href="https://github.com/duckdb/duckdb">https://github.com/duckdb/duckdb</a></td>
-          <td>In-process analytical DB (C++, vectorized)</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>PostgreSQL</td>
-          <td><a href="https://github.com/postgres/postgres">https://github.com/postgres/postgres</a></td>
-          <td>Widely-used OLTP DB (C)</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>SQLite</td>
-          <td><a href="https://github.com/sqlite/sqlite">https://github.com/sqlite/sqlite</a></td>
-          <td>Embedded DB (C)</td>
-      </tr>
-      <tr>
-          <td>Execution Eng.</td>
-          <td>Velox</td>
-          <td><a href="https://github.com/facebookincubator/velox">https://github.com/facebookincubator/velox</a></td>
-          <td>Vectorized execution library (C++)</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>Apache DataFusion</td>
-          <td><a href="https://github.com/apache/datafusion">https://github.com/apache/datafusion</a></td>
-          <td>Rust query engine (Arrow-based)</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>ClickHouse</td>
-          <td><a href="https://github.com/ClickHouse/ClickHouse">https://github.com/ClickHouse/ClickHouse</a></td>
-          <td>Columnar OLAP DB (C++)</td>
-      </tr>
-      <tr>
-          <td>Query Engines</td>
-          <td>Trino (PrestoSQL)</td>
-          <td><a href="https://github.com/trinodb/trino">https://github.com/trinodb/trino</a></td>
-          <td>Distributed SQL engine (Java)</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>Apache Spark</td>
-          <td><a href="https://github.com/apache/spark">https://github.com/apache/spark</a></td>
-          <td>Distributed data processing (Scala/Java)</td>
-      </tr>
-      <tr>
-          <td>Warehouse</td>
-          <td>dbt Core</td>
-          <td><a href="https://github.com/dbt-labs/dbt-core">https://github.com/dbt-labs/dbt-core</a></td>
-          <td>SQL-based ELT tool (Python, Jinja)</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>Cube.js</td>
-          <td><a href="https://github.com/cube-js/cube">https://github.com/cube-js/cube</a></td>
-          <td>Headless BI and analytics (Node.js)</td>
-      </tr>
-      <tr>
-          <td>Data Lake</td>
-          <td>Apache Iceberg</td>
-          <td><a href="https://github.com/apache/iceberg">https://github.com/apache/iceberg</a></td>
-          <td>Table format for data lakes (Java)</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>Delta Lake</td>
-          <td><a href="https://github.com/delta-io/delta">https://github.com/delta-io/delta</a></td>
-          <td>ACID table layer for Spark (Scala)</td>
-      </tr>
-      <tr>
-          <td>Educational</td>
-          <td>BusTub</td>
-          <td><a href="https://github.com/cmu-db/bustub">https://github.com/cmu-db/bustub</a></td>
-          <td>CMU educational DB (C++)</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>MiniDB (MiniOB)</td>
-          <td><a href="https://github.com/oceanbase/miniob">https://github.com/oceanbase/miniob</a></td>
-          <td>Educational SQL DB (C++)</td>
-      </tr>
-      <tr>
-          <td>Other</td>
-          <td>PostgreSQL docs</td>
-          <td><a href="https://www.postgresql.org/docs/">https://www.postgresql.org/docs/</a></td>
-          <td>Official docs (e.g. Chapter 13 on CC)</td>
-      </tr>
-  </tbody>
-</table>
-<p><strong>Seminal Papers:</strong> (Topic – Title – Link)</p>
-<table>
-  <thead>
-      <tr>
-          <th>Topic</th>
-          <th>Paper (Title – Year)</th>
-          <th>Reference/URL</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Query Optimization</td>
-          <td>“Access Path Selection…” – Selinger <em>SIGMOD 1979</em></td>
-          <td>[PDF][38]</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>“Volcano Optimizer Generator” – 1994 (Graefe)</td>
-          <td>[HTML][21] (notes)</td>
-      </tr>
-      <tr>
-          <td>Indexing</td>
-          <td>B-Tree – Compton (1979)</td>
-          <td>(classic text, often in DB books)</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>“C-Store: The Column-Oriented DBMS” – Abadi 2008</td>
-          <td>VLDB’08</td>
-      </tr>
-      <tr>
-          <td>Logging/Recovery</td>
-          <td>“ARIES: Transaction Recovery Method” – Mohan 1992</td>
-          <td>[PDF][5]</td>
-      </tr>
-      <tr>
-          <td>Transactions</td>
-          <td>“Aries: …partial rollbacks…” – VLDB 1992 (the same)</td>
-          <td></td>
-      </tr>
-      <tr>
-          <td>MVCC</td>
-          <td>Bernstein et al., “Concurrency Control” (1987)</td>
-          <td>ACM; or <em>Handbook of Trans. Proc.</em></td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>Cahill et al., “Serializable Isolation for RDBMS” – VLDB 2008</td>
-          <td></td>
-      </tr>
-      <tr>
-          <td>Distributed</td>
-          <td>“The Google File System” – 2003</td>
-          <td>SOSP’03 (for concept)</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>“MapReduce” – Dean/Ghemawat 2004</td>
-          <td>OSDI’04</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>“Bigtable” – Chang 2006</td>
-          <td>OSDI’06</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>“Spanner” – Corbett 2012</td>
-          <td>OSDI’12</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>“Calvin: Fast Deterministic…” – Thomson 2012</td>
-          <td>SOSP’12</td>
-      </tr>
-      <tr>
-          <td>Data Warehousing</td>
-          <td>“C-Store: A Column-Oriented DBMS” – Abadi 2008</td>
-          <td>(same as above)</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>“Parquet” (2013) &amp; “ORC” (2015) spec papers</td>
-          <td>Apache docs</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>“Vertica: C-Store 2.0” – Stonebraker 2013</td>
-          <td>VLDB’13</td>
-      </tr>
-      <tr>
-          <td>Query Engines</td>
-          <td>“Spark SQL” – Armbrust 2015</td>
-          <td>(SIGMOD or PVLDB)</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>“The Snowflake Elastic Data Warehouse” – BCMConf 2016</td>
-          <td>(paper by Jain et al. may be present)</td>
-      </tr>
-      <tr>
-          <td>Data Lake</td>
-          <td>“Delta Lake” – Armbrust 2020</td>
-          <td>PVLDB’20, [PDF][32]</td>
-      </tr>
-  </tbody>
-</table>
-<p><em>(Full citations and URLs can be given in footnotes or separate reference list as needed.)</em></p>
-<p><strong>Key Books:</strong></p>
-<table>
-  <thead>
-      <tr>
-          <th>Book</th>
-          <th>Author(s)</th>
-          <th>Note / URL</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><em>Database Internals</em></td>
-          <td>Alex Petrov (2019)</td>
-          <td>Covers storage, indexing, recovery. O’Reilly (see contents above)</td>
-      </tr>
-      <tr>
-          <td><em>Designing Data-Intensive Apps</em></td>
-          <td>Martin Kleppmann (2017)</td>
-          <td>Essential on distributed systems, consistency, streaming.</td>
-      </tr>
-      <tr>
-          <td><em>Readings in Database Systems (Red Book)</em></td>
-          <td>Stonebraker (ed.)</td>
-          <td>Collection of classic papers (Sigmod 2000).</td>
-      </tr>
-      <tr>
-          <td><em>Transaction Processing</em></td>
-          <td>Gray &amp; Reuter (1993)</td>
-          <td>Comprehensive reference on concurrency/recovery.</td>
-      </tr>
-      <tr>
-          <td><em>Architecture of Open Source Applications</em> (vol. on SQLite/Postgres)</td>
-          <td></td>
-          <td>Free online chapters on real DBMS architecture.</td>
-      </tr>
-      <tr>
-          <td><em>CMU 15445 Course Notes</em></td>
-          <td>UCSD/CMU</td>
-          <td>(free online notes by Charlie Garrod et al.)</td>
-      </tr>
-  </tbody>
-</table>
-<p>These books should be read selectively (key chapters on B-Trees, Logging, Dist. Systems, etc.).</p>
-<h2 id="suggested-reading-order--prerequisites-graph">Suggested Reading Order &amp; Prerequisites Graph</h2>
-<p>We recommend a <strong>prerequisites graph</strong> guiding the order of topics. Fundamental modules (data models, storage) come first, then indexing/execution, then optimization, then transactions, and finally distributed and warehousing.  A sample dependency graph in mermaid:</p>
-<pre tabindex="0"><code class="language-mermaid" data-lang="mermaid">graph TB
-  RelModel[&#34;Relational Model &amp; SQL&#34;] --&gt; Storage[&#34;Storage &amp; Data Layout&#34;];
-  RelModel --&gt; Algebra[&#34;Relational Algebra&#34;];
-  Storage --&gt; Indexing[&#34;Index Structures (B+Tree, Hash)&#34;];
-  Storage --&gt; BufferPool[&#34;Buffer Pool, Paging&#34;];
-  Algebra --&gt; QueryExec[&#34;Query Execution (Operators)&#34;];
-  Indexing --&gt; QueryExec;
-  QueryExec --&gt; QueryOpt[&#34;Query Optimization&#34;];
-  QueryOpt --&gt; Transactions[&#34;Concurrency &amp; Transactions&#34;];
-  QueryOpt --&gt; DistDB[&#34;Distributed Systems&#34;];
-  Transactions --&gt; Recovery[&#34;Logging &amp; Recovery&#34;];
-  DistDB --&gt; DataWarehouse[&#34;Data Warehousing&#34;];
-  DataWarehouse --&gt; DataLake[&#34;Data Lakes&#34;];
-  QueryOpt --&gt; DataWarehouse;
-  Storage --&gt; Partitioning[&#34;Data Partitioning (Snowflake, Hive)&#34;];
-  Partitioning --&gt; QueryOpt;
-</code></pre><p>This graph (to be embedded via Mermaid) shows that, e.g., you should learn <strong>Storage &amp; Indexing</strong> before heavy <strong>Query Execution</strong>; <strong>Query Execution</strong> before <strong>Query Optimization</strong>; <strong>Transactions</strong> rely on understanding concurrency and logging. It also highlights that <strong>Distributed DB</strong> and <strong>Data Warehouse</strong> build on these foundations.</p>
-<h2 id="tables-candidates-comparison">Tables: Candidates Comparison</h2>
-<p><strong>Open-Source Engines (for code study):</strong></p>
-<table>
-  <thead>
-      <tr>
-          <th>Name</th>
-          <th>Focus</th>
-          <th>URL</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>DuckDB</td>
-          <td>In-process analytics</td>
-          <td><a href="https://github.com/duckdb/duckdb">https://github.com/duckdb/duckdb</a></td>
-      </tr>
-      <tr>
-          <td>PostgreSQL</td>
-          <td>Traditional RDBMS</td>
-          <td><a href="https://github.com/postgres/postgres">https://github.com/postgres/postgres</a></td>
-      </tr>
-      <tr>
-          <td>SQLite</td>
-          <td>Embedded RDBMS</td>
-          <td><a href="https://github.com/sqlite/sqlite">https://github.com/sqlite/sqlite</a></td>
-      </tr>
-      <tr>
-          <td>Velox</td>
-          <td>Vector execution lib</td>
-          <td><a href="https://github.com/facebookincubator/velox">https://github.com/facebookincubator/velox</a></td>
-      </tr>
-      <tr>
-          <td>DataFusion</td>
-          <td>Rust Query engine</td>
-          <td><a href="https://github.com/apache/datafusion">https://github.com/apache/datafusion</a></td>
-      </tr>
-      <tr>
-          <td>ClickHouse</td>
-          <td>Columnar OLAP DB</td>
-          <td><a href="https://github.com/ClickHouse/ClickHouse">https://github.com/ClickHouse/ClickHouse</a></td>
-      </tr>
-      <tr>
-          <td>Trino</td>
-          <td>Distributed SQL Engine</td>
-          <td><a href="https://github.com/trinodb/trino">https://github.com/trinodb/trino</a></td>
-      </tr>
-      <tr>
-          <td>Apache Spark</td>
-          <td>Distributed compute</td>
-          <td><a href="https://github.com/apache/spark">https://github.com/apache/spark</a></td>
-      </tr>
-      <tr>
-          <td>dbt Core</td>
-          <td>ELT transformation tool</td>
-          <td><a href="https://github.com/dbt-labs/dbt-core">https://github.com/dbt-labs/dbt-core</a></td>
-      </tr>
-      <tr>
-          <td>Cube.js</td>
-          <td>Analytics framework</td>
-          <td><a href="https://github.com/cube-js/cube">https://github.com/cube-js/cube</a></td>
-      </tr>
-      <tr>
-          <td>Apache Iceberg</td>
-          <td>Data lake table format</td>
-          <td><a href="https://github.com/apache/iceberg">https://github.com/apache/iceberg</a></td>
-      </tr>
-      <tr>
-          <td>Delta Lake</td>
-          <td>Lakehouse storage layer</td>
-          <td><a href="https://github.com/delta-io/delta">https://github.com/delta-io/delta</a></td>
-      </tr>
-      <tr>
-          <td>BusTub</td>
-          <td>Educational DB (CMU)</td>
-          <td><a href="https://github.com/cmu-db/bustub">https://github.com/cmu-db/bustub</a></td>
-      </tr>
-      <tr>
-          <td>MiniOB (OceanBase)</td>
-          <td>Educational DB</td>
-          <td><a href="https://github.com/oceanbase/miniob">https://github.com/oceanbase/miniob</a></td>
-      </tr>
-  </tbody>
-</table>
-<p><strong>Seminal Papers (with topics):</strong></p>
-<table>
-  <thead>
-      <tr>
-          <th>Topic</th>
-          <th>Paper (Link)</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Cost-Based Optimizer</td>
-          <td>Selinger et al., <em>SIGMOD 1979</em> (System R)</td>
-      </tr>
-      <tr>
-          <td>Volcano Optimizer</td>
-          <td>Graefe, <em>VLDB 1994</em>, &ldquo;The Volcano Optimizer Generator&rdquo;</td>
-      </tr>
-      <tr>
-          <td>Query Execution</td>
-          <td>Neumann, <em>SIGMOD 2011</em>, “Efficiently Compiling Query Plans for Modern Hardware” (HyPer)</td>
-      </tr>
-      <tr>
-          <td>Column Store</td>
-          <td>Abadi et al., <em>VLDB 2008</em>, “C-Store” (Vertica prototype)</td>
-      </tr>
-      <tr>
-          <td>Distributed Data</td>
-          <td>Dean/Ghemawat, <em>OSDI 2004</em>, “MapReduce”</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>Chang et al., <em>OSDI 2006</em>, “Bigtable”</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>Corbett et al., <em>OSDI 2012</em>, “Spanner”</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>DeCandia et al., <em>SOSP 2007</em>, “Dynamo”</td>
-      </tr>
-      <tr>
-          <td>Transactions</td>
-          <td>Mohan et al., <em>TODS 1992</em>, “ARIES” (Recovery)</td>
-      </tr>
-      <tr>
-          <td></td>
-          <td>Bernstein et al., <em>VLDB 1987</em>, “Concurrency Control in T.P.”</td>
-      </tr>
-      <tr>
-          <td>Query Engines</td>
-          <td>Armbrust et al., <em>PVLDB 2015</em>, “Tungsten: Spark’s Execution Engine”</td>
-      </tr>
-      <tr>
-          <td>Data Lakes</td>
-          <td>Armbrust et al., <em>PVLDB 2020</em>, “Delta Lake”</td>
-      </tr>
-  </tbody>
-</table>
-<p><strong>Books:</strong></p>
-<table>
-  <thead>
-      <tr>
-          <th>Title</th>
-          <th>Author(s)</th>
-          <th>Notes</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td><em>Database Internals</em></td>
-          <td>Alex Petrov</td>
-          <td>Thorough, covers storage, index, recovery</td>
-      </tr>
-      <tr>
-          <td><em>Designing Data-Intensive Apps</em></td>
-          <td>M. Kleppmann</td>
-          <td>Distributed systems, consistency, streaming</td>
-      </tr>
-      <tr>
-          <td><em>Transaction Processing</em> (Gray/Reuter)</td>
-          <td>Gray &amp; Reuter</td>
-          <td>Classic on concurrency and recovery</td>
-      </tr>
-      <tr>
-          <td><em>Readings in Database Systems</em></td>
-          <td>Stonebraker (ed.)</td>
-          <td>Collection of classic DB papers (Red Book)</td>
-      </tr>
-      <tr>
-          <td><em>Architecture of OSS Apps: SQLite, Postgres</em></td>
-          <td>Various</td>
-          <td>Real-system architectures (free online)</td>
-      </tr>
-      <tr>
-          <td><em>CMU 15-445/645 Lecture Notes</em></td>
-          <td>CMU Database Group</td>
-          <td>Course notes (cherry-pick chapters)</td>
-      </tr>
-  </tbody>
-</table>
-<h2 id="assessment-and-rubric">Assessment and Rubric</h2>
-<p>We recommend <strong>ongoing assessment</strong> with graded quizzes, homeworks, and projects:</p>
-<ul>
-<li><em>Quizzes</em> (weekly, online): Test core concepts (e.g. explain LRU, define MVCC).</li>
-<li><em>Homeworks</em> (problem sets): Analytical questions and short coding tasks (e.g. “Draw a B+Tree after these inserts”).</li>
-<li><em>Coding Projects</em> (bi-weekly): Implement modules (e.g. Project 1: row store with B+Tree index; Project 2: query engine with join). Grades based on correctness, efficiency, and code clarity.</li>
-<li><em>Capstone</em>: End-to-end project (e.g. a mini database or performance analysis report).</li>
-</ul>
-<p><strong>Rubric example:</strong> Homework/Projects 50%, Quiz/Participation 30%, Final Project 20%. Evaluate correctness (code runs, algorithms work), depth (handles edge cases), understanding (written explanations), and connections (apply to systems like Snowflake/Spark as discussed).</p>
-<p><strong>Timeline for ~150–200 topics:</strong> Roughly 12–16 weeks as outlined, but learners might expand (esp. for interviews). No strict time/week; adapt to personal schedule. Each topic requires core reading (1-2 hours) plus code/exercise (2-4 hours).</p>
-<h2 id="prerequisite-graph-mermaid">Prerequisite Graph (Mermaid)</h2>
-<p>Below is a directed graph of topic prerequisites.  For readability, it’s abstracted to major topics/modules:</p>
-<pre tabindex="0"><code class="language-mermaid" data-lang="mermaid">graph LR
-  A[&#34;Data Models (Relational)&#34;] --&gt; B[&#34;Storage Engines (Pages, Buffer Pool)&#34;]
-  A --&gt; C[&#34;Relational Algebra / SQL&#34;]
-  B --&gt; D[&#34;Indexing (B+Tree, Hash)&#34;]
-  B --&gt; E[&#34;Data Partitioning&#34;]
-  D --&gt; F[&#34;Query Execution (Scans, Joins)&#34;]
-  C --&gt; F
-  E --&gt; F
-  F --&gt; G[&#34;Query Optimization (Cost-based)&#34;]
-  G --&gt; H[&#34;Transactions &amp; Concurrency&#34;]
-  G --&gt; I[&#34;Distributed Databases&#34;]
-  H --&gt; J[&#34;Logging &amp; Recovery (WAL/ARIES)&#34;]
-  I --&gt; K[&#34;Distributed Transactions (Spanner, 2PC)&#34;]
-  K --&gt; L[&#34;Consensus &amp; Replication&#34;]
-  G --&gt; M[&#34;Data Warehousing &amp; DW Engines&#34;]
-  M --&gt; N[&#34;Modern Analytics Tools (Spark, Trino, dbt)&#34;]
-  I --&gt; N
-  J --&gt; N
-</code></pre><p>This graph indicates e.g. that Storage &amp; Indexing should be learned before Query Execution, which comes before Optimization. Transactions/Recovery depend on understanding query processing and locking, etc.</p>
-<h2 id="visual-aids">Visual Aids</h2>
-<p>We have used tables above to compare resources. Additional charts (e.g. a timeline Gantt chart, or taxonomy diagrams) could help, but due to space we omit them here.  Readers are encouraged to sketch their own schemas (ERD, B-Tree diagrams, pipeline flows) as study aids.</p>
-<h2 id="assumptions">Assumptions</h2>
-<p>We assume the learner has a CS background (algorithms, data structures, distributed systems) but may not have formal DB courses.  We assume basic programming skill in Go or Python (per stated background) and familiarity with Linux tools.  No fixed weekly time is mandated; total effort spreads over months as needed.  We also assume interest in going deep (reading papers, source code).</p>
+<hr>
+<h2 id="-actionable-execution-strategy-outperforming-your-team-in-30-days">⚡ Actionable Execution Strategy: Outperforming Your Team in 30 Days</h2>
+<p>To immediately apply your database knowledge and establish visible technical leadership in your team, execute this 3-step operational playbook:</p>
+<h3 id="-step-1-optimize-snowflake-compute-costs-storage-pruning-audit">📍 Step 1: Optimize Snowflake Compute Costs (Storage Pruning Audit)</h3>
+<p>Before suggesting larger warehouse sizes, audit your production Snowflake accounts using <code>ACCOUNT_USAGE</code> query logs<sup id="fnref2:22"><a href="#fn:22" class="footnote-ref" role="doc-noteref">22</a></sup>. Use <code>SYSTEM$CLUSTERING_INFORMATION</code> to identify unclustered tables over 100 GB<sup id="fnref3:23"><a href="#fn:23" class="footnote-ref" role="doc-noteref">23</a></sup>. Ensure your query predicates (such as <code>WHERE</code> clauses) are &ldquo;sargable&rdquo; (e.g., avoid wrapping dates in custom functions) to allow Snowflake to prune micro-partitions effectively, dramatically lowering active credit consumption<sup id="fnref1:27"><a href="#fn:27" class="footnote-ref" role="doc-noteref">27</a></sup>.</p>
+<h3 id="-step-2-implement-sliding-window-incrementalization-in-dbt">📍 Step 2: Implement Sliding-Window Incrementalization in dbt</h3>
+<p>Audit your dbt models for expensive full-table scans during incremental runs<sup id="fnref2:35"><a href="#fn:35" class="footnote-ref" role="doc-noteref">35</a></sup>. For dynamic tables, replace unpartitioned table merge statements with <code>insert_overwrite</code> strategies bounded by a strict, sliding-window lookback filter<sup id="fnref1:32"><a href="#fn:32" class="footnote-ref" role="doc-noteref">32</a></sup>. For high-churn event tables, implement Snowflake Streams to construct a real-time CDC transform pipeline<sup id="fnref6:34"><a href="#fn:34" class="footnote-ref" role="doc-noteref">34</a></sup>. This ensures your models run in flat-time and scale cost-effectively as data volume grows<sup id="fnref3:35"><a href="#fn:35" class="footnote-ref" role="doc-noteref">35</a></sup>.</p>
+<h3 id="-step-3-offload-dashboard-concurrency-to-cube-store">📍 Step 3: Offload Dashboard Concurrency to Cube Store</h3>
+<p>Examine the interactive query load hitting Snowflake from downstream BI dashboards<sup id="fnref:47"><a href="#fn:47" class="footnote-ref" role="doc-noteref">47</a></sup>. Identify repeating expensive aggregation queries<sup id="fnref1:47"><a href="#fn:47" class="footnote-ref" role="doc-noteref">47</a></sup>, centralize metric formulas in Cube, and configure optimized daily pre-aggregations<sup id="fnref5:13"><a href="#fn:13" class="footnote-ref" role="doc-noteref">13</a></sup>. Let Cube Store&rsquo;s high-performance, vectorized Rust engine serve these concurrent requests from local Parquet files<sup id="fnref8:21"><a href="#fn:21" class="footnote-ref" role="doc-noteref">21</a></sup>. This delivers sub-second dashboard performance while allowing your Snowflake warehouses to auto-suspend, instantly cutting compute bills<sup id="fnref:48"><a href="#fn:48" class="footnote-ref" role="doc-noteref">48</a></sup>.</p>
+<hr>
+<h2 id="-works-cited">📚 Works Cited</h2>
+<div class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1">
+<p><a href="https://15721.courses.cs.cmu.edu/spring2024/schedule.html">CMU 15-721: Advanced Database Systems Course Schedule</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref3:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref4:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref5:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref6:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref7:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref8:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref9:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref10:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref11:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref12:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref13:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref14:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref15:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref16:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref17:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref18:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref19:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref20:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref21:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref22:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref23:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref24:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref25:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref26:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref27:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref28:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref29:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref30:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2">
+<p><a href="https://metafunctor.com/media/readings-in-database-systems-red-book/">Readings in Database Systems (Red Book) - Metafunctor</a>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3">
+<p><a href="https://duckdb.org/docs/current/internals/overview">Overview of DuckDB Internals - DuckDB Docs</a>&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4">
+<p><a href="https://engineering.fb.com/2023/03/09/open-source/velox-open-source-execution-engine/">Introducing Velox: An Open Source Unified Execution Engine - Meta Engineering</a>&#160;<a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref3:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:5">
+<p><a href="https://hemantkgupta.medium.com/insights-from-paper-velox-metas-unified-execution-engine-eb592eaf0859">Insights from Paper: Velox: Meta&rsquo;s Unified Execution Engine - Medium</a>&#160;<a href="#fnref:5" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:5" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:5" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:6">
+<p><a href="https://github.com/apache/datafusion">Apache DataFusion SQL Query Engine GitHub Repository</a>&#160;<a href="#fnref:6" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:6" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:6" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:7">
+<p><a href="https://www.alibabacloud.com/blog/600689">Research on the Computing Principle of Velox Expressions - Alibaba Cloud Community</a>&#160;<a href="#fnref:7" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:7" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:8">
+<p><a href="https://clickhouse.com/docs/academic_overview">Architecture Overview - ClickHouse Docs</a>&#160;<a href="#fnref:8" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:8" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:8" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref3:8" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:9">
+<p><a href="https://facebookincubator.github.io/velox/develop/expression-evaluation.html">Expression Evaluation - Velox Documentation</a>&#160;<a href="#fnref:9" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:9" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:10">
+<p><a href="https://www.tinybird.co/blog/clickhouse-vs-duckdb-nodes">ClickHouse® vs DuckDB: How Many Nodes Do You Need? - Tinybird Blog</a>&#160;<a href="#fnref:10" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:11">
+<p><a href="https://blobs.duckdb.org/slides/DiDi-08.pdf">Query Rewriting and Optimization - DuckDB</a>&#160;<a href="#fnref:11" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:11" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:12">
+<p><a href="https://davidgomes.com/advanced-database-systems-part-1/">Advanced Database Systems (Part 1)</a>&#160;<a href="#fnref:12" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:12" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:13">
+<p><a href="https://rittmananalytics.com/partners/cube">Cube Partner - Semantic Layer Experts - Rittman Analytics</a>&#160;<a href="#fnref:13" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:13" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:13" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref3:13" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref4:13" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref5:13" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:14">
+<p><a href="https://velox-lib.io/blog/page/2/">Blog | Velox</a>&#160;<a href="#fnref:14" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:14" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:15">
+<p><a href="https://www.ibm.com/new/product-blog/veloxcon-2024-innovation-in-data-management">VeloxCon 2024: Innovation in Data Management - IBM</a>&#160;<a href="#fnref:15" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:16">
+<p><a href="https://github.com/duckdb/duckdb/blob/main/src/optimizer/optimizer.cpp">DuckDB Optimizer Source Code GitHub</a>&#160;<a href="#fnref:16" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:16" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:16" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref3:16" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:17">
+<p><a href="https://www.snowflake.com/en/blog/engineering/apache-iceberg-queries-adaptive-execution/">How Snowflake Optimizes Apache Iceberg Queries with Adaptive Execution - Snowflake Blog</a>&#160;<a href="#fnref:17" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:17" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:18">
+<p><a href="http://www.redbook.io/pdf/redbook-5th-edition.pdf">Readings in Database Systems (Red Book), 5th Edition (PDF)</a>&#160;<a href="#fnref:18" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:18" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:18" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref3:18" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:19">
+<p><a href="https://docs.rs/datafusion/latest/datafusion/">DataFusion Crate Documentation - Docs.rs</a>&#160;<a href="#fnref:19" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:20">
+<p><a href="https://www.metaplane.dev/blog/optimize-your-snowflake-query-performance">How to Optimize Your Snowflake Query Performance - Metaplane Blog</a>&#160;<a href="#fnref:20" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:21">
+<p><a href="https://docs.cube.dev/docs/pre-aggregations">Pre-aggregations Overview - Cube Documentation</a>&#160;<a href="#fnref:21" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:21" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:21" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref3:21" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref4:21" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref5:21" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref6:21" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref7:21" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref8:21" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:22">
+<p><a href="https://docs.snowflake.com/en/guides-overview-performance">Performance Optimization - Snowflake Documentation</a>&#160;<a href="#fnref:22" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:22" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:22" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:23">
+<p><a href="https://keebo.ai/blog/snowflake-micropartitions-clustering/">Demystifying Snowflake Micro-Partitions &amp; Clustering - Keebo Blog</a>&#160;<a href="#fnref:23" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:23" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:23" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref3:23" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:24">
+<p><a href="https://medium.com/snowflake/super-charge-snowflake-query-performance-with-micro-partitions-3d8ef927890d">Super-charge Snowflake Query Performance with Micro-Partitions - Medium</a>&#160;<a href="#fnref:24" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:24" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:25">
+<p><a href="https://docs.snowflake.com/en/user-guide/performance-query-options">Optimizing Query Performance - Snowflake Documentation</a>&#160;<a href="#fnref:25" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:25" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:26">
+<p><a href="https://www.snowflake.com/en/blog/engineering/sql-performance-improvements-2026/">SQL Performance Improvements Year in Review - Snowflake Engineering</a>&#160;<a href="#fnref:26" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:27">
+<p><a href="https://www.unitedtechno.com/13-snowflake-performance-optimizations-you-should-know/">13 Snowflake Performance Optimizations You Should Know - United Techno</a>&#160;<a href="#fnref:27" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:27" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:28">
+<p><a href="https://www.datadoghq.com/blog/understanding-dbt/">Understanding dbt: Basics and Best Practices - Datadog</a>&#160;<a href="#fnref:28" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:28" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:28" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref3:28" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref4:28" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref5:28" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref6:28" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:29">
+<p><a href="http://www.redbook.io/">Readings in Database Systems (Red Book), 5th Edition Homepage</a>&#160;<a href="#fnref:29" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:30">
+<p><a href="https://www.getdbt.com/blog/modular-data-modeling-techniques">Data Modeling Techniques for More Modularity - dbt Labs</a>&#160;<a href="#fnref:30" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:30" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:30" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:31">
+<p><a href="https://stellans.io/dbt-merge-vs-deleteinsert/">dbt MERGE vs DELETE+INSERT - Stellans Blog</a>&#160;<a href="#fnref:31" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:31" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:31" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:32">
+<p><a href="https://atrium.ai/resources/guide-incremental-strategies-in-dbt/">Incremental Data Loading Strategies in dbt Explained - Atrium AI</a>&#160;<a href="#fnref:32" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:32" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:33">
+<p><a href="https://docs.getdbt.com/docs/build/incremental-strategy">About Incremental Strategy - dbt Developer Hub</a>&#160;<a href="#fnref:33" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:33" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:33" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:34">
+<p><a href="https://docs.getdbt.com/best-practices/how-we-handle-real-time-data/2-incremental-patterns">Incremental Patterns for Near Real-Time Data - dbt Developer Hub</a>&#160;<a href="#fnref:34" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:34" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:34" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref3:34" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref4:34" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref5:34" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref6:34" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:35">
+<p><a href="https://medium.com/@reliabledataengineering/i-tested-dbts-incremental-strategies-on-1m-rows-here-s-what-actually-happened-1628cf03931f">I Tested dbt&rsquo;s Incremental Strategies on 1M Rows: Here&rsquo;s What Actually Happened - Medium</a>&#160;<a href="#fnref:35" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:35" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:35" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref3:35" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:36">
+<p><a href="https://oneuptime.com/blog/post/2026-01-27-dbt-incremental-models/view">How to Configure dbt Incremental Models - OneUptime</a>&#160;<a href="#fnref:36" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:37">
+<p><a href="https://archive.org/details/redbook-5th-edition">Readings in Database Systems (Red Book), 5th Edition Archive</a>&#160;<a href="#fnref:37" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:37" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:37" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref3:37" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref4:37" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref5:37" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref6:37" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:38">
+<p><a href="https://snowflakemasters.in/performance-optimization-techniques-in-snowflake/">Performance Optimization Techniques in Snowflake - Snowflake Masters</a>&#160;<a href="#fnref:38" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:39">
+<p><a href="https://datacoves.com/post/dbt-test-options">dbt Testing: A Complete Guide to Data Tests, Unit Tests, and Testing Packages - Datacoves</a>&#160;<a href="#fnref:39" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:39" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:39" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref3:39" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref4:39" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref5:39" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref6:39" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref7:39" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref8:39" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:40">
+<p><a href="https://www.datafold.com/blog/7-dbt-testing-best-practices/">7 dbt Testing Best Practices: Shifting Testing Left - Datafold</a>&#160;<a href="#fnref:40" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:40" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:40" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:41">
+<p><a href="https://cube.dev/partnerships/technology/snowflake">Snowflake Integration - Cube.dev</a>&#160;<a href="#fnref:41" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:42">
+<p><a href="https://www.ssp.sh/brain/cube-store/">Cube Store Notes - Simon Späti</a>&#160;<a href="#fnref:42" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:42" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:43">
+<p><a href="https://cube.dev/blog/introducing-cubestore">Introducing Cube Store: High Concurrency and Sub-Second Latency for Any Database - Cube Blog</a>&#160;<a href="#fnref:43" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:44">
+<p><a href="https://cube.dev/articles/best-semantic-layer-for-ai-and-bi-2026">Best Semantic Layer for AI and BI (2026) - Cube.dev</a>&#160;<a href="#fnref:44" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:45">
+<p><a href="https://dzone.com/articles/high-performance-data-analytics-with-cubejs-pre-ag">High Performance Data Analytics With Cube.js Pre-Aggregations - DZone</a>&#160;<a href="#fnref:45" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:45" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref2:45" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:46">
+<p><a href="https://www.geeksforgeeks.org/cloud-computing/snowflake-architecture/">Snowflake Architecture - GeeksforGeeks</a>&#160;<a href="#fnref:46" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:47">
+<p><a href="https://cube.dev/blog/how-cubes-universal-semantic-layer-and-snowflake-data-cloud-work-together">How Cube&rsquo;s Universal Semantic Layer &amp; Snowflake Work Together - Cube Blog</a>&#160;<a href="#fnref:47" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a>&#160;<a href="#fnref1:47" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:48">
+<p><a href="https://www.phdata.io/blog/how-to-optimize-the-value-of-snowflake/">How to Optimize the Value of Snowflake - phData Blog</a>&#160;<a href="#fnref:48" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</div>
  </content>
 
 <p>
@@ -1571,7 +1407,7 @@ Executive Summary We propose a modular, project-driven curriculum focused on cor
 
     
     document.addEventListener('DOMContentLoaded', function () {
-        const slug = '';
+        const slug = 'dbms_content';
         upvoteBtn = document.getElementById('upvote-btn');
         upvoteCount = document.getElementById('upvote-count');
         getCount(slug);
@@ -1586,7 +1422,7 @@ Executive Summary We propose a modular, project-driven curriculum focused on cor
             console.log('You have already upvoted this post!');
             return;
         }
-        const slug = '';
+        const slug = 'dbms_content';
 
         
         upvoteBtn.disabled = true;
@@ -1660,18 +1496,43 @@ Executive Summary We propose a modular, project-driven curriculum focused on cor
 <div class="toc">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#executive-summary">Executive Summary</a></li>
-    <li><a href="#curriculum-structure">Curriculum Structure</a></li>
-    <li><a href="#topic-resources-examples">Topic Resources (Examples)</a></li>
-    <li><a href="#sample-1216-week-syllabus">Sample 12–16 Week Syllabus</a></li>
-    <li><a href="#learning-outcomes-and-assessment">Learning Outcomes and Assessment</a></li>
-    <li><a href="#resources-repos-papers-books">Resources: Repos, Papers, Books</a></li>
-    <li><a href="#suggested-reading-order--prerequisites-graph">Suggested Reading Order &amp; Prerequisites Graph</a></li>
-    <li><a href="#tables-candidates-comparison">Tables: Candidates Comparison</a></li>
-    <li><a href="#assessment-and-rubric">Assessment and Rubric</a></li>
-    <li><a href="#prerequisite-graph-mermaid">Prerequisite Graph (Mermaid)</a></li>
-    <li><a href="#visual-aids">Visual Aids</a></li>
-    <li><a href="#assumptions">Assumptions</a></li>
+    <li><a href="#-program-architecture-overview">🗺️ Program Architecture Overview</a>
+      <ul>
+        <li><a href="#-phase-1-database-kernel-internals-weeks-1-to-7">🔬 Phase 1: Database Kernel Internals (Weeks 1 to 7)</a></li>
+        <li><a href="#-phase-2-high-performance-distributed-analytics--corporate-stack-weeks-8-to-14">☁️ Phase 2: High-Performance Distributed Analytics &amp; Corporate Stack (Weeks 8 to 14)</a></li>
+      </ul>
+    </li>
+    <li><a href="#-phase-1-database-kernel-internals">🔬 Phase 1: Database Kernel Internals</a>
+      <ul>
+        <li><a href="#-week-1-analytical-storage-layouts--pax-hybrid-storage">📅 Week 1: Analytical Storage Layouts &amp; PAX Hybrid Storage</a></li>
+        <li><a href="#-week-2-hardware-aligned-integer-vector-compression">📅 Week 2: Hardware-Aligned Integer Vector Compression</a></li>
+        <li><a href="#-week-3-vectorized-execution-and-cache-locality">📅 Week 3: Vectorized Execution and Cache Locality</a></li>
+        <li><a href="#-week-4-just-in-time-jit-query-compilation">📅 Week 4: Just-In-Time (JIT) Query Compilation</a></li>
+        <li><a href="#-week-5-morsel-driven-parallelism--numa-scheduling">📅 Week 5: Morsel-Driven Parallelism &amp; NUMA Scheduling</a></li>
+        <li><a href="#-week-6-vectorized-hash-join-algorithms">📅 Week 6: Vectorized Hash Join Algorithms</a></li>
+        <li><a href="#-week-7-query-optimizers-cbo--rule-based-plan-pruning">📅 Week 7: Query Optimizers (CBO &amp; Rule-Based Plan Pruning)</a></li>
+      </ul>
+    </li>
+    <li><a href="#-phase-2-distributed-analytical-storage--corporate-stack">☁️ Phase 2: Distributed Analytical Storage &amp; Corporate Stack</a>
+      <ul>
+        <li><a href="#-week-8-disaggregated-storage--query-planning-snowflake-internals">📅 Week 8: Disaggregated Storage &amp; Query Planning (Snowflake Internals)</a></li>
+        <li><a href="#-week-9-snowflake-workload-acceleration-sos-qas-and-materialized-views">📅 Week 9: Snowflake Workload Acceleration (SOS, QAS, and Materialized Views)</a></li>
+        <li><a href="#-week-10-high-performance-data-transformations-dbt-advanced-modeling">📅 Week 10: High-Performance Data Transformations (dbt Advanced Modeling)</a></li>
+        <li><a href="#-week-11-optimized-dbt-incremental-strategies-on-snowflake">📅 Week 11: Optimized dbt Incremental Strategies on Snowflake</a></li>
+        <li><a href="#-week-12-near-real-time-cdc-via-snowflake-streams">📅 Week 12: Near Real-Time CDC via Snowflake Streams</a></li>
+        <li><a href="#-week-13-left-shifting-data-governance--cicd-guardrails">📅 Week 13: Left-Shifting Data Governance &amp; CI/CD Guardrails</a></li>
+        <li><a href="#-week-14-headless-semantic-modeling--caching-cube-store-mpp-architecture">📅 Week 14: Headless Semantic Modeling &amp; Caching (Cube Store MPP Architecture)</a></li>
+      </ul>
+    </li>
+    <li><a href="#-technical-synthesis-curriculum">📊 Technical Synthesis Curriculum</a></li>
+    <li><a href="#-actionable-execution-strategy-outperforming-your-team-in-30-days">⚡ Actionable Execution Strategy: Outperforming Your Team in 30 Days</a>
+      <ul>
+        <li><a href="#-step-1-optimize-snowflake-compute-costs-storage-pruning-audit">📍 Step 1: Optimize Snowflake Compute Costs (Storage Pruning Audit)</a></li>
+        <li><a href="#-step-2-implement-sliding-window-incrementalization-in-dbt">📍 Step 2: Implement Sliding-Window Incrementalization in dbt</a></li>
+        <li><a href="#-step-3-offload-dashboard-concurrency-to-cube-store">📍 Step 3: Offload Dashboard Concurrency to Cube Store</a></li>
+      </ul>
+    </li>
+    <li><a href="#-works-cited">📚 Works Cited</a></li>
   </ul>
 </nav>
 </div>
@@ -1708,27 +1569,6 @@ Made with
 <button id="back-to-top" title="Go to top">↑</button>
 
 
-
-<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const codeBlocks = document.querySelectorAll('pre code.language-mermaid');
-        codeBlocks.forEach(function(codeBlock) {
-            const preBlock = codeBlock.parentNode;
-            const mermaidDiv = document.createElement('div');
-            mermaidDiv.className = 'mermaid';
-            mermaidDiv.textContent = codeBlock.textContent;
-            preBlock.parentNode.replaceChild(mermaidDiv, preBlock);
-        });
-
-        const isDark = document.body.classList.contains('dark-mode');
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: isDark ? 'dark' : 'default',
-            securityLevel: 'loose'
-        });
-    });
-</script>
 
 </footer>
 

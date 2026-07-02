@@ -1,5 +1,6 @@
 +++
 title = "DBMS Content"
+slug = "dbms_content"
 date = "2026-07-02T00:30:31+05:30"
 
 # description is optional
