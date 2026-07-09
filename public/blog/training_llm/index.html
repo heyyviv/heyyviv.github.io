@@ -1,26 +1,870 @@
-<!doctype html><html lang=en-us><head><meta http-equiv=X-Clacks-Overhead content="GNU Terry Pratchett"><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Training_LLM | Vivek's Field Notes</title><meta name=title content="Training_LLM"><meta name=description content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism."><meta name=keywords content="training,LLM,notes,"><link rel=canonical href=https://heyyviv.github.io/blog/training_llm/><meta property="og:url" content="https://heyyviv.github.io/blog/training_llm/"><meta property="og:site_name" content="Vivek's Field Notes"><meta property="og:title" content="Training_LLM"><meta property="og:description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism."><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="blog"><meta property="article:published_time" content="2025-05-23T15:12:55+05:30"><meta property="article:modified_time" content="2025-05-23T15:12:55+05:30"><meta property="article:tag" content="Training"><meta property="article:tag" content="LLM"><meta property="article:tag" content="Notes"><meta property="og:image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png"><meta name=twitter:title content="Training_LLM"><meta name=twitter:description content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism."><meta itemprop=name content="Training_LLM"><meta itemprop=description content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism."><meta itemprop=datePublished content="2025-05-23T15:12:55+05:30"><meta itemprop=dateModified content="2025-05-23T15:12:55+05:30"><meta itemprop=wordCount content="1096"><meta itemprop=image content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png"><meta itemprop=keywords content="Training,LLM,Notes"><meta name=referrer content="no-referrer-when-downgrade"><style>:root{--width-max:720px;--font-primary:Verdana, sans-serif;--font-secondary:monospace;--font-size-primary:1em;--font-size-secondary:0.8em;--body-bg-color:#fcfcfc;--bold-text-color:#222;--body-text-color:#444;--link-color:#3273dc;--link-visited-color:#8b6fcb;--table-border-color:#f2f2f2;--table-th-bg-color:#f2f2f2;--img-border-color:#f2f2f2;--code-bg-color:#f2f2f2;--code-text-color:#222;--blockquote-border-color:#666;--blockquote-text-color:#666;--upvoted-color:#FA8072}@media(prefers-color-scheme:dark){:root{--body-bg-color:#1c1c1c;--bold-text-color:#eee;--body-text-color:#ddd;--link-color:#8cc2dd;--link-visited-color:#c3b1ee;--table-border-color:#999;--table-th-bg-color:#999;--img-border-color:#999;--code-bg-color:#555;--code-text-color:#ddd;--blockquote-border-color:#ccc;--blockquote-text-color:#ccc}}body{font-family:var(--font-primary);font-size:var(--font-size-primary);margin:auto;padding:20px;max-width:var(--width-max);text-align:left;background-color:var(--body-bg-color);word-wrap:break-word;overflow-wrap:break-word;line-height:1.5;color:var(--body-text-color)}h1,h2,h3,h4,h5,h6,strong,b{color:var(--bold-text-color)}h1,h2,h3,h4,h5,h6{margin:16px 0}a{color:var(--link-color);cursor:pointer;text-decoration:none}a:hover{text-decoration:underline}.title{text-decoration:none;border:0}.title:hover{text-decoration:none}.title span{font-weight:400}nav a{margin-right:8px}textarea{width:100%;font-size:16px}input{font-size:14px}content{line-height:1.6}table{width:100%;border-collapse:collapse;border:1px solid var(--table-border-color);border-radius:4px}th,td{border:1px solid var(--table-border-color);padding:4px}th{background-color:var(--table-th-bg-color)}hr{border:0;border-top:1px dashed}img{max-width:100%;display:block;margin-left:auto;margin-right:auto;border:1px solid var(--img-border-color);border-radius:4px;content-visibility:auto;loading:lazy}img[src*="#minipic"]{max-width:50%;margin-left:0;margin-right:auto}i{font-style:normal}time{font-family:var(--font-secondary);font-size:15px}code{font-family:var(--font-secondary);background-color:var(--code-bg-color);color:var(--code-text-color);padding:2px;border-radius:4px}pre code{display:block;padding:16px;white-space:pre-wrap;overflow-x:auto}div.highlight pre{border-radius:4px}div.highlight code{background-color:var(--code-bg-color);color:var(--code-text-color)}blockquote{border-left:2px solid var(--blockquote-border-color);color:var(--blockquote-text-color);margin:0;padding-left:16px;font-style:normal}blockquote p{margin:0}footer{padding:25px 0;text-align:center;font-size:var(--font-size-secondary)}ul li:has(input){list-style-type:none;margin-left:-25.5px}ul.blog-posts{list-style-type:none;padding:unset}ul.blog-posts li{display:flex}ul.blog-posts li span{flex:0 0 130px}ul.blog-posts li span.grouped{flex:0 0 80px}ul.blog-posts li a:visited{color:var(--link-visited-color)}div.toc{position:fixed;top:50%;left:calc((100vw + var(--width-max))/2);transform:translateY(-50%);width:calc((90vw - var(--width-max))/2);max-height:80vh;overflow-y:auto;padding:20px 8px;z-index:99;&::-webkit-scrollbar { display:none; } -ms-overflow-style:none;scrollbar-width:none}div.toc ul{list-style-type:none;padding-left:0}div.toc ul li{margin:8px 0}div.toc ul li a{text-decoration:none;color:var(--blockquote-text-color)}div.toc ul li a:hover{color:var(--link-color)}button.upvote-btn{margin:0;padding:0;border:none;background:0 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;color:var(--body-text-color)}button.upvoted{color:var(--upvoted-color)}span.upvote-count{margin-top:-4px;font-size:smaller}@media(max-width:500px){img[src*="#minipic"]{max-width:100%;margin-left:auto;margin-right:auto}div.toc{display:none}}</style><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel=stylesheet><style>:root{--font-primary:'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;--font-serif:'Playfair Display', Georgia, serif;--bg-light:#FAFAFA;--text-dark:#2D3748;--accent-primary:#4A5568;--accent-secondary:#718096;--night-bg:#1A202C;--night-text:#E2E8F0;--night-accent:#A0AEC0;--body-bg-color:var(--bg-light);--bold-text-color:#1A202C;--body-text-color:var(--text-dark);--link-color:#3182CE;--link-visited-color:#6B46C1}html{scroll-behavior:smooth}body{transition:background-color .4s ease,color .4s ease;font-family:var(--font-primary);line-height:1.8;background-color:var(--body-bg-color);color:var(--body-text-color);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}h1,h2,h3,h4,h5,h6{font-family:var(--font-serif);color:var(--bold-text-color);margin-top:2em;margin-bottom:.75em;line-height:1.3;letter-spacing:-.02em}body.light-mode{--body-bg-color:var(--bg-light);--bold-text-color:#1A202C;--body-text-color:var(--text-dark);--link-color:#3182CE;--code-bg-color:#F7FAFC;--code-text-color:#2D3748;--blockquote-border-color:#E2E8F0;--blockquote-text-color:#4A5568}body.dark-mode{--body-bg-color:var(--night-bg);--bold-text-color:#F7FAFC;--body-text-color:var(--night-text);--link-color:#63B3ED;--code-bg-color:#2D3748;--code-text-color:#E2E8F0;--blockquote-border-color:#4A5568;--blockquote-text-color:#A0AEC0}#theme-toggle{border:1px solid var(--accent-secondary);background:0 0;color:var(--body-text-color);cursor:pointer;padding:5px 12px;border-radius:20px;margin-left:10px;font-family:var(--font-primary);font-weight:600;transition:all .3s ease}#theme-toggle:hover{transform:scale(1.05);border-color:var(--accent-sky)}#back-to-top{position:fixed;bottom:30px;right:30px;background-color:var(--accent-primary);border:none;color:#fff;padding:12px;border-radius:50%;cursor:pointer;display:none;z-index:100;box-shadow:0 4px 10px rgba(0,0,0,.2);transition:all .3s ease}#back-to-top:hover{transform:translateY(-5px);background-color:var(--accent-sky)}a{text-decoration:none;color:var(--link-color);transition:color .2s ease,border-bottom-color .2s ease;border-bottom:1px solid transparent}a:hover{border-bottom-color:var(--link-color)}.title h1{margin-top:0;color:var(--bold-text-color);text-decoration:none}.title:hover{border-bottom:none}nav a{color:var(--body-text-color);margin-right:15px;font-weight:500;font-size:.95rem}nav a:hover{color:var(--link-color);border-bottom-color:transparent}.blog-posts{list-style:none;padding-left:0}.blog-posts li{margin-bottom:.5rem;padding:.25rem 0;display:flex;align-items:baseline;gap:1rem}.blog-posts time{display:inline-block;width:110px;color:var(--accent-secondary);font-feature-settings:"tnum";font-variant-numeric:tabular-nums;font-size:.9rem;flex-shrink:0}.blog-posts a{font-weight:500;color:var(--body-text-color);display:inline-block}.blog-posts a:hover{color:var(--link-color)}blockquote{border-left:4px solid var(--blockquote-border-color);padding:.5rem 1.5rem;background:var(--code-bg-color);border-radius:0 4px 4px 0;font-style:italic;margin-left:0;margin-right:0}</style><script>document.addEventListener("DOMContentLoaded",()=>{const e=document.getElementById("back-to-top");e&&(window.addEventListener("scroll",()=>{window.scrollY>300?e.style.display="block":e.style.display="none"}),e.addEventListener("click",()=>{window.scrollTo({top:0,behavior:"smooth"})}))})</script></head><body><header><a href=/ class=title><h1>Vivek's Field Notes</h1></a><nav><a href=/>Home</a>
-<a href=/books/>Books</a>
-<a href=/feed/>Feed</a>
-<a href=/bookmarks/>Reading List</a>
-<a href=/blog/>Blog</a>
-<button id=theme-toggle aria-label="Toggle Dark Mode">Theme</button></nav><script>(function(){const n=document.getElementById("theme-toggle"),e=document.body,o="☀️",i="🌙";function t(e){n.innerHTML=e?o:i,n.setAttribute("aria-label",e?"Switch to Light Mode":"Switch to Dark Mode")}let s=localStorage.getItem("theme");const a=window.matchMedia("(prefers-color-scheme: dark)").matches;s||(s=a?"dark":"light"),s==="dark"?(e.classList.add("dark-mode"),t(!0)):(e.classList.add("light-mode"),t(!1)),n.addEventListener("click",function(){e.classList.contains("dark-mode")?(e.classList.remove("dark-mode"),e.classList.add("light-mode"),localStorage.setItem("theme","light"),t(!1)):(e.classList.remove("light-mode"),e.classList.add("dark-mode"),localStorage.setItem("theme","dark"),t(!0))})})()</script><script>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]],displayMath:[["$$","$$"],["\\[","\\]"]]}}</script><script src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js defer></script></header><main><h1>Training_LLM</h1><p><i><time datetime=2025-05-23 pubdate>23 May, 2025
-</time>• 6 min read</i></p><content><h1 id=training-on-one-gpu>Training on One GPU</h1><p>when a model trained, there are 3 phases</p><ul><li>A forward pass, which passes inputs through the model to yield its outputs</li><li>A backward pass to compute the gradients</li><li>An optimization step using the gradients to update the parameters
-The batch size (bs) is one of the important hyperparameters for model training; it affects both model convergence and throughput.</li></ul><p>A small batch size can be useful early in training to quickly move through the training landscape to reach an optimal learning point. However, further along in the model training, small batch sizes will keep gradients noisy, and the model may not be able to converge to the most optimal final performance. At the other extreme, a large batch size, while giving very accurate gradient estimations, will tend to make less use of each training token, rendering convergence slower and potentially wasting compute resources.</p><p>Batch size also affects the time it takes to train on a given text dataset: a small batch size will require more optimizer steps to train on the same amount of samples. Optimizer steps are costly (in compute time), and the total time to train will thus increase compared to using a larger batch size. That being said, note that the batch size can often be adjusted quite widely around the optimal batch size without major impact on the performance of the model - that is, the sensitivity of final model performance to the exact batch size value is usually rather low around the optimal batch size.
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Training_LLM | Vivek&#39;s Field Notes</title>
+<meta name="title" content="Training_LLM" />
+<meta name="description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism." />
+<meta name="keywords" content="training,LLM,notes," />
+
+<link rel="canonical" href="https://heyyviv.github.io/blog/training_llm/">
+
+
+<meta property="og:url" content="https://heyyviv.github.io/blog/training_llm/">
+  <meta property="og:site_name" content="Vivek&#39;s Field Notes">
+  <meta property="og:title" content="Training_LLM">
+  <meta property="og:description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2025-05-23T15:12:55+05:30">
+    <meta property="article:modified_time" content="2025-05-23T15:12:55+05:30">
+    <meta property="article:tag" content="Training">
+    <meta property="article:tag" content="LLM">
+    <meta property="article:tag" content="Notes">
+    <meta property="og:image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
+
+
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
+  <meta name="twitter:title" content="Training_LLM">
+  <meta name="twitter:description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism.">
+
+
+
+
+  <meta itemprop="name" content="Training_LLM">
+  <meta itemprop="description" content="Technical notes on training Large Language Models (LLMs), covering GPU memory, batch sizes, gradient accumulation, and data parallelism.">
+  <meta itemprop="datePublished" content="2025-05-23T15:12:55+05:30">
+  <meta itemprop="dateModified" content="2025-05-23T15:12:55+05:30">
+  <meta itemprop="wordCount" content="1096">
+  <meta itemprop="image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
+  <meta itemprop="keywords" content="Training,LLM,Notes">
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+   
+  :root {
+    --width-max: 720px;
+    --font-primary: Verdana, sans-serif;
+    --font-secondary: monospace;
+    --font-size-primary: 1em;
+    --font-size-secondary: 0.8em;
+    --body-bg-color: #fcfcfc;
+    --bold-text-color: #222;
+    --body-text-color: #444;
+    --link-color: #3273dc;
+    --link-visited-color: #8b6fcb;
+    --table-border-color: #f2f2f2;
+    --table-th-bg-color: #f2f2f2;
+    --img-border-color: #f2f2f2;
+    --code-bg-color: #f2f2f2;
+    --code-text-color: #222;
+    --blockquote-border-color: #666;
+    --blockquote-text-color: #666;
+    --upvoted-color: #FA8072;
+  }
+
+  @media (prefers-color-scheme: dark) {
+     
+    :root {
+      --body-bg-color: #1c1c1c;
+      --bold-text-color: #eee;
+      --body-text-color: #ddd;
+      --link-color: #8cc2dd;
+      --link-visited-color: #c3b1ee;
+      --table-border-color: #999;
+      --table-th-bg-color: #999;
+      --img-border-color: #999;
+      --code-bg-color: #555;
+      --code-text-color: #ddd;
+      --blockquote-border-color: #ccc;
+      --blockquote-text-color: #ccc;
+    }
+  }
+
+  body {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-primary);
+    margin: auto;
+    padding: 20px;
+    max-width: var(--width-max);
+    text-align: left;
+    background-color: var(--body-bg-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: var(--body-text-color);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: var(--bold-text-color);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 16px 0;
+  }
+
+  a {
+    color: var(--link-color);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title:hover {
+    text-decoration: none;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 8px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 14px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--table-border-color);
+    border-radius: 4px;
+  }
+
+  th,
+  td {
+    border: 1px solid var(--table-border-color);
+    padding: 4px;
+  }
+
+  th {
+    background-color: var(--table-th-bg-color);
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px dashed;
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid var(--img-border-color);
+    border-radius: 4px;
+    content-visibility: auto;
+    loading: lazy;
+  }
+
+  img[src*="#minipic"] {
+    max-width: 50%;
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  i {
+    font-style: normal;
+  }
+
+  time {
+    font-family: var(--font-secondary);
+    font-size: 15px;
+  }
+
+  code {
+    font-family: var(--font-secondary);
+    background-color: var(--code-bg-color);
+    color: var(--code-text-color);
+    padding: 2px;
+    border-radius: 4px;
+  }
+
+  pre code {
+    display: block;
+    padding: 16px;
+    white-space: pre-wrap;
+    overflow-x: auto;
+  }
+
+  div.highlight pre {
+    border-radius: 4px;
+  }
+
+  div.highlight code {
+    background-color: var(--code-bg-color);
+    color: var(--code-text-color);
+  }
+
+  blockquote {
+    border-left: 2px solid var(--blockquote-border-color);
+    color: var(--blockquote-text-color);
+    margin: 0;
+    padding-left: 16px;
+    font-style: normal;
+  }
+
+  blockquote p {
+    margin: 0;
+  }
+
+  footer {
+    padding: 25px 0;
+    text-align: center;
+    font-size: var(--font-size-secondary);
+  }
+
+  ul li:has(input) {
+    list-style-type: none;
+    margin-left: -25.5px;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li span.grouped {
+    flex: 0 0 80px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: var(--link-visited-color);
+  }
+
+   
+  div.toc {
+    position: fixed;
+    top: 50%;
+    left: calc((100vw + var(--width-max)) / 2);
+    transform: translateY(-50%);
+    width: calc((90vw - var(--width-max)) / 2);
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 20px 8px;
+    z-index: 99;
+
+     
+    &::-webkit-scrollbar {
+        display: none;  
+    }
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+  }
+
+  div.toc ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  div.toc ul li {
+    margin: 8px 0;
+  }
+
+  div.toc ul li a {
+    text-decoration: none;
+    color: var(--blockquote-text-color);
+  }
+
+  div.toc ul li a:hover {
+    color: var(--link-color);
+  }
+
+   
+  button.upvote-btn {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--body-text-color);
+  }
+
+  button.upvoted {
+    color: var(--upvoted-color);
+  }
+
+  span.upvote-count {
+    margin-top: -4px;
+    font-size: smaller;
+  }
+
+  @media (max-width: 500px) {
+    img[src*="#minipic"] {
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    div.toc {
+      display: none;
+    }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap"
+    rel="stylesheet">
+
+<style>
+    :root {
+        --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        --font-serif: 'Playfair Display', Georgia, serif;
+        --bg-light: #FAFAFA;
+        --text-dark: #2D3748;
+        --accent-primary: #4A5568;
+        --accent-secondary: #718096;
+        --night-bg: #1A202C;
+        --night-text: #E2E8F0;
+        --night-accent: #A0AEC0;
+
+        --body-bg-color: var(--bg-light);
+        --bold-text-color: #1A202C;
+        --body-text-color: var(--text-dark);
+        --link-color: #3182CE;
+        --link-visited-color: #6B46C1;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        transition: background-color 0.4s ease, color 0.4s ease;
+        font-family: var(--font-primary);
+        line-height: 1.8;
+        background-color: var(--body-bg-color);
+        color: var(--body-text-color);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-serif);
+        color: var(--bold-text-color);
+        margin-top: 2em;
+        margin-bottom: 0.75em;
+        line-height: 1.3;
+        letter-spacing: -0.02em;
+    }
+
+     
+    body.light-mode {
+        --body-bg-color: var(--bg-light);
+        --bold-text-color: #1A202C;
+        --body-text-color: var(--text-dark);
+        --link-color: #3182CE;
+        --code-bg-color: #F7FAFC;
+        --code-text-color: #2D3748;
+        --blockquote-border-color: #E2E8F0;
+        --blockquote-text-color: #4A5568;
+    }
+
+     
+    body.dark-mode {
+        --body-bg-color: var(--night-bg);
+        --bold-text-color: #F7FAFC;
+        --body-text-color: var(--night-text);
+        --link-color: #63B3ED;
+        --code-bg-color: #2D3748;
+        --code-text-color: #E2E8F0;
+        --blockquote-border-color: #4A5568;
+        --blockquote-text-color: #A0AEC0;
+    }
+
+
+
+    #theme-toggle {
+        border: 1px solid var(--accent-secondary);
+        background: transparent;
+        color: var(--body-text-color);
+        cursor: pointer;
+        padding: 5px 12px;
+        border-radius: 20px;
+        margin-left: 10px;
+        font-family: var(--font-primary);
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    #theme-toggle:hover {
+        transform: scale(1.05);
+        border-color: var(--accent-sky);
+    }
+
+    #back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background-color: var(--accent-primary);
+        border: none;
+        color: white;
+        padding: 12px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: none;
+        z-index: 100;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    #back-to-top:hover {
+        transform: translateY(-5px);
+        background-color: var(--accent-sky);
+    }
+
+     
+    a {
+        text-decoration: none;
+        color: var(--link-color);
+        transition: color 0.2s ease, border-bottom-color 0.2s ease;
+        border-bottom: 1px solid transparent;
+    }
+
+    a:hover {
+        border-bottom-color: var(--link-color);
+    }
+    
+    .title h1 {
+        margin-top: 0;
+        color: var(--bold-text-color);
+        text-decoration: none;
+    }
+    
+    .title:hover {
+        border-bottom: none;
+    }
+    
+    nav a {
+        color: var(--body-text-color);
+        margin-right: 15px;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+    
+    nav a:hover {
+        color: var(--link-color);
+        border-bottom-color: transparent;
+    }
+    
+     
+    .blog-posts {
+        list-style: none;
+        padding-left: 0;
+    }
+    
+    .blog-posts li {
+        margin-bottom: 0.5rem;
+        padding: 0.25rem 0;
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+    }
+    
+    .blog-posts time {
+        display: inline-block;
+        width: 110px;  
+        color: var(--accent-secondary);
+        font-feature-settings: "tnum";
+        font-variant-numeric: tabular-nums;
+        font-size: 0.9rem;
+        flex-shrink: 0;  
+    }
+    
+     
+    .blog-posts a {
+        font-weight: 500;
+        color: var(--body-text-color);
+        display: inline-block;
+    }
+    
+    .blog-posts a:hover {
+        color: var(--link-color);
+    }
+
+    blockquote {
+        border-left: 4px solid var(--blockquote-border-color);
+        padding: 0.5rem 1.5rem;
+        background: var(--code-bg-color);
+        border-radius: 0 4px 4px 0;
+        font-style: italic;
+        margin-left: 0;
+        margin-right: 0;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const backToTopBtn = document.getElementById('back-to-top');
+        if (backToTopBtn) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    backToTopBtn.style.display = 'block';
+                } else {
+                    backToTopBtn.style.display = 'none';
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+    });
+</script></head>
+
+<body>
+  <header>
+
+<a href="/" class="title">
+    <h1>Vivek&#39;s Field Notes</h1>
+</a>
+<nav><a href="/">Home</a>
+
+<a href="/books/">Books</a>
+
+<a href="/feed/">Feed</a>
+
+<a href="/bookmarks/">Reading List</a>
+
+
+<a href="/blog/">Blog</a>
+
+<button id="theme-toggle" aria-label="Toggle Dark Mode">Theme</button>
+</nav>
+
+<script>
+    
+    (function () {
+        const toggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        const iconSun = "☀️";
+        const iconMoon = "🌙";
+
+        
+        function setIcon(isDark) {
+            toggleBtn.innerHTML = isDark ? iconSun : iconMoon;
+            toggleBtn.setAttribute('aria-label', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+        }
+
+        
+        let currentTheme = localStorage.getItem('theme');
+
+        
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (!currentTheme) {
+            currentTheme = systemPrefersDark ? 'dark' : 'light';
+        }
+
+        
+        if (currentTheme === 'dark') {
+            body.classList.add('dark-mode');
+            setIcon(true);
+        } else {
+            body.classList.add('light-mode');
+            setIcon(false);
+        }
+
+        
+        toggleBtn.addEventListener('click', function () {
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                localStorage.setItem('theme', 'light');
+                setIcon(false);
+            } else {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+                setIcon(true);
+            }
+        });
+    })();
+</script>
+
+<script>
+    window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }
+    };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script></header>
+  <main>
+
+
+<h1>Training_LLM</h1>
+
+<p>
+    <i>
+        <time datetime='2025-05-23' pubdate>
+            23 May, 2025
+        </time>
+        • 6 min read
+    </i>
+</p>
+
+
+
+
+<content> <h1 id="training-on-one-gpu">Training on One GPU</h1>
+<p>when a model trained, there are 3 phases</p>
+<ul>
+<li>A forward pass, which passes inputs through the model to yield its outputs</li>
+<li>A backward pass to compute the gradients</li>
+<li>An optimization step using the gradients to update the parameters
+The batch size (bs) is one of the important hyperparameters for model training; it affects both model convergence and throughput.</li>
+</ul>
+<p>A small batch size can be useful early in training to quickly move through the training landscape to reach an optimal learning point. However, further along in the model training, small batch sizes will keep gradients noisy, and the model may not be able to converge to the most optimal final performance. At the other extreme, a large batch size, while giving very accurate gradient estimations, will tend to make less use of each training token, rendering convergence slower and potentially wasting compute resources.</p>
+<p>Batch size also affects the time it takes to train on a given text dataset: a small batch size will require more optimizer steps to train on the same amount of samples. Optimizer steps are costly (in compute time), and the total time to train will thus increase compared to using a larger batch size. That being said, note that the batch size can often be adjusted quite widely around the optimal batch size without major impact on the performance of the model - that is, the sensitivity of final model performance to the exact batch size value is usually rather low around the optimal batch size.
 In the LLM pretraining community, batch sizes are commonly reported in terms of tokens rather than number of samples
 bst = batch size tokens
 bs = batch size
 seq = model input sequence length
 bst = bs * seq
-Llama 1 was trained with a batch size of ~4M tokens for 1.4 trillion tokens, while DeepSeek was trained with a batch size of ~60M tokens for 14 trillion tokens.</p><p>we couldn&rsquo;t calculate exact memory usage by a model cuz</p><ul><li>CUDA kernels typically require 1-2 GB of GPU memory</li><li>Some memory is used for buffers and intermediate results, and there&rsquo;s some memory that can&rsquo;t be used due to fragmentation.
+Llama 1 was trained with a batch size of ~4M tokens for 1.4 trillion tokens, while DeepSeek was trained with a batch size of ~60M tokens for 14 trillion tokens.</p>
+<p>we couldn&rsquo;t calculate exact memory usage by a model cuz</p>
+<ul>
+<li>CUDA kernels typically require 1-2 GB of GPU memory</li>
+<li>Some memory is used for buffers and intermediate results, and there&rsquo;s some memory that can&rsquo;t be used due to fragmentation.
 We could face out-of-memory (OOM) issues when training this large models but why?
-When training a neural network model, we store several items in memory:</li><li>Model weights</li><li>Model gradients</li><li>Optimizer states</li><li>Activations needed to compute the gradients</li></ul><p>First the activations increase quickly as we do the forward pass, then during the backward pass the gradients build up, and as the backward pass propagates, the stored activations used to compute the gradients are progressively cleared. Finally, we perform optimization, during which we need all the gradients, and then update the optimizer states before we start the next forward pass.</p><p>An interesting observation here is that memory usage is not static for a given model; rather, it scales linearly with the batch size and quadratically with the sequence length. This means the activation memory is the part that will blow up when we increase our batch size or train with longer sequences.</p><p>These graphs tell a striking story: for short sequences (or small batch sizes), memory usage for activations is almost negligible, but from around 2-4k tokens they start to take up a significant amount of memory, while usage for parameters, gradients, and optimizer states (as we’ll discuss later) is roughly independent of the sequence length and batch size.
-The general idea behind activation recomputation – also called gradient checkpointing or rematerialization – is to discard some activations during the forward pass to save memory and spend some extra compute to recompute these on the fly during the backward pass. Without recomputation, we store every hidden state between two learnable operations (e.g., feedforward, LayerNorm, etc.), so that we can use them during the backward pass to compute gradients. When we use recomputation, we typically only store activations at a few key points in the model architecture, discarding the rest of the activations and recomputing them on the fly during the backward pass from the nearest saved activations. Basically, we perform a sub-part of the forward pass again, to trade off memory for compute.</p><ul><li>FULL : We checkpoint activations at the transition point between each layer of the Transformer model. This is usually called the “full” strategy since it requires a forward pass through each layer, essentially adding a full forward pass during the backward pass. This strategy saves the most memory but is the most expensive one in terms of compute. It typically increases the compute cost and time by up to 30-40%, which is very noticeable.</li><li>Selective: In general, we can do better than full. The authors of the recomputation paper did a detailed analysis studying which activations grow the largest and have the cheapest recomputation cost in terms of floating-point operations per second (FLOPS). It turns out that the attention computations fall in that category, and thus we can usually discard them and focus on checkpointing the expensive feedforward computations. For a GPT-3 (175B) model, this means a 70% activation memory reduction at a 2.7% compute cost.</li></ul><p>Gradient accumulation is a very straightforward method to avoid memory explosion that consists of splitting a batch into micro-batches. We then perform forward and backward passes successively on each micro-batch, compute the gradients, and, as the name suggests, sum the gradients of all micro-batches before we perform optimization. In practice, the optimization step is conducted not on the sum but on the average of the gradients, so that the result is independent of the number of gradient accumulation steps.
+When training a neural network model, we store several items in memory:</li>
+<li>Model weights</li>
+<li>Model gradients</li>
+<li>Optimizer states</li>
+<li>Activations needed to compute the gradients</li>
+</ul>
+<p>First the activations increase quickly as we do the forward pass, then during the backward pass the gradients build up, and as the backward pass propagates, the stored activations used to compute the gradients are progressively cleared. Finally, we perform optimization, during which we need all the gradients, and then update the optimizer states before we start the next forward pass.</p>
+<p>An interesting observation here is that memory usage is not static for a given model; rather, it scales linearly with the batch size and quadratically with the sequence length. This means the activation memory is the part that will blow up when we increase our batch size or train with longer sequences.</p>
+<p>These graphs tell a striking story: for short sequences (or small batch sizes), memory usage for activations is almost negligible, but from around 2-4k tokens they start to take up a significant amount of memory, while usage for parameters, gradients, and optimizer states (as we’ll discuss later) is roughly independent of the sequence length and batch size.
+The general idea behind activation recomputation – also called gradient checkpointing or rematerialization – is to discard some activations during the forward pass to save memory and spend some extra compute to recompute these on the fly during the backward pass. Without recomputation, we store every hidden state between two learnable operations (e.g., feedforward, LayerNorm, etc.), so that we can use them during the backward pass to compute gradients. When we use recomputation, we typically only store activations at a few key points in the model architecture, discarding the rest of the activations and recomputing them on the fly during the backward pass from the nearest saved activations. Basically, we perform a sub-part of the forward pass again, to trade off memory for compute.</p>
+<ul>
+<li>FULL : We checkpoint activations at the transition point between each layer of the Transformer model. This is usually called the “full” strategy since it requires a forward pass through each layer, essentially adding a full forward pass during the backward pass. This strategy saves the most memory but is the most expensive one in terms of compute. It typically increases the compute cost and time by up to 30-40%, which is very noticeable.</li>
+<li>Selective: In general, we can do better than full. The authors of the recomputation paper did a detailed analysis studying which activations grow the largest and have the cheapest recomputation cost in terms of floating-point operations per second (FLOPS). It turns out that the attention computations fall in that category, and thus we can usually discard them and focus on checkpointing the expensive feedforward computations. For a GPT-3 (175B) model, this means a 70% activation memory reduction at a 2.7% compute cost.</li>
+</ul>
+<p>Gradient accumulation is a very straightforward method to avoid memory explosion that consists of splitting a batch into micro-batches. We then perform forward and backward passes successively on each micro-batch, compute the gradients, and, as the name suggests, sum the gradients of all micro-batches before we perform optimization. In practice, the optimization step is conducted not on the sum but on the average of the gradients, so that the result is independent of the number of gradient accumulation steps.
 Gradient accumulation allows us to reduce activation memory, which grows linearly with batch size, by processing smaller micro-batches sequentially. This reduces stored activations and gradients since only one micro-batch&rsquo;s worth of activations needs to be kept in memory at a time, which helps reduce the overall activation memory footprint.
-One drawback, however, is that gradient accumulation requires multiple consecutive forward/backward passes per optimization step, thereby increasing the compute overhead and slowing down training.</p><h1 id=data-parallelism>Data Parallelism</h1><p>The idea behind data parallelism (DP) is to replicate the model on several GPUs (we call the replicas “model instances”) and run forward and backward passes on different micro-batches of data in parallel on each GPU - hence the name data parallelism.
-Using a different micro-batch for each GPU means we’ll have different gradients on each GPU, so to keep the model instances in sync across the different GPUs, we&rsquo;ll average the gradients from the model instances using an operation called “all-reduce.” This operation takes place during the backward pass, before the optimizer step.</p></content><p><a href=https://heyyviv.github.io/tags/training/>#Training</a>
-<a href=https://heyyviv.github.io/tags/llm/>#LLM</a>
-<a href=https://heyyviv.github.io/tags/notes/>#Notes</a></p><div class=upvote-container><small class=upvote><button class=upvote-btn id=upvote-btn>
-<svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
-<span class=upvote-count id=upvote-count>0</span></button></small></div><script>let hasUpvoted=!1,upvoteBtn,upvoteCount;document.addEventListener("DOMContentLoaded",function(){const e="";upvoteBtn=document.getElementById("upvote-btn"),upvoteCount=document.getElementById("upvote-count"),getCount(e),upvoteBtn.addEventListener("click",handleUpvote)});async function handleUpvote(){if(hasUpvoted){console.log("You have already upvoted this post!");return}const e="";upvoteBtn.disabled=!0,upvoteBtn.classList.add("upvoted"),upvoteCount.innerText=parseInt(upvoteCount.innerText)+1;try{const t=await fetch("https://upvote-api.random4hello.workers.dev/upvote",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({postId:e,diff:1})});t.ok?(console.log("Upvote successful!"),hasUpvoted=!0,await getCount(e,3)):console.log("Upvote failed!")}catch(e){console.error("Error: ",e)}finally{upvoteBtn.disabled=!1}}async function getCount(e,t=0){try{const n=await fetch("https://upvote-api.random4hello.workers.dev/count?post="+e,{method:"GET",headers:{"Content-Type":"application/json"}}),t=await n.json();if(t.code===0){const e=t.data.count;upvoteCount.innerText=e,hasUpvoted=t.data.hasUpvoted,hasUpvoted?upvoteBtn.classList.add("upvoted"):upvoteBtn.classList.remove("upvoted")}else console.error("Failed to get upvote count: ",t.msg)}catch(n){console.error("Error: ",n),t>0&&setTimeout(()=>{getCount(e,t-1)},1e3)}}</script><div class=toc><nav id=TableOfContents></nav></div></main><footer>Subscribe via <a href=/index.xml>RSS</a>.<br>Made with
-<a href=https://github.com/rokcso/hugo-bearblog-neo/>Hugo Bear Neo</a>.<br>🗺️ <a href=/sitemap.xml>Sitemap</a>.
-<button id=back-to-top title="Go to top">↑</button></footer></body></html>
+One drawback, however, is that gradient accumulation requires multiple consecutive forward/backward passes per optimization step, thereby increasing the compute overhead and slowing down training.</p>
+<h1 id="data-parallelism">Data Parallelism</h1>
+<p>The idea behind data parallelism (DP) is to replicate the model on several GPUs (we call the replicas “model instances”) and run forward and backward passes on different micro-batches of data in parallel on each GPU - hence the name data parallelism.
+Using a different micro-batch for each GPU means we’ll have different gradients on each GPU, so to keep the model instances in sync across the different GPUs, we&rsquo;ll average the gradients from the model instances using an operation called “all-reduce.” This operation takes place during the backward pass, before the optimizer step.</p>
+ </content>
+
+<p>
+    
+    <a href="https://heyyviv.github.io/tags/training/">#Training</a>
+    
+    <a href="https://heyyviv.github.io/tags/llm/">#LLM</a>
+    
+    <a href="https://heyyviv.github.io/tags/notes/">#Notes</a>
+    
+</p>
+
+
+
+<div class="upvote-container">
+    <small class="upvote">
+        <button class="upvote-btn" id="upvote-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor"
+                stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                <polyline points="17 11 12 6 7 11"></polyline>
+                <polyline points="17 18 12 13 7 18"></polyline>
+            </svg>
+            <span class="upvote-count" id="upvote-count">0</span>
+        </button>
+    </small>
+</div>
+
+<script>
+    let hasUpvoted = false;
+    let upvoteBtn;
+    let upvoteCount;
+
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        const slug = '';
+        upvoteBtn = document.getElementById('upvote-btn');
+        upvoteCount = document.getElementById('upvote-count');
+        getCount(slug);
+
+        
+        upvoteBtn.addEventListener('click', handleUpvote);
+    });
+
+    
+    async function handleUpvote() {
+        if (hasUpvoted) {
+            console.log('You have already upvoted this post!');
+            return;
+        }
+        const slug = '';
+
+        
+        upvoteBtn.disabled = true;
+        
+        upvoteBtn.classList.add('upvoted');
+        
+        upvoteCount.innerText = parseInt(upvoteCount.innerText) + 1;
+
+        try {
+            const response = await fetch('https:\/\/upvote-api.random4hello.workers.dev\/upvote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ postId: slug, diff: 1 }),
+            });
+
+            if (response.ok) {
+                console.log('Upvote successful!');
+                hasUpvoted = true;
+                await getCount(slug, 3);
+            } else {
+                console.log('Upvote failed!');
+            }
+        } catch (error) {
+            console.error('Error: ', error);
+        } finally {
+            upvoteBtn.disabled = false;
+        }
+    }
+
+    
+    async function getCount(slug, retryCount = 0) {
+        try {
+            const response = await fetch('https:\/\/upvote-api.random4hello.workers.dev\/count?post=' + slug, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+
+            if (data.code === 0) {
+                const count = data.data.count;
+                upvoteCount.innerText = count;
+                hasUpvoted = data.data.hasUpvoted;
+                if (hasUpvoted) {
+                    upvoteBtn.classList.add('upvoted');
+                } else {
+                    upvoteBtn.classList.remove('upvoted');
+                }
+            } else {
+                console.error('Failed to get upvote count: ', data.msg);
+            }
+        } catch (error) {
+            console.error('Error: ', error);
+            if (retryCount > 0) {
+                setTimeout(() => {
+                    getCount(slug, retryCount - 1);
+                }, 1000);
+            }
+        }
+    }
+</script>
+
+
+
+
+
+<div class="toc">
+    <nav id="TableOfContents"></nav>
+</div>
+
+
+
+  </main>
+  <footer>
+
+
+
+
+Subscribe via <a href="/index.xml">RSS</a>.
+<br />
+
+
+
+
+
+
+Made with
+<a href="https://github.com/rokcso/hugo-bearblog-neo/">Hugo Bear Neo</a>.
+<br />
+
+
+
+
+
+
+
+🗺️ <a href="/sitemap.xml">Sitemap</a>.
+
+
+<button id="back-to-top" title="Go to top">↑</button>
+
+
+
+</footer>
+
+    
+
+
+</body>
+
+</html>

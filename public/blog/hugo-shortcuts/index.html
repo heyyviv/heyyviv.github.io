@@ -1,15 +1,840 @@
-<!doctype html><html lang=en-us><head><meta http-equiv=X-Clacks-Overhead content="GNU Terry Pratchett"><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Hugo Shortcuts | Vivek's Field Notes</title><meta name=title content="Hugo Shortcuts"><meta name=description content="Quick reference for essential Hugo commands to create pages, posts, and run the local server."><meta name=keywords content="tips,blog,"><link rel=canonical href=https://heyyviv.github.io/blog/hugo-shortcuts/><meta property="og:url" content="https://heyyviv.github.io/blog/hugo-shortcuts/"><meta property="og:site_name" content="Vivek's Field Notes"><meta property="og:title" content="Hugo Shortcuts"><meta property="og:description" content="Quick reference for essential Hugo commands to create pages, posts, and run the local server."><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="blog"><meta property="article:published_time" content="2025-05-22T15:35:24+05:30"><meta property="article:modified_time" content="2025-05-22T15:35:24+05:30"><meta property="article:tag" content="Tips"><meta property="article:tag" content="Blog"><meta property="og:image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png"><meta name=twitter:title content="Hugo Shortcuts"><meta name=twitter:description content="Quick reference for essential Hugo commands to create pages, posts, and run the local server."><meta itemprop=name content="Hugo Shortcuts"><meta itemprop=description content="Quick reference for essential Hugo commands to create pages, posts, and run the local server."><meta itemprop=datePublished content="2025-05-22T15:35:24+05:30"><meta itemprop=dateModified content="2025-05-22T15:35:24+05:30"><meta itemprop=wordCount content="28"><meta itemprop=image content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png"><meta itemprop=keywords content="Tips,Blog"><meta name=referrer content="no-referrer-when-downgrade"><style>:root{--width-max:720px;--font-primary:Verdana, sans-serif;--font-secondary:monospace;--font-size-primary:1em;--font-size-secondary:0.8em;--body-bg-color:#fcfcfc;--bold-text-color:#222;--body-text-color:#444;--link-color:#3273dc;--link-visited-color:#8b6fcb;--table-border-color:#f2f2f2;--table-th-bg-color:#f2f2f2;--img-border-color:#f2f2f2;--code-bg-color:#f2f2f2;--code-text-color:#222;--blockquote-border-color:#666;--blockquote-text-color:#666;--upvoted-color:#FA8072}@media(prefers-color-scheme:dark){:root{--body-bg-color:#1c1c1c;--bold-text-color:#eee;--body-text-color:#ddd;--link-color:#8cc2dd;--link-visited-color:#c3b1ee;--table-border-color:#999;--table-th-bg-color:#999;--img-border-color:#999;--code-bg-color:#555;--code-text-color:#ddd;--blockquote-border-color:#ccc;--blockquote-text-color:#ccc}}body{font-family:var(--font-primary);font-size:var(--font-size-primary);margin:auto;padding:20px;max-width:var(--width-max);text-align:left;background-color:var(--body-bg-color);word-wrap:break-word;overflow-wrap:break-word;line-height:1.5;color:var(--body-text-color)}h1,h2,h3,h4,h5,h6,strong,b{color:var(--bold-text-color)}h1,h2,h3,h4,h5,h6{margin:16px 0}a{color:var(--link-color);cursor:pointer;text-decoration:none}a:hover{text-decoration:underline}.title{text-decoration:none;border:0}.title:hover{text-decoration:none}.title span{font-weight:400}nav a{margin-right:8px}textarea{width:100%;font-size:16px}input{font-size:14px}content{line-height:1.6}table{width:100%;border-collapse:collapse;border:1px solid var(--table-border-color);border-radius:4px}th,td{border:1px solid var(--table-border-color);padding:4px}th{background-color:var(--table-th-bg-color)}hr{border:0;border-top:1px dashed}img{max-width:100%;display:block;margin-left:auto;margin-right:auto;border:1px solid var(--img-border-color);border-radius:4px;content-visibility:auto;loading:lazy}img[src*="#minipic"]{max-width:50%;margin-left:0;margin-right:auto}i{font-style:normal}time{font-family:var(--font-secondary);font-size:15px}code{font-family:var(--font-secondary);background-color:var(--code-bg-color);color:var(--code-text-color);padding:2px;border-radius:4px}pre code{display:block;padding:16px;white-space:pre-wrap;overflow-x:auto}div.highlight pre{border-radius:4px}div.highlight code{background-color:var(--code-bg-color);color:var(--code-text-color)}blockquote{border-left:2px solid var(--blockquote-border-color);color:var(--blockquote-text-color);margin:0;padding-left:16px;font-style:normal}blockquote p{margin:0}footer{padding:25px 0;text-align:center;font-size:var(--font-size-secondary)}ul li:has(input){list-style-type:none;margin-left:-25.5px}ul.blog-posts{list-style-type:none;padding:unset}ul.blog-posts li{display:flex}ul.blog-posts li span{flex:0 0 130px}ul.blog-posts li span.grouped{flex:0 0 80px}ul.blog-posts li a:visited{color:var(--link-visited-color)}div.toc{position:fixed;top:50%;left:calc((100vw + var(--width-max))/2);transform:translateY(-50%);width:calc((90vw - var(--width-max))/2);max-height:80vh;overflow-y:auto;padding:20px 8px;z-index:99;&::-webkit-scrollbar { display:none; } -ms-overflow-style:none;scrollbar-width:none}div.toc ul{list-style-type:none;padding-left:0}div.toc ul li{margin:8px 0}div.toc ul li a{text-decoration:none;color:var(--blockquote-text-color)}div.toc ul li a:hover{color:var(--link-color)}button.upvote-btn{margin:0;padding:0;border:none;background:0 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;color:var(--body-text-color)}button.upvoted{color:var(--upvoted-color)}span.upvote-count{margin-top:-4px;font-size:smaller}@media(max-width:500px){img[src*="#minipic"]{max-width:100%;margin-left:auto;margin-right:auto}div.toc{display:none}}</style><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel=stylesheet><style>:root{--font-primary:'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;--font-serif:'Playfair Display', Georgia, serif;--bg-light:#FAFAFA;--text-dark:#2D3748;--accent-primary:#4A5568;--accent-secondary:#718096;--night-bg:#1A202C;--night-text:#E2E8F0;--night-accent:#A0AEC0;--body-bg-color:var(--bg-light);--bold-text-color:#1A202C;--body-text-color:var(--text-dark);--link-color:#3182CE;--link-visited-color:#6B46C1}html{scroll-behavior:smooth}body{transition:background-color .4s ease,color .4s ease;font-family:var(--font-primary);line-height:1.8;background-color:var(--body-bg-color);color:var(--body-text-color);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}h1,h2,h3,h4,h5,h6{font-family:var(--font-serif);color:var(--bold-text-color);margin-top:2em;margin-bottom:.75em;line-height:1.3;letter-spacing:-.02em}body.light-mode{--body-bg-color:var(--bg-light);--bold-text-color:#1A202C;--body-text-color:var(--text-dark);--link-color:#3182CE;--code-bg-color:#F7FAFC;--code-text-color:#2D3748;--blockquote-border-color:#E2E8F0;--blockquote-text-color:#4A5568}body.dark-mode{--body-bg-color:var(--night-bg);--bold-text-color:#F7FAFC;--body-text-color:var(--night-text);--link-color:#63B3ED;--code-bg-color:#2D3748;--code-text-color:#E2E8F0;--blockquote-border-color:#4A5568;--blockquote-text-color:#A0AEC0}#theme-toggle{border:1px solid var(--accent-secondary);background:0 0;color:var(--body-text-color);cursor:pointer;padding:5px 12px;border-radius:20px;margin-left:10px;font-family:var(--font-primary);font-weight:600;transition:all .3s ease}#theme-toggle:hover{transform:scale(1.05);border-color:var(--accent-sky)}#back-to-top{position:fixed;bottom:30px;right:30px;background-color:var(--accent-primary);border:none;color:#fff;padding:12px;border-radius:50%;cursor:pointer;display:none;z-index:100;box-shadow:0 4px 10px rgba(0,0,0,.2);transition:all .3s ease}#back-to-top:hover{transform:translateY(-5px);background-color:var(--accent-sky)}a{text-decoration:none;color:var(--link-color);transition:color .2s ease,border-bottom-color .2s ease;border-bottom:1px solid transparent}a:hover{border-bottom-color:var(--link-color)}.title h1{margin-top:0;color:var(--bold-text-color);text-decoration:none}.title:hover{border-bottom:none}nav a{color:var(--body-text-color);margin-right:15px;font-weight:500;font-size:.95rem}nav a:hover{color:var(--link-color);border-bottom-color:transparent}.blog-posts{list-style:none;padding-left:0}.blog-posts li{margin-bottom:.5rem;padding:.25rem 0;display:flex;align-items:baseline;gap:1rem}.blog-posts time{display:inline-block;width:110px;color:var(--accent-secondary);font-feature-settings:"tnum";font-variant-numeric:tabular-nums;font-size:.9rem;flex-shrink:0}.blog-posts a{font-weight:500;color:var(--body-text-color);display:inline-block}.blog-posts a:hover{color:var(--link-color)}blockquote{border-left:4px solid var(--blockquote-border-color);padding:.5rem 1.5rem;background:var(--code-bg-color);border-radius:0 4px 4px 0;font-style:italic;margin-left:0;margin-right:0}</style><script>document.addEventListener("DOMContentLoaded",()=>{const e=document.getElementById("back-to-top");e&&(window.addEventListener("scroll",()=>{window.scrollY>300?e.style.display="block":e.style.display="none"}),e.addEventListener("click",()=>{window.scrollTo({top:0,behavior:"smooth"})}))})</script></head><body><header><a href=/ class=title><h1>Vivek's Field Notes</h1></a><nav><a href=/>Home</a>
-<a href=/books/>Books</a>
-<a href=/feed/>Feed</a>
-<a href=/bookmarks/>Reading List</a>
-<a href=/blog/>Blog</a>
-<button id=theme-toggle aria-label="Toggle Dark Mode">Theme</button></nav><script>(function(){const n=document.getElementById("theme-toggle"),e=document.body,o="☀️",i="🌙";function t(e){n.innerHTML=e?o:i,n.setAttribute("aria-label",e?"Switch to Light Mode":"Switch to Dark Mode")}let s=localStorage.getItem("theme");const a=window.matchMedia("(prefers-color-scheme: dark)").matches;s||(s=a?"dark":"light"),s==="dark"?(e.classList.add("dark-mode"),t(!0)):(e.classList.add("light-mode"),t(!1)),n.addEventListener("click",function(){e.classList.contains("dark-mode")?(e.classList.remove("dark-mode"),e.classList.add("light-mode"),localStorage.setItem("theme","light"),t(!1)):(e.classList.remove("light-mode"),e.classList.add("dark-mode"),localStorage.setItem("theme","dark"),t(!0))})})()</script><script>window.MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]],displayMath:[["$$","$$"],["\\[","\\]"]]}}</script><script src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js defer></script></header><main><h1>Hugo Shortcuts</h1><p><i><time datetime=2025-05-22 pubdate>22 May, 2025
-</time>• 1 min read</i></p><content><h1 id=shortcuts>Shortcuts</h1><h2 id=to-create-a-page>to create a page</h2><pre tabindex=0><code>hugo new my-new-page.md
-</code></pre><h2 id=to-create-a-blog>to create a blog</h2><pre tabindex=0><code>hugo new blog/my-new-post.md
-</code></pre><h2 id=run-locally>run locally</h2><pre tabindex=0><code>hugo server
-</code></pre><p>This shortcuts will be used by me in future.</p></content><p><a href=https://heyyviv.github.io/tags/tips/>#Tips</a>
-<a href=https://heyyviv.github.io/tags/blog/>#Blog</a></p><div class=upvote-container><small class=upvote><button class=upvote-btn id=upvote-btn>
-<svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>
-<span class=upvote-count id=upvote-count>0</span></button></small></div><script>let hasUpvoted=!1,upvoteBtn,upvoteCount;document.addEventListener("DOMContentLoaded",function(){const e="";upvoteBtn=document.getElementById("upvote-btn"),upvoteCount=document.getElementById("upvote-count"),getCount(e),upvoteBtn.addEventListener("click",handleUpvote)});async function handleUpvote(){if(hasUpvoted){console.log("You have already upvoted this post!");return}const e="";upvoteBtn.disabled=!0,upvoteBtn.classList.add("upvoted"),upvoteCount.innerText=parseInt(upvoteCount.innerText)+1;try{const t=await fetch("https://upvote-api.random4hello.workers.dev/upvote",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({postId:e,diff:1})});t.ok?(console.log("Upvote successful!"),hasUpvoted=!0,await getCount(e,3)):console.log("Upvote failed!")}catch(e){console.error("Error: ",e)}finally{upvoteBtn.disabled=!1}}async function getCount(e,t=0){try{const n=await fetch("https://upvote-api.random4hello.workers.dev/count?post="+e,{method:"GET",headers:{"Content-Type":"application/json"}}),t=await n.json();if(t.code===0){const e=t.data.count;upvoteCount.innerText=e,hasUpvoted=t.data.hasUpvoted,hasUpvoted?upvoteBtn.classList.add("upvoted"):upvoteBtn.classList.remove("upvoted")}else console.error("Failed to get upvote count: ",t.msg)}catch(n){console.error("Error: ",n),t>0&&setTimeout(()=>{getCount(e,t-1)},1e3)}}</script><div class=toc><nav id=TableOfContents><ul><li><a href=#to-create-a-page>to create a page</a></li><li><a href=#to-create-a-blog>to create a blog</a></li><li><a href=#run-locally>run locally</a></li></ul></nav></div></main><footer>Subscribe via <a href=/index.xml>RSS</a>.<br>Made with
-<a href=https://github.com/rokcso/hugo-bearblog-neo/>Hugo Bear Neo</a>.<br>🗺️ <a href=/sitemap.xml>Sitemap</a>.
-<button id=back-to-top title="Go to top">↑</button></footer></body></html>
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hugo Shortcuts | Vivek&#39;s Field Notes</title>
+<meta name="title" content="Hugo Shortcuts" />
+<meta name="description" content="Quick reference for essential Hugo commands to create pages, posts, and run the local server." />
+<meta name="keywords" content="tips,blog," />
+
+<link rel="canonical" href="https://heyyviv.github.io/blog/hugo-shortcuts/">
+
+
+<meta property="og:url" content="https://heyyviv.github.io/blog/hugo-shortcuts/">
+  <meta property="og:site_name" content="Vivek&#39;s Field Notes">
+  <meta property="og:title" content="Hugo Shortcuts">
+  <meta property="og:description" content="Quick reference for essential Hugo commands to create pages, posts, and run the local server.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="blog">
+    <meta property="article:published_time" content="2025-05-22T15:35:24+05:30">
+    <meta property="article:modified_time" content="2025-05-22T15:35:24+05:30">
+    <meta property="article:tag" content="Tips">
+    <meta property="article:tag" content="Blog">
+    <meta property="og:image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
+
+
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
+  <meta name="twitter:title" content="Hugo Shortcuts">
+  <meta name="twitter:description" content="Quick reference for essential Hugo commands to create pages, posts, and run the local server.">
+
+
+
+
+  <meta itemprop="name" content="Hugo Shortcuts">
+  <meta itemprop="description" content="Quick reference for essential Hugo commands to create pages, posts, and run the local server.">
+  <meta itemprop="datePublished" content="2025-05-22T15:35:24+05:30">
+  <meta itemprop="dateModified" content="2025-05-22T15:35:24+05:30">
+  <meta itemprop="wordCount" content="28">
+  <meta itemprop="image" content="https://heyyviv.github.io/ghibli_landscape_hero_1772177126257.png">
+  <meta itemprop="keywords" content="Tips,Blog">
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+   
+  :root {
+    --width-max: 720px;
+    --font-primary: Verdana, sans-serif;
+    --font-secondary: monospace;
+    --font-size-primary: 1em;
+    --font-size-secondary: 0.8em;
+    --body-bg-color: #fcfcfc;
+    --bold-text-color: #222;
+    --body-text-color: #444;
+    --link-color: #3273dc;
+    --link-visited-color: #8b6fcb;
+    --table-border-color: #f2f2f2;
+    --table-th-bg-color: #f2f2f2;
+    --img-border-color: #f2f2f2;
+    --code-bg-color: #f2f2f2;
+    --code-text-color: #222;
+    --blockquote-border-color: #666;
+    --blockquote-text-color: #666;
+    --upvoted-color: #FA8072;
+  }
+
+  @media (prefers-color-scheme: dark) {
+     
+    :root {
+      --body-bg-color: #1c1c1c;
+      --bold-text-color: #eee;
+      --body-text-color: #ddd;
+      --link-color: #8cc2dd;
+      --link-visited-color: #c3b1ee;
+      --table-border-color: #999;
+      --table-th-bg-color: #999;
+      --img-border-color: #999;
+      --code-bg-color: #555;
+      --code-text-color: #ddd;
+      --blockquote-border-color: #ccc;
+      --blockquote-text-color: #ccc;
+    }
+  }
+
+  body {
+    font-family: var(--font-primary);
+    font-size: var(--font-size-primary);
+    margin: auto;
+    padding: 20px;
+    max-width: var(--width-max);
+    text-align: left;
+    background-color: var(--body-bg-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: var(--body-text-color);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: var(--bold-text-color);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 16px 0;
+  }
+
+  a {
+    color: var(--link-color);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .title {
+    text-decoration: none;
+    border: 0;
+  }
+
+  .title:hover {
+    text-decoration: none;
+  }
+
+  .title span {
+    font-weight: 400;
+  }
+
+  nav a {
+    margin-right: 8px;
+  }
+
+  textarea {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  input {
+    font-size: 14px;
+  }
+
+  content {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--table-border-color);
+    border-radius: 4px;
+  }
+
+  th,
+  td {
+    border: 1px solid var(--table-border-color);
+    padding: 4px;
+  }
+
+  th {
+    background-color: var(--table-th-bg-color);
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px dashed;
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid var(--img-border-color);
+    border-radius: 4px;
+    content-visibility: auto;
+    loading: lazy;
+  }
+
+  img[src*="#minipic"] {
+    max-width: 50%;
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  i {
+    font-style: normal;
+  }
+
+  time {
+    font-family: var(--font-secondary);
+    font-size: 15px;
+  }
+
+  code {
+    font-family: var(--font-secondary);
+    background-color: var(--code-bg-color);
+    color: var(--code-text-color);
+    padding: 2px;
+    border-radius: 4px;
+  }
+
+  pre code {
+    display: block;
+    padding: 16px;
+    white-space: pre-wrap;
+    overflow-x: auto;
+  }
+
+  div.highlight pre {
+    border-radius: 4px;
+  }
+
+  div.highlight code {
+    background-color: var(--code-bg-color);
+    color: var(--code-text-color);
+  }
+
+  blockquote {
+    border-left: 2px solid var(--blockquote-border-color);
+    color: var(--blockquote-text-color);
+    margin: 0;
+    padding-left: 16px;
+    font-style: normal;
+  }
+
+  blockquote p {
+    margin: 0;
+  }
+
+  footer {
+    padding: 25px 0;
+    text-align: center;
+    font-size: var(--font-size-secondary);
+  }
+
+  ul li:has(input) {
+    list-style-type: none;
+    margin-left: -25.5px;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li span.grouped {
+    flex: 0 0 80px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: var(--link-visited-color);
+  }
+
+   
+  div.toc {
+    position: fixed;
+    top: 50%;
+    left: calc((100vw + var(--width-max)) / 2);
+    transform: translateY(-50%);
+    width: calc((90vw - var(--width-max)) / 2);
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 20px 8px;
+    z-index: 99;
+
+     
+    &::-webkit-scrollbar {
+        display: none;  
+    }
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+  }
+
+  div.toc ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  div.toc ul li {
+    margin: 8px 0;
+  }
+
+  div.toc ul li a {
+    text-decoration: none;
+    color: var(--blockquote-text-color);
+  }
+
+  div.toc ul li a:hover {
+    color: var(--link-color);
+  }
+
+   
+  button.upvote-btn {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--body-text-color);
+  }
+
+  button.upvoted {
+    color: var(--upvoted-color);
+  }
+
+  span.upvote-count {
+    margin-top: -4px;
+    font-size: smaller;
+  }
+
+  @media (max-width: 500px) {
+    img[src*="#minipic"] {
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    div.toc {
+      display: none;
+    }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap"
+    rel="stylesheet">
+
+<style>
+    :root {
+        --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        --font-serif: 'Playfair Display', Georgia, serif;
+        --bg-light: #FAFAFA;
+        --text-dark: #2D3748;
+        --accent-primary: #4A5568;
+        --accent-secondary: #718096;
+        --night-bg: #1A202C;
+        --night-text: #E2E8F0;
+        --night-accent: #A0AEC0;
+
+        --body-bg-color: var(--bg-light);
+        --bold-text-color: #1A202C;
+        --body-text-color: var(--text-dark);
+        --link-color: #3182CE;
+        --link-visited-color: #6B46C1;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        transition: background-color 0.4s ease, color 0.4s ease;
+        font-family: var(--font-primary);
+        line-height: 1.8;
+        background-color: var(--body-bg-color);
+        color: var(--body-text-color);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-serif);
+        color: var(--bold-text-color);
+        margin-top: 2em;
+        margin-bottom: 0.75em;
+        line-height: 1.3;
+        letter-spacing: -0.02em;
+    }
+
+     
+    body.light-mode {
+        --body-bg-color: var(--bg-light);
+        --bold-text-color: #1A202C;
+        --body-text-color: var(--text-dark);
+        --link-color: #3182CE;
+        --code-bg-color: #F7FAFC;
+        --code-text-color: #2D3748;
+        --blockquote-border-color: #E2E8F0;
+        --blockquote-text-color: #4A5568;
+    }
+
+     
+    body.dark-mode {
+        --body-bg-color: var(--night-bg);
+        --bold-text-color: #F7FAFC;
+        --body-text-color: var(--night-text);
+        --link-color: #63B3ED;
+        --code-bg-color: #2D3748;
+        --code-text-color: #E2E8F0;
+        --blockquote-border-color: #4A5568;
+        --blockquote-text-color: #A0AEC0;
+    }
+
+
+
+    #theme-toggle {
+        border: 1px solid var(--accent-secondary);
+        background: transparent;
+        color: var(--body-text-color);
+        cursor: pointer;
+        padding: 5px 12px;
+        border-radius: 20px;
+        margin-left: 10px;
+        font-family: var(--font-primary);
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    #theme-toggle:hover {
+        transform: scale(1.05);
+        border-color: var(--accent-sky);
+    }
+
+    #back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background-color: var(--accent-primary);
+        border: none;
+        color: white;
+        padding: 12px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: none;
+        z-index: 100;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    #back-to-top:hover {
+        transform: translateY(-5px);
+        background-color: var(--accent-sky);
+    }
+
+     
+    a {
+        text-decoration: none;
+        color: var(--link-color);
+        transition: color 0.2s ease, border-bottom-color 0.2s ease;
+        border-bottom: 1px solid transparent;
+    }
+
+    a:hover {
+        border-bottom-color: var(--link-color);
+    }
+    
+    .title h1 {
+        margin-top: 0;
+        color: var(--bold-text-color);
+        text-decoration: none;
+    }
+    
+    .title:hover {
+        border-bottom: none;
+    }
+    
+    nav a {
+        color: var(--body-text-color);
+        margin-right: 15px;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+    
+    nav a:hover {
+        color: var(--link-color);
+        border-bottom-color: transparent;
+    }
+    
+     
+    .blog-posts {
+        list-style: none;
+        padding-left: 0;
+    }
+    
+    .blog-posts li {
+        margin-bottom: 0.5rem;
+        padding: 0.25rem 0;
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+    }
+    
+    .blog-posts time {
+        display: inline-block;
+        width: 110px;  
+        color: var(--accent-secondary);
+        font-feature-settings: "tnum";
+        font-variant-numeric: tabular-nums;
+        font-size: 0.9rem;
+        flex-shrink: 0;  
+    }
+    
+     
+    .blog-posts a {
+        font-weight: 500;
+        color: var(--body-text-color);
+        display: inline-block;
+    }
+    
+    .blog-posts a:hover {
+        color: var(--link-color);
+    }
+
+    blockquote {
+        border-left: 4px solid var(--blockquote-border-color);
+        padding: 0.5rem 1.5rem;
+        background: var(--code-bg-color);
+        border-radius: 0 4px 4px 0;
+        font-style: italic;
+        margin-left: 0;
+        margin-right: 0;
+    }
+</style>
+
+<script>
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const backToTopBtn = document.getElementById('back-to-top');
+        if (backToTopBtn) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    backToTopBtn.style.display = 'block';
+                } else {
+                    backToTopBtn.style.display = 'none';
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+    });
+</script></head>
+
+<body>
+  <header>
+
+<a href="/" class="title">
+    <h1>Vivek&#39;s Field Notes</h1>
+</a>
+<nav><a href="/">Home</a>
+
+<a href="/books/">Books</a>
+
+<a href="/feed/">Feed</a>
+
+<a href="/bookmarks/">Reading List</a>
+
+
+<a href="/blog/">Blog</a>
+
+<button id="theme-toggle" aria-label="Toggle Dark Mode">Theme</button>
+</nav>
+
+<script>
+    
+    (function () {
+        const toggleBtn = document.getElementById('theme-toggle');
+        const body = document.body;
+        const iconSun = "☀️";
+        const iconMoon = "🌙";
+
+        
+        function setIcon(isDark) {
+            toggleBtn.innerHTML = isDark ? iconSun : iconMoon;
+            toggleBtn.setAttribute('aria-label', isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+        }
+
+        
+        let currentTheme = localStorage.getItem('theme');
+
+        
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (!currentTheme) {
+            currentTheme = systemPrefersDark ? 'dark' : 'light';
+        }
+
+        
+        if (currentTheme === 'dark') {
+            body.classList.add('dark-mode');
+            setIcon(true);
+        } else {
+            body.classList.add('light-mode');
+            setIcon(false);
+        }
+
+        
+        toggleBtn.addEventListener('click', function () {
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                localStorage.setItem('theme', 'light');
+                setIcon(false);
+            } else {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+                setIcon(true);
+            }
+        });
+    })();
+</script>
+
+<script>
+    window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }
+    };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" defer></script></header>
+  <main>
+
+
+<h1>Hugo Shortcuts</h1>
+
+<p>
+    <i>
+        <time datetime='2025-05-22' pubdate>
+            22 May, 2025
+        </time>
+        • 1 min read
+    </i>
+</p>
+
+
+
+
+<content> <h1 id="shortcuts">Shortcuts</h1>
+<h2 id="to-create-a-page">to create a page</h2>
+<pre tabindex="0"><code>hugo new my-new-page.md
+</code></pre><h2 id="to-create-a-blog">to create a blog</h2>
+<pre tabindex="0"><code>hugo new blog/my-new-post.md
+</code></pre><h2 id="run-locally">run locally</h2>
+<pre tabindex="0"><code>hugo server
+</code></pre><p>This shortcuts will be used by me in future.</p>
+ </content>
+
+<p>
+    
+    <a href="https://heyyviv.github.io/tags/tips/">#Tips</a>
+    
+    <a href="https://heyyviv.github.io/tags/blog/">#Blog</a>
+    
+</p>
+
+
+
+<div class="upvote-container">
+    <small class="upvote">
+        <button class="upvote-btn" id="upvote-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" stroke="currentColor"
+                stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                <polyline points="17 11 12 6 7 11"></polyline>
+                <polyline points="17 18 12 13 7 18"></polyline>
+            </svg>
+            <span class="upvote-count" id="upvote-count">0</span>
+        </button>
+    </small>
+</div>
+
+<script>
+    let hasUpvoted = false;
+    let upvoteBtn;
+    let upvoteCount;
+
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        const slug = '';
+        upvoteBtn = document.getElementById('upvote-btn');
+        upvoteCount = document.getElementById('upvote-count');
+        getCount(slug);
+
+        
+        upvoteBtn.addEventListener('click', handleUpvote);
+    });
+
+    
+    async function handleUpvote() {
+        if (hasUpvoted) {
+            console.log('You have already upvoted this post!');
+            return;
+        }
+        const slug = '';
+
+        
+        upvoteBtn.disabled = true;
+        
+        upvoteBtn.classList.add('upvoted');
+        
+        upvoteCount.innerText = parseInt(upvoteCount.innerText) + 1;
+
+        try {
+            const response = await fetch('https:\/\/upvote-api.random4hello.workers.dev\/upvote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ postId: slug, diff: 1 }),
+            });
+
+            if (response.ok) {
+                console.log('Upvote successful!');
+                hasUpvoted = true;
+                await getCount(slug, 3);
+            } else {
+                console.log('Upvote failed!');
+            }
+        } catch (error) {
+            console.error('Error: ', error);
+        } finally {
+            upvoteBtn.disabled = false;
+        }
+    }
+
+    
+    async function getCount(slug, retryCount = 0) {
+        try {
+            const response = await fetch('https:\/\/upvote-api.random4hello.workers.dev\/count?post=' + slug, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+
+            if (data.code === 0) {
+                const count = data.data.count;
+                upvoteCount.innerText = count;
+                hasUpvoted = data.data.hasUpvoted;
+                if (hasUpvoted) {
+                    upvoteBtn.classList.add('upvoted');
+                } else {
+                    upvoteBtn.classList.remove('upvoted');
+                }
+            } else {
+                console.error('Failed to get upvote count: ', data.msg);
+            }
+        } catch (error) {
+            console.error('Error: ', error);
+            if (retryCount > 0) {
+                setTimeout(() => {
+                    getCount(slug, retryCount - 1);
+                }, 1000);
+            }
+        }
+    }
+</script>
+
+
+
+
+
+<div class="toc">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#to-create-a-page">to create a page</a></li>
+    <li><a href="#to-create-a-blog">to create a blog</a></li>
+    <li><a href="#run-locally">run locally</a></li>
+  </ul>
+</nav>
+</div>
+
+
+
+  </main>
+  <footer>
+
+
+
+
+Subscribe via <a href="/index.xml">RSS</a>.
+<br />
+
+
+
+
+
+
+Made with
+<a href="https://github.com/rokcso/hugo-bearblog-neo/">Hugo Bear Neo</a>.
+<br />
+
+
+
+
+
+
+
+🗺️ <a href="/sitemap.xml">Sitemap</a>.
+
+
+<button id="back-to-top" title="Go to top">↑</button>
+
+
+
+</footer>
+
+    
+
+
+</body>
+
+</html>

@@ -128,7 +128,28 @@ gantt
 | **5**      | *Storage:* B-tree/LSM, MVCC, 2PC, Spanner       | Use RocksDB (B-tree) vs LevelDB (LSM); simulate 2PC commit; explain Spanner’s TrueTime. |
 | **6**      | *Systems:* Caches, Kafka, Cloud (Lambda); *Advanced:* BFT, Jepsen | Deploy a 3-node Memcached cluster; build a Kafka producer/consumer; run Jepsen on etcd. |
 
- 
+---
+
+### 📖 Companion Reading: *Designing Data-Intensive Applications* (Martin Kleppmann)
+
+To bridge theoretical concepts with real-world system design, this curriculum incorporates chapters from the industry-standard textbook *Designing Data-Intensive Applications* (O'Reilly) as companion readings across modules:
+
+* **Part I: Foundations of Data Systems**
+  * **Module: Concurrency & Go Fundamentals / OS Basics:** Chapter 1 (Reliable, Scalable, and Maintainable Applications)
+  * **Module: Networking & RPC Protocols:** Chapter 2 (Data Models and Query Languages) & Chapter 4 (Encoding and Evolution)
+  * **Module: Storage Engines (B-Tree, LSM-tree):** Chapter 3 (Storage and Retrieval — SSTables, LSM-trees, B-trees)
+* **Part II: Distributed Data**
+  * **Module: Replication Strategies:** Chapter 5 (Replication — Leaders/Followers, replication lag, multi-leader/leaderless)
+  * **Module: Data Partitioning & Sharding:** Chapter 6 (Partitioning — Sharding keys, secondary indexes, routing)
+  * **Module: Transactions & Concurrency Control / MVCC:** Chapter 7 (Transactions — ACID, isolation levels, serializability)
+  * **Module: Linearizability & Clocks / Testing & Jepsen:** Chapter 8 (The Trouble with Distributed Systems — Network/clock faults, process pauses)
+  * **Module: Consensus (Paxos, Raft) / Coordination / Spanner:** Chapter 9 (Consistency and Consensus — Linearizability, ordering, consensus, 2PC)
+* **Part III: Derived Data**
+  * **Module: MapReduce & Distributed Filesystems:** Chapter 10 (Batch Processing — Unix tools, MapReduce, GFS/HDFS)
+  * **Module: Messaging & Streaming (Kafka):** Chapter 11 (Stream Processing — Event streams, messaging logs, databases & streams, CDC)
+  * **Module: Kubernetes / AWS Lambda / Advanced Verification:** Chapter 12 (The Future of Data Systems — Data integration, unbundling databases, dataflow)
+
+---
 
 ## Modules (Detailed)
 
@@ -141,6 +162,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Intermediate Go, basic OS threads.  
 - **Learning Objectives:** Explain concurrency vs parallelism, go routines, mutexes, channels, select. Understand race conditions and memory ordering.  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 1: Reliable, Scalable, and Maintainable Applications  
   - [Go Official Tour](https://tour.golang.org) – hands-on introduction (prerequisite).  
   - Russ Cox – *“Patterns and Hints for Concurrency in Go”* (MIT lecture).  
   - *Go Concurrency Patterns* (Golang Blog) – common idioms (search).  
@@ -161,6 +183,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Sockets, Go concurrency.  
 - **Learning Objectives:** Understand TCP/IP basics, serialization (JSON, ProtoBuf), HTTP/gRPC. Implement client-server RPCs.  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 2: Data Models and Query Languages & Chapter 4: Encoding and Evolution  
   - *“Go Programming Language & Environment”* by Cox et al. (CACM) – overview of Go’s net packages (source).  
   - Go [net/http](https://pkg.go.dev/net/http) and [gRPC](https://grpc.io/docs/) official docs.  
   - MIT *6.824 LEC2: RPC and Threads* (notes).  
@@ -185,6 +208,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Systems programming.  
 - **Learning Objectives:** Understand processes vs threads, context switching, file I/O, memory hierarchy. Learn Linux I/O (epoll, io_uring).  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 1: Reliable, Scalable, and Maintainable Applications  
   - *Operating Systems: Three Easy Pieces* (free online) – chapters on threads and virtualization.  
   - *Linux Performance* talks (Brendan Gregg’s blog).  
 - **Code Repos:** N/A (focus on theory).  
@@ -202,6 +226,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Concurrency, RPC, basic algorithms.  
 - **Learning Objectives:** Learn the MapReduce model (map, shuffle, reduce) and how GFS/HDFS provide storage. Understand fault tolerance in batch jobs.  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 10: Batch Processing  
   - [Google MapReduce paper (2004)](https://research.google/pubs/pub62/) – original MapReduce design. MIT 6.824 uses this.  
   - [GFS paper (2003)](https://research.google/pubs/archive/51.pdf) – foundational distributed filesystem (also taught in 6.824).  
   - Google’s [Hadoop](https://hadoop.apache.org/) documentation – open-source implementation.  
@@ -224,6 +249,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** MapReduce basics, networking.  
 - **Learning Objectives:** Study file chunking, metadata servers, replication strategies in GFS/HDFS. Learn design trade-offs (write-once, large chunk size).  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 10: Batch Processing (MapReduce and Distributed Filesystems)  
   - [GFS Paper (2003)](https://research.google/pubs/archive/51.pdf) – chunk servers, master, recovery.  
   - *Bigtable (2006)* – build on GFS for NoSQL (optional).  
 - **Code Repos:**  
@@ -244,7 +270,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Key-value stores, networking.  
 - **Learning Objectives:** Understand sharding strategies (range vs hash), lookup (DHT), rebalancing. Learn about consistent hashing.  
 - **Resources:**  
-  - *Designing Data-Intensive Apps* Ch. 3 – partitioning.  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 6: Partitioning  
   - Karger et al. (1997) “Consistent Hashing” (classic DHT paper).  
 - **Code Repos:**  
   - [etcd-io/etcd](https://github.com/etcd-io/etcd) – examine `etcdserver/v3/server` how it handles keys.  
@@ -263,6 +289,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Basic replication concepts.  
 - **Learning Objectives:** Understand ACID vs BASE, strong vs eventual consistency, linearizability vs serializability, and the CAP theorem.  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 9: Consistency and Consensus (Consistency Guarantees, Linearizability)  
   - **CAP Theorem:** *Brewer’s Conjecture* (original talk summary) and Gilbert & Lynch (2002) proof, or IBM’s accessible explanation.  
   - Eric Brewer’s lectures (YouTube) on CAP.  
   - Vogels’ blog “Eventually Consistent” (AllThingsDistributed).  
@@ -281,6 +308,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Concurrency, CAP.  
 - **Learning Objectives:** Define linearizability (single-copy consistency) and sequential consistency. Learn Lamport timestamps and Vector clocks for ordering events.  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 8: The Trouble with Distributed Systems (Unreliable Clocks, Process Pauses) & Chapter 9: Consistency and Consensus (Linearizability, Ordering)  
   - Lamport’s “Time, Clocks, and Ordering” (1978).  
   - "Logical Clocks" section in database/distributed systems textbooks (e.g. *LPW*).  
 - **Code Repos:**  
@@ -298,6 +326,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Consensus (useful), Sharding.  
 - **Learning Objectives:** Compare primary-backup (master-slave) vs multi-leader vs leaderless. Study **chain replication** for high-throughput, and basic **CRDTs** for eventual consistency.  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 5: Replication  
   - Van Renesse & Schneider “Chain Replication” (OSDI 2004) – high throughput + availability with strong consistency.  
   - Shapiro et al. (2011) *CRDT* survey – math behind conflict-free replication.  
 - **Code Repos:**  
@@ -317,6 +346,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Linearizability, replication.  
 - **Learning Objectives:** Understand the Paxos family: Basic Paxos (single-decree), Multi-Paxos (replicated log), and optimizations (e.g. Paxos Made Practical).  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 9: Consistency and Consensus (Distributed Transactions and Consensus)  
   - *“Paxos Made Simple”* (Lamport, 2001) – canonical explanation.  
   - *“Paxos Made Practical”* (Google/Sherwood) or *“Paxos Made Live”* (Yahoo) – engineering insights.  
   - MIT 6.824 notes on Paxos.  
@@ -337,6 +367,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Paxos concepts (useful but not required).  
 - **Learning Objectives:** Study Raft’s leader election, log replication, safety, and cluster reconfiguration. Know how it simplifies Paxos..  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 9: Consistency and Consensus (Fault-Tolerant Consensus)  
   - *“In Search of an Understandable Consensus Algorithm”* (Extended) by Ongaro & Ousterhout.  
   - MIT 6.824 Raft labs and extended notes.  
 - **Code Repos:**  
@@ -359,6 +390,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Consensus (Raft/Paxos), RPC.  
 - **Learning Objectives:** Learn how ZooKeeper and Chubby provide a filesystem-like store for locks, leader election, and naming. Understand sequential znodes.  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 9: Consistency and Consensus (Membership and Coordination Services)  
   - [ZooKeeper Paper (2010)](https://www.usenix.org/system/files/conference/fast10/fast10-final-que) – Paxos-like protocol. MIT 6.824 covers this.  
   - ZooKeeper documentation.  
 - **Code Repos:**  
@@ -378,6 +410,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Paxos/Raft, storage engines.  
 - **Learning Objectives:** Understand 2-phase commit (2PC) and its blocking problem. Study alternatives (3PC, Paxos Commit).  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 7: Transactions & Chapter 9: Consistency and Consensus (Two-Phase Commit)  
   - Formal description in *Distributed Algorithms* (Nancy Lynch).  
   - Wikipedia/OCW on 2PC vs 3PC.  
 - **Code Repos:**  
@@ -397,6 +430,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** 2PC, Paxos, Clocks.  
 - **Learning Objectives:** Learn Spanner’s architecture (TrueTime API, two-phase Paxos commit). Study alternate designs (Calvin, MDCC).  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 7: Transactions & Chapter 9: Consistency and Consensus (Distributed Transactions in Practice)  
   - [Spanner paper (2012)](https://research.google/pubs/pub39966/) – Google’s globally-replicated multi-version DB.  
   - *Calvin* (Yale) – deterministic transactions paper.  
 - **Code Repos:**  
@@ -415,6 +449,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Data structures, file I/O.  
 - **Learning Objectives:** Compare B+Trees (used by classic RDBMS) vs LSM-trees (used by Cassandra/LevelDB) for write-optimized workloads. Learn about write-ahead logs (WAL).  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 3: Storage and Retrieval (LSM-trees, B-trees, WAL)  
   - *Database Internals* (Petrov) – chapters on storage engines.  
   - Go *sstable* example code or LevelDB source (C++).  
 - **Code Repos:**  
@@ -435,6 +470,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Storage engines, transactions.  
 - **Learning Objectives:** Understand snapshot isolation and MVCC (Multi-Version Concurrency Control) for readers. Examine serializability vs snapshot consistency.  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 7: Transactions (Weak Isolation Levels, MVCC, Serializability)  
   - Transaction chapters in DB textbooks (Hector Garcia-Molina, etc.).  
   - PostgreSQL MVCC docs.  
 - **Code Repos:**  
@@ -453,6 +489,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Networking, hashing.  
 - **Learning Objectives:** Learn how in-memory caches (key-value stores) reduce load. Study cache eviction policies and consistency (cache invalidation).  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 3: Storage and Retrieval & Chapter 12: The Future of Data Systems  
   - *Scaling Memcache at Facebook* (NSDI 2013) – blog summary of FB’s memcached architecture.  
   - Redis official tutorial/docs for usage patterns.  
 - **Code Repos:**  
@@ -472,6 +509,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Networking, replication.  
 - **Learning Objectives:** Understand publish/subscribe (pub/sub), log-based messaging. Study Kafka’s design: partitions, offset commit, consumer groups.  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 11: Stream Processing  
   - [Kafka Paper (2011)](https://research.microsoft.com/pubs/153888/kafka-osdi2014.pdf) – architecture of Kafka (from LinkedIn).  
   - Confluent Kafka documentation.  
 - **Code Repos:**  
@@ -490,6 +528,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Linux containers (Docker).  
 - **Learning Objectives:** Learn how Kubernetes schedules containers across nodes, using etcd for state. Study etcd’s use of Raft for cluster configuration.  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 12: The Future of Data Systems  
   - Kubernetes docs (master concepts).  
   - The original [Kubernetes 2015 blog series](https://kubernetes.io/blog/2015/04/) by Google.  
 - **Code Repos:**  
@@ -508,6 +547,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Networking, OS.  
 - **Learning Objectives:** Understand how AWS Lambda starts containers on-demand. Study the “On-demand Container Loading” (Vishwanath et al., 2023). Learn cold starts vs warm starts.  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 12: The Future of Data Systems  
   - AWS Lambda documentation.  
   - *On-demand Container Loading* (OSDI 2023) – how Lambda quickly fires up functions.  
 - **Project:** Write a serverless function (AWS/GCP) and measure cold start latency under load.  
@@ -523,6 +563,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Paxos/Raft, consistency.  
 - **Learning Objectives:** Learn to test distributed systems by injecting network partitions, crashes, clock skews. Study the Jepsen methodology and findings.  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 8: The Trouble with Distributed Systems  
   - [Jepsen.io](https://jepsen.io) blog by Kyle Kingsbury – case studies on Cassandra, MongoDB, etc..  
   - “Aphyr’s Distributed Systems Lecture Notes” (GitHub) – tests and invariants (via Jepsen author).  
 - **Code Repos:**  
@@ -541,6 +582,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Consensus, linearizability.  
 - **Learning Objectives:** Understand Byzantine faults (arbitrary/malicious failures). Study PBFT (Practical Byzantine Fault Tolerance) and its variants. Learn Bitcoin’s consensus (Nakamoto consensus).  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 8: The Trouble with Distributed Systems (Byzantine Faults)  
   - [PBFT (1999)](https://pmg.csail.mit.edu/papers/osdi99.pdf) – the classic BFT algorithm.  
   - [Bitcoin Whitepaper (2008)](https://bitcoin.org/bitcoin.pdf) – proof-of-work consensus. (MIT syllabus covers Bitcoin.)  
 - **Code Repos:**  
@@ -559,6 +601,7 @@ Below each module is rated **Importance** (★★★★★=Essential, ★★=Opt
 - **Prerequisites:** Consensus, programming languages.  
 - **Learning Objectives:** Learn how to **formally prove** distributed algorithms correct. Study IronFleet (OSDI 2015) – verifying Paxos/Raft in Dafny. Introduction to TLA+ or Ivy.  
 - **Resources:**  
+  - 📖 *Designing Data-Intensive Applications* – Chapter 9: Consistency and Consensus & Chapter 12: The Future of Data Systems  
   - [IronFleet paper (2015)](http://people.cs.uchicago.edu/~ostrowski/papers/ironfleet.pdf).  
   - TLA+ Video Lectures (Leslie Lamport).  
 - **Code Repos:**  

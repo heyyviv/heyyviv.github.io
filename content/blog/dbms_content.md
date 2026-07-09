@@ -29,6 +29,25 @@ To achieve deep mastery without cognitive burnout, this curriculum is explicitly
 
 ---
 
+### 📖 Companion Reading: *Fundamentals of Data Engineering* (Reis & Housley)
+
+To bridge the low-level database kernel internals with high-level data platform architectures, this curriculum integrates selected chapters from the industry-standard textbook *Fundamentals of Data Engineering* (O'Reilly) as companion readings:
+
+* **Phase 1 (Foundations & Kernels):**
+  * **Week 1:** Chapter 1 (Data Engineering Described) & Chapter 2 (The Data Engineering Lifecycle) — *For landscape context.*
+  * **Week 2:** Chapter 6 (Storage: Raw Ingredients — pages 189-197) — *For hardware mechanics: SSD, disk, networking, CPU, and serialization/compression basics.*
+  * **Week 7:** Chapter 8 (Queries, Modeling, and Transformation — Queries section, pages 271-287) — *For query execution & optimization foundations.*
+* **Phase 2 (Distributed Analytics & Corporate Stack):**
+  * **Week 8:** Chapter 3 (Designing Good Data Architecture) & Chapter 6 (Storage Abstractions — pages 197-227) — *For architecture design principles and analytics storage systems.*
+  * **Week 9:** Chapter 4 (Choosing Technologies Across the Lifecycle) — *For build vs. buy, cloud vs. hybrid, and cost optimization.*
+  * **Week 10:** Chapter 8 (Queries, Modeling, and Transformation — Data Modeling & Transformations sections, pages 287-329) — *For batch analytical modeling (Kimball/denormalization) and transformations.*
+  * **Week 11:** Chapter 7 (Ingestion — Batch Ingestion Considerations, pages 233-247) — *For batch extraction patterns, snapshots, and ETL vs. ELT.*
+  * **Week 12:** Chapter 5 (Data Generation in Source Systems) & Chapter 7 (Ingestion — Streaming & CDC, pages 248-262) — *For CDC, OLTP systems, and messaging/event-streaming platforms.*
+  * **Week 13:** Chapter 10 (Security and Privacy) — *For least privilege, encryption, cloud shared responsibility, and backups.*
+  * **Week 14:** Chapter 9 (Serving Data for Analytics, ML, & Reverse ETL) & Chapter 11 (The Future of Data Engineering) — *For metrics layers, reverse ETL, and the Live Data Stack.*
+
+---
+
 ## 🔬 Phase 1: Database Kernel Internals
 
 ### 📅 Week 1: Analytical Storage Layouts & PAX Hybrid Storage
@@ -43,6 +62,7 @@ To achieve deep mastery without cognitive burnout, this curriculum is explicitly
 * 📄 *Lakehouse: A New Generation of Open Platforms that Unify Data Warehousing and Advanced Analytics* (Armbrust et al.)[^1]
 * 📄 *An Empirical Evaluation of Columnar Storage Formats* (Zeng et al.)[^1]
 * 📖 *Database Internals* (Alex Petrov) – Chapters 1 & 2[^2]
+* 📖 *Fundamentals of Data Engineering* (Reis & Housley) – Chapter 1 (Data Engineering Described) & Chapter 2 (The Data Engineering Lifecycle)
 
 #### 📂 Codebase Paths to Inspect
 * 🔍 [`duckdb/duckdb`](https://github.com/duckdb/duckdb): Target `/src/storage/` (Inspect how physical pages, row group boundaries, and column metrics are written to disk)[^9]
@@ -70,6 +90,7 @@ To achieve deep mastery without cognitive burnout, this curriculum is explicitly
 #### 📚 Required Academic & Textbook Readings
 * 📄 *The FastLanes Compression Layout: Decoding > 100 Billion Integers per Second with Scalar Code* (Afroozeh et al.)[^1]
 * 📄 *BtrBlocks: Efficient Columnar Compression for Data Lakes* (Kuschewski et al.)[^1]
+* 📖 *Fundamentals of Data Engineering* (Reis & Housley) – Chapter 6 (Storage — Raw Ingredients, pages 189-197)
 
 #### 📂 Codebase Paths to Inspect
 * 🔍 [`facebookincubator/velox`](https://github.com/facebookincubator/velox): Target `/velox/vector/DecodedVector.h` (Study how arbitrarily encoded vector formats—such as flat, dictionary, and constant—are decoded into flat logical arrays without memory copies)[^5]
@@ -206,6 +227,7 @@ To achieve deep mastery without cognitive burnout, this curriculum is explicitly
 * 📄 *An Overview of Query Optimization in Relational Systems* (Surajit Chaudhuri)[^1]
 * 📄 *Unnesting Arbitrary Queries* (Thomas Neumann)[^1]
 * 📖 *Readings in Database Systems (Red Book)* (Bailis, Hellerstein, Stonebraker) – Chapter 8 (Query Optimization)[^22]
+* 📖 *Fundamentals of Data Engineering* (Reis & Housley) – Chapter 8 (Queries, Modeling, and Transformation — Queries section, pages 271-287)
 
 #### 📂 Codebase Paths to Inspect
 * 🔍 [`duckdb/duckdb`](https://github.com/duckdb/duckdb): Target `/src/optimizer/` (Read `filter_pushdown.cpp`, `statistics_propagator.cpp`, and `join_order_optimizer.cpp` to understand how plan optimizations are sequentially applied)[^9]
@@ -234,6 +256,7 @@ To achieve deep mastery without cognitive burnout, this curriculum is explicitly
 #### 📚 Required Academic & Textbook Readings
 * 📄 *The Snowflake Elastic Data Warehouse* (Dageville et al.)[^1]
 * 📄 *Building An Elastic Query Engine on Disaggregated Storage* (Vuppalapati et al.)[^1]
+* 📖 *Fundamentals of Data Engineering* (Reis & Housley) – Chapter 3 (Designing Good Data Architecture) & Chapter 6 (Storage Abstractions, pages 197-227)
 
 #### 📂 Codebase Paths to Inspect
 * 🔍 [`cube-js/cube`](https://github.com/cube-js/cube): Target `/rust/cubestore/cubestore/src/parquet/` (Inspect how the cache engine coordinates file indexing and reads Parquet statistical ranges directly from remote cloud object storage)[^27]
@@ -259,6 +282,7 @@ To achieve deep mastery without cognitive burnout, this curriculum is explicitly
 #### 📚 Required Snowflake Architecture & Performance Documentation
 * 📖 [Snowflake Documentation: Optimizing Query Performance](https://docs.snowflake.com/en/user-guide/performance-query-options)[^35]
 * 📖 [Snowflake Documentation: Choosing Automatic Clustering, Search Optimization, and Materialized Views](https://docs.snowflake.com/en/guides-overview-performance)[^29]
+* 📖 *Fundamentals of Data Engineering* (Reis & Housley) – Chapter 4 (Choosing Technologies Across the Data Engineering Lifecycle)
 
 #### 📂 Codebase Paths to Inspect
 * 🔍 Create a permanent table on Snowflake, populate it with millions of randomized UUID records, and run selective queries. Access the Snowflake Query Profile console and compare the query execution graph of a cold table scan with a query utilizing the Search Optimization Service (SOS).
@@ -285,6 +309,7 @@ To achieve deep mastery without cognitive burnout, this curriculum is explicitly
 #### 📚 Required Readings & Best Practices
 * 📖 [dbt Developer Guide: Modular Data Modeling Techniques](https://www.getdbt.com/blog/modular-data-modeling-techniques)[^38]
 * 📖 [dbt Design Conventions: Staging, Intermediate, and Marts directories](https://www.datadoghq.com/blog/understanding-dbt/)[^37]
+* 📖 *Fundamentals of Data Engineering* (Reis & Housley) – Chapter 8 (Queries, Modeling, and Transformation — Data Modeling & Transformations, pages 287-329)
 
 #### 📂 Codebase Paths to Inspect
 * 🔍 [`dbt-labs/dbt-core`](https://github.com/dbt-labs/dbt-core): Target `/core/dbt/adapters/` (Study how database-specific SQL templates are compiled and resolved at runtime during model executions).
@@ -316,6 +341,7 @@ To achieve deep mastery without cognitive burnout, this curriculum is explicitly
 #### 📚 Required Readings & Benchmarks
 * 📖 [dbt Documentation: Understanding built-in incremental model strategies](https://docs.getdbt.com/docs/build/incremental-strategy)[^43]
 * 📖 [dbt Best Practices: How to manage time-series datasets using microbatching](https://docs.getdbt.com/best-practices/how-we-handle-real-time-data/2-incremental-patterns)[^45]
+* 📖 *Fundamentals of Data Engineering* (Reis & Housley) – Chapter 7 (Ingestion — Batch Ingestion Considerations, pages 233-247)
 
 #### 📂 Codebase Paths to Inspect
 * 🔍 Examine the generated `.sql` files in your dbt project's `/target/run/` directory. Trace the exact SQL statements Snowflake executes for both `merge` and `insert_overwrite` models.
@@ -341,6 +367,7 @@ To achieve deep mastery without cognitive burnout, this curriculum is explicitly
 #### 📚 Required Snowflake Architecture Documentation
 * 📖 [Snowflake Documentation: Using Streams and Tasks for near real-time CDC](https://docs.snowflake.com/en/user-guide/streams-intro)[^48]
 * 📖 [dbt Integration Guide: Designing incremental models from Snowflake streams](https://docs.snowflake.com/en/user-guide/streams-intro)[^48]
+* 📖 *Fundamentals of Data Engineering* (Reis & Housley) – Chapter 5 (Data Generation in Source Systems) & Chapter 7 (Ingestion — Streaming & CDC, pages 248-262)
 
 #### 📂 Codebase Paths to Inspect
 * 🔍 Examine adapter configuration modules to inspect how custom stream macro functions are parsed during model compilation.
@@ -367,6 +394,7 @@ To achieve deep mastery without cognitive burnout, this curriculum is explicitly
 * 🛠️ [dbt-checkpoint pre-commit hook configuration](https://datacoves.com/post/dbt-test-options)[^50]
 * 🛠️ [dbt-bouncer artifact analyzer documentation](https://datacoves.com/post/dbt-test-options)[^50]
 * 📦 [dbt-expectations generic test coverage libraries](https://datacoves.com/post/dbt-test-options)[^50]
+* 📖 *Fundamentals of Data Engineering* (Reis & Housley) – Chapter 10 (Security and Privacy)
 
 #### 📂 Codebase Paths to Inspect
 * 🔍 Explore a production dbt manifest file `/target/manifest.json`. Review how dbt maps the entire lineage graph, node relationships, metadata, and testing configs as a structured JSON catalog.
@@ -396,6 +424,7 @@ To achieve deep mastery without cognitive burnout, this curriculum is explicitly
 #### 📚 Required Academic & Architecture Readings
 * 📄 [Introducing Cube Store: Sub-second latency for analytical applications at scale](https://cube.dev/blog/introducing-cubestore)[^56]
 * 📖 *Readings in Database Systems (Red Book)* (Bailis, Hellerstein, Stonebraker) – Chapter 10 (Interactive Analytics)[^22]
+* 📖 *Fundamentals of Data Engineering* (Reis & Housley) – Chapter 9 (Serving Data for Analytics, ML, & Reverse ETL) & Chapter 11 (The Future of Data Engineering)
 
 #### 📂 Codebase Paths to Inspect
 * 🔍 [`cube-js/cube`](https://github.com/cube-js/cube): Target `/rust/cubestore/cubestore/src/queryplanner/` (Study how incoming API calls are compiled into logical physical execution steps via DataFusion)[^27]
