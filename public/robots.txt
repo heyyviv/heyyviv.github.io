@@ -1,4 +1,0 @@
-User-agent: *
-Disallow:
-
-Sitemap: https://heyyviv.github.io/sitemap.xml

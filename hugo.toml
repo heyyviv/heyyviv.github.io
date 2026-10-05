@@ -13,8 +13,7 @@ ignoreErrors = ["error-disable-taxonomy"]
 
 [params]
     # The "description" of your website. This is used in the meta data of your generated html.
-    description = "A quiet corner of the web where thoughts wander, pixels settle into place, and small ideas take root. 'Kanna's Field Notes' is a personal blog and digital sketchbook—a place to share reflections, experiments, and discoveries in technology, creativity, and life. Whether it's a snippet of code, a captured moment, or a late-night thought, this is where it lives, gently archived for the curious passerby."
-    title = "Hugo ʕ•ᴥ•ʔ Bear"
+    description = 'A quiet corner of the web where thoughts wander, pixels settle into place, and small ideas take root. Vivek\’s Field Notes is a personal blog and digital sketchbook—a place to share reflections, experiments, and discoveries in technology, creativity, and life. Whether it’s a snippet of code, a captured moment, or a late-night thought, this is where it lives, gently archived for the curious passerby.'
     images = ["/ghibli_landscape_hero_1772177126257.png"]
     postSearch = true
     upvote = true
@@ -44,12 +43,12 @@ ignoreErrors = ["error-disable-taxonomy"]
   [[menu.main]]
     name = "Books"
     url = "/books/"
-    weight = 1
+    weight = 2
 
   [[menu.main]]
     name = "Reading List"
     url = "/bookmarks/"
-    weight = 2
+    weight = 3
 
 
 [caches]
