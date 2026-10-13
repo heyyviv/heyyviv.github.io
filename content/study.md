@@ -1,7 +1,7 @@
 +++
 title = 'Study Plan'
 date = '2026-10-14T00:00:00+05:30'
-lastmod = '2026-10-14T00:45:00+05:30'
+lastmod = '2026-10-14T01:00:00+05:30'
 draft = false
 description = "Daily plan for working through MIT 6.5840 Distributed Systems and CMU 15-721 Advanced Database Systems, and daily DSA practice."
 +++
@@ -14,7 +14,7 @@ description = "Daily plan for working through MIT 6.5840 Distributed Systems and
 
 **Theme:** RPC and threads in Go, and Lab 1 setup. *(MapReduce paper already done: see [my notes](/blog/mapper-reducer/).)*
 
-### 🏢 Office (30–45 min, split however you like)
+### 🏢 Office (up to 1 hour, videos and articles only; split however you like)
 
 1. Read the [Lecture 2 notes: RPC and threads](https://pdos.csail.mit.edu/6.824/notes/l-rpc.txt). This is the Go `net/rpc` + goroutines + mutex toolkit Lab 1 is built on.
 2. Skim [crawler.go](https://pdos.csail.mit.edu/6.824/notes/crawler.go) and [kv.go](https://pdos.csail.mit.edu/6.824/notes/kv.go) from the same lecture (you'll copy these patterns tonight).
@@ -86,6 +86,7 @@ Energy (1–5): _  · Actual time: office __ min, evening __ min
 
 ## Rules that keep this sustainable
 
+- Office time is at most 1 hour and only for videos and articles. Watch lectures at 1.5x; a full ~80 min lecture fits in under an hour.
 - The evening is 2 hours **including** DSA: 30 min DSA first, then 90 min lab. Two hours is a cap. Stop mid-function if you have to, and write one line saying where to resume.
 - Falling behind moves the calendar. It never means doing two days at once.
 - Sunday is off. Saturday is catch-up, and a rest day if nothing is behind.
