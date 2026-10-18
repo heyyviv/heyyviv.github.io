@@ -50,11 +50,6 @@ ignoreErrors = ["error-disable-taxonomy"]
     url = "/bookmarks/"
     weight = 3
 
-  [[menu.main]]
-    name = "Study Plan"
-    url = "/study/"
-    weight = 4
-
 
 [caches]
   [caches.images]
