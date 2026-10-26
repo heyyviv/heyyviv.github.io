@@ -1,7 +1,7 @@
 +++
 title = 'Today'
 date = '2026-10-26T00:00:00+05:30'
-lastmod = '2026-10-26T22:45:00+05:30'
+lastmod = '2026-10-26T23:00:00+05:30'
 draft = false
 description = "What to read and build today: inference engineering, MIT 6.5840, CMU 15-445 and LeetCode."
 +++
@@ -75,6 +75,19 @@ Already over today. From tomorrow, this slot is for reading and watching only.
 - [ ] GPU MODE lectures on YouTube (closer to Phase 2)
 - [ ] *Inference Engineering*: Ch 2 ⬜ · Ch 3 ⬜ · Ch 5 ⬜
 - [ ] Kleppmann, *Designing Data-Intensive Applications* (1st ed.), one chapter a week from Week 2, office reading: Ch 5 Replication ⬜ · Ch 8 Trouble with distributed systems ⬜ · Ch 9 Consistency and consensus ⬜ (these three go with Raft) · then Ch 3 Storage ⬜ · Ch 7 Transactions ⬜ · Ch 6 Partitioning ⬜ (these go with 15-445)
+
+### DDIA: learn by doing
+
+Each chapter read at the office gets one build that week, in the normal evening slots.
+
+| Ch | Read | Build (prove it) | Size |
+|---|---|---|---|
+| 5 | Replication | Postgres primary + async replica in Docker Compose: measure replication lag under load, kill the primary mid-write and count lost writes, show a read-your-writes violation | 1 evening |
+| 8 | Trouble with distributed systems | Last-write-wins with skewed clocks: two Go nodes, one clock +200 ms, show silently lost writes. Then add network partitions with toxiproxy | 1 evening |
+| 9 | Consistency and consensus | Raft 3B/3C is the build. Extra: run 6.5840's porcupine linearizability checker against a deliberately broken KV store and read the failing history | 1 evening |
+| 3 | Storage and retrieval | **Mini LSM-tree KV store in Go**: WAL → memtable → SSTables → compaction → bloom filter. Benchmark against bbolt (B+tree): write amp, read latency | 2–3 Saturdays, after Raft 3B (portfolio piece) |
+| 7 | Transactions | Two psql sessions: reproduce lost update, write skew and phantoms under READ COMMITTED / REPEATABLE READ / SERIALIZABLE, and record which level stops which anomaly | 1 evening |
+| 6 | Partitioning | Consistent-hashing router in Go with virtual nodes: measure keys moved when a node joins/leaves vs mod-N hashing. Connects to llm-d cache-aware routing | 1 evening |
 
 ## Rules
 
