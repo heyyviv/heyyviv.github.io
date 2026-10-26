@@ -1,7 +1,7 @@
 +++
 title = 'Today'
 date = '2026-10-26T00:00:00+05:30'
-lastmod = '2026-10-26T23:00:00+05:30'
+lastmod = '2026-10-26T23:10:00+05:30'
 draft = false
 description = "What to read and build today: inference engineering, MIT 6.5840, CMU 15-445 and LeetCode."
 +++
@@ -88,6 +88,22 @@ Each chapter read at the office gets one build that week, in the normal evening 
 | 3 | Storage and retrieval | **Mini LSM-tree KV store in Go**: WAL → memtable → SSTables → compaction → bloom filter. Benchmark against bbolt (B+tree): write amp, read latency | 2–3 Saturdays, after Raft 3B (portfolio piece) |
 | 7 | Transactions | Two psql sessions: reproduce lost update, write skew and phantoms under READ COMMITTED / REPEATABLE READ / SERIALIZABLE, and record which level stops which anomaly | 1 evening |
 | 6 | Partitioning | Consistent-hashing router in Go with virtual nodes: measure keys moved when a node joins/leaves vs mod-N hashing. Connects to llm-d cache-aware routing | 1 evening |
+
+### Reading expert code
+
+After each build, read how experts wrote the same thing.
+
+| After you build… | Read the expert version | Start with |
+|---|---|---|
+| Arithmetic-intensity script, GPT-2 + KV cache | **gpt-fast** (PyTorch team, ~1k lines: KV cache, int8/int4, speculative decoding) | `model.py`, `generate.py` |
+| Mini inference engine (Phase 2) | **nano-vllm** (~1.2k lines of vLLM ideas), then **vLLM** itself | nano-vllm `engine/`; vLLM `v1/core/sched/scheduler.py`, `v1/core/kv_cache_manager.py` |
+| Raft 3A–3C | **etcd-io/raft** (the Raft used by etcd, K8s, CockroachDB) | `raft.go`, `log.go`, `node.go` |
+| Mini LSM KV store | **LevelDB** (Jeff Dean & Sanjay Ghemawat, small and clean C++), then **Pebble** (CockroachDB's LSM in Go) | LevelDB `db/db_impl.cc`, `table/`; Pebble `compaction.go` |
+| 15-445 buffer pool | **Postgres** buffer manager (clock-sweep eviction, maps to PagedAttention) | `src/backend/storage/buffer/bufmgr.c`, `freelist.c` |
+| 15-445 B+Tree | **bbolt** (small Go B+tree), **SQLite** (heavily commented) | bbolt `node.go`, `cursor.go`; SQLite `btree.c` |
+| Go services at work | **Go standard library** | `net/http/server.go`, `sync/mutex.go`, `context/` |
+
+**How to read it:** build your own version first, then read theirs and list 3 things they did differently and why. Trace one request or operation end to end instead of reading files top to bottom. Read the tests, which show what the authors were worried about. Use `git blame` and the linked PRs to find out *why* the code is shaped that way. Code reading counts as office reading time.
 
 ## Rules
 
