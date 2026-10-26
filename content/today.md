@@ -1,7 +1,7 @@
 +++
 title = 'Today'
 date = '2026-10-26T00:00:00+05:30'
-lastmod = '2026-10-26T23:30:00+05:30'
+lastmod = '2026-10-26T22:45:00+05:30'
 draft = false
 description = "What to read and build today: inference engineering, MIT 6.5840, CMU 15-445 and LeetCode."
 +++
@@ -74,6 +74,7 @@ Already over today. From tomorrow, this slot is for reading and watching only.
 - [ ] [Raft paper](https://raft.github.io/raft.pdf) (before Raft 3A)
 - [ ] GPU MODE lectures on YouTube (closer to Phase 2)
 - [ ] *Inference Engineering*: Ch 2 ⬜ · Ch 3 ⬜ · Ch 5 ⬜
+- [ ] Kleppmann, *Designing Data-Intensive Applications* (1st ed.), one chapter a week from Week 2, office reading: Ch 5 Replication ⬜ · Ch 8 Trouble with distributed systems ⬜ · Ch 9 Consistency and consensus ⬜ (these three go with Raft) · then Ch 3 Storage ⬜ · Ch 7 Transactions ⬜ · Ch 6 Partitioning ⬜ (these go with 15-445)
 
 ## Rules
 
