@@ -50,6 +50,11 @@ ignoreErrors = ["error-disable-taxonomy"]
     url = "/bookmarks/"
     weight = 3
 
+  [[menu.main]]
+    name = "Today"
+    url = "/today/"
+    weight = 4
+
 
 [caches]
   [caches.images]
