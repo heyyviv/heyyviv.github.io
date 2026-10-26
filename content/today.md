@@ -1,7 +1,7 @@
 +++
 title = 'Today'
 date = '2026-10-26T00:00:00+05:30'
-lastmod = '2026-10-26T22:00:00+05:30'
+lastmod = '2026-10-26T23:00:00+05:30'
 draft = false
 description = "What to read and build today: inference engineering, MIT 6.5840, CMU 15-445 and LeetCode."
 +++
@@ -36,18 +36,18 @@ Already over today. From tomorrow, this slot is for reading and watching only.
 | --- | --- | --- |
 | Mon 26 | — | Book Ch 2 (first half) + arithmetic-intensity script |
 | Tue 27 | kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/) | 1 LeetCode warm-up · 6.5840: check where MapReduce / Raft 3A stand, continue |
-| Wed 28 | [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/) + 3Blue1Brown [GPT and attention videos](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) (ch 5–6) | Book Ch 2 (rest) · start Karpathy [Let's build GPT](https://www.youtube.com/watch?v=kCc8FmEb1nY) (code along) |
+| Wed 28 | [How to Scale Your Model](https://jax-ml.github.io/scaling-book/): the rooflines chapter | Book Ch 2 (rest) · start GPT-2 inference from scratch: load the real weights into your own PyTorch model, check outputs match Hugging Face |
 | Thu 29 | Horace He, [Making Deep Learning Go Brrrr](https://horace.io/brrr_intro.html) | 1 LeetCode warm-up · 6.5840 lab |
-| Fri 30 | CMU 15-445 [Lecture 1](https://15445.courses.cs.cmu.edu/) at 1.5x | Karpathy GPT continued (15-445 labs wait until Raft is done) |
-| Sat 31 | — | 5–6 h: finish Karpathy GPT, train the tiny model, or 6.5840 catch-up |
+| Fri 30 | CMU 15-445 [Lecture 1](https://15445.courses.cs.cmu.edu/) at 1.5x | GPT-2: add a KV cache (15-445 labs wait until Raft is done) |
+| Sat 31 | — | 5–6 h: GPT-2 benchmark: tokens/sec and memory with vs without KV cache, across batch sizes · or 6.5840 catch-up |
 | Sun 1 | Light | First weekly notes post on this blog · optional LeetCode / contest |
 
 ## Reading queue (Phase 1)
 
 - [ ] kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/)
-- [ ] Jay Alammar, [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/) + 3Blue1Brown transformer videos
 - [ ] Horace He, [Making Deep Learning Go Brrrr From First Principles](https://horace.io/brrr_intro.html)
 - [ ] Google, [How to Scale Your Model](https://jax-ml.github.io/scaling-book/) (rooflines, parallelism)
+- [ ] Llama 2 / Llama 3 papers: GQA and what it does to KV cache size
 - [ ] Lilian Weng, [Large Transformer Model Inference Optimization](https://lilianweng.github.io/posts/2023-01-10-inference-optimization/)
 - [ ] [vLLM / PagedAttention blog post](https://blog.vllm.ai/2023/06/20/vllm.html) + Anyscale, [continuous batching](https://www.anyscale.com/blog/continuous-batching-llm-inference)
 - [ ] Martin Kleppmann, [distributed systems lectures](https://www.youtube.com/playlist?list=PLeKd45zvjcDFUEv_ohr_HdUFe97RItdiB) (pairs with 6.5840)
