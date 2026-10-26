@@ -46,11 +46,6 @@ ignoreErrors = ["error-disable-taxonomy"]
     weight = 2
 
   [[menu.main]]
-    name = "Reading List"
-    url = "/bookmarks/"
-    weight = 3
-
-  [[menu.main]]
     name = "Today"
     url = "/today/"
     weight = 4
