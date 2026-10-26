@@ -46,7 +46,7 @@ Already over today. From tomorrow, this slot is for reading and watching only.
 
 | Phase | When | Focus |
 | --- | --- | --- |
-| **1. Resume + proof** | Nov – Dec 2026 | AI-infra resume with numbers · GPT-2 + KV cache benchmark · Narad benchmarks · Raft 3A–3B · LeetCode 5–6/week |
+| **1. Resume + proof** | Nov – Dec 2026 | AI-infra resume with numbers · GPT-2 + KV cache benchmark · Narad benchmarks · Raft 3A–3B · LeetCode 5–6/week · DDIA Ch 5, 8, 9 |
 | 2. Interview prep | Jan – Mar 2027 | LeetCode daily · system design (classic + ML system design) · project deep-dive stories · behavioral · mock interviews · mini inference engine |
 | 3. Applications | Apr – Jun 2027 | Referrals, applications in waves, interviews |
 | 4. Offer + move | Jul – Sep 2027 | Negotiate, paperwork, move |
