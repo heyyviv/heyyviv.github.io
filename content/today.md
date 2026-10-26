@@ -1,9 +1,9 @@
 +++
 title = 'Today'
 date = '2026-10-26T00:00:00+05:30'
-lastmod = '2026-10-27T00:30:00+05:30'
+lastmod = '2026-10-27T00:50:00+05:30'
 draft = false
-description = "What to read and build today: inference engineering, MIT 6.5840, CMU 15-445 and LeetCode."
+description = "What to read and build today: inference engineering, MIT 6.5840, CMU 15-721 and LeetCode."
 +++
 
 # What to read today
@@ -41,7 +41,7 @@ Read kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-infe
 | Tue 27 | kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/) (first half) | Day 1 carry-over: matmul cost by hand + `matmul_cost` script · 1 LeetCode |
 | Wed 28 | [How to Scale Your Model](https://jax-ml.github.io/scaling-book/): the rooflines chapter | 1 LeetCode · Book Ch 2 (rest) · start GPT-2 inference from scratch: load the real weights into your own PyTorch model, check outputs match Hugging Face |
 | Thu 29 | Horace He, [Making Deep Learning Go Brrrr](https://horace.io/brrr_intro.html) | 1 LeetCode · 6.5840: check where MapReduce / Raft 3A stand, continue |
-| Fri 30 | CMU 15-445 [Lecture 1](https://15445.courses.cs.cmu.edu/) at 1.5x | GPT-2: add a KV cache (15-445 labs wait until Raft is done) |
+| Fri 30 | CMU 15-721 [#01 Modern analytical DBs](https://15721.courses.cs.cmu.edu/spring2024/schedule.html) at 1.5x + skim the Lakehouse paper | GPT-2: add a KV cache |
 | Sat 31 | — | 1 LeetCode · 5–6 h: GPT-2 benchmark: tokens/sec and memory with vs without KV cache, across batch sizes · or 6.5840 catch-up |
 | Sun 1 | Light | Weekly contest · **Resume pass 1:** list every bullet missing a number (p99, throughput, users, hours saved) and collect the numbers from work · first weekly notes post |
 
@@ -49,7 +49,7 @@ Read kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-infe
 
 | Phase | When | Focus |
 | --- | --- | --- |
-| **1. Resume + proof** | Nov – Dec 2026 | AI-infra resume with numbers · GPT-2 + KV cache benchmark · Narad benchmarks · Raft 3A–3B · LeetCode 5–6/week · DDIA Ch 5, 8, 9 |
+| **1. Resume + proof** | Nov – Dec 2026 | AI-infra resume with numbers · GPT-2 + KV cache benchmark · Narad benchmarks · Raft 3A–3B · 15-721 #01–#08 · LeetCode 5–6/week · DDIA Ch 5, 8, 9 |
 | 2. Interview prep | Jan – Mar 2027 | LeetCode daily · system design (classic + ML system design) · project deep-dive stories · behavioral · mock interviews · mini inference engine |
 | 3. Applications | Apr – Jun 2027 | Referrals, applications in waves, interviews |
 | 4. Offer + move | Jul – Sep 2027 | Negotiate, paperwork, move |
@@ -77,7 +77,30 @@ Read kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-infe
 - [ ] [Raft paper](https://raft.github.io/raft.pdf) (before Raft 3A)
 - [ ] GPU MODE lectures on YouTube (closer to Phase 2)
 - [ ] *Inference Engineering*: Ch 2 ⬜ · Ch 3 ⬜ · Ch 5 ⬜
-- [ ] Kleppmann, *Designing Data-Intensive Applications* (1st ed.), one chapter a week from Week 2, office reading: Ch 5 Replication ⬜ · Ch 8 Trouble with distributed systems ⬜ · Ch 9 Consistency and consensus ⬜ (these three go with Raft) · then Ch 3 Storage ⬜ · Ch 7 Transactions ⬜ · Ch 6 Partitioning ⬜ (these go with 15-445)
+- [ ] Kleppmann, *Designing Data-Intensive Applications* (1st ed.), one chapter a week from Week 2, office reading: Ch 5 Replication ⬜ · Ch 8 Trouble with distributed systems ⬜ · Ch 9 Consistency and consensus ⬜ (these three go with Raft) · then Ch 3 Storage ⬜ · Ch 7 Transactions ⬜ · Ch 6 Partitioning ⬜ (Ch 3 goes with 15-721 #02–03)
+
+### CMU 15-721: Advanced Database Systems (Spring 2024)
+
+[Schedule, slides, papers](https://15721.courses.cs.cmu.edu/spring2024/schedule.html) · [YouTube playlist](https://www.youtube.com/playlist?list=PLSE8ODhjZXjYa_zX-KeMJui7pcN1rIaIJ). One lecture a week at the office + its main paper, and the build on Friday evening.
+
+| Week | Lecture (office, ~1 h at 1.5x) | Main paper | Build (Friday evening) |
+|---|---|---|---|
+| 1 (30 Oct) | #01 Modern analytical DBs | Lakehouse (CIDR '21) | — (KV cache week) |
+| 2 | #19 Snowflake (early: I use it daily) | Snowflake Elastic DW (SIGMOD '16) | Read real Snowflake query profiles: pruning, spilling, warehouse size |
+| 3 | #02 Data formats I | Columnar formats evaluation (VLDB '23) | Same table as CSV vs Parquet (plain / dictionary / RLE / zstd) with pyarrow + DuckDB: file size and scan time |
+| 4 | #03 Data formats II | FastLanes (VLDB '23) | Frame-of-reference + bit-packing in Go: decode GB/s |
+| 5 | #04 Query execution I | MonetDB/X100 (CIDR '05) | **Tuple-at-a-time (Volcano) vs vectorized (1024-row batches)** filter + sum over 100M ints in Go: same idea as batching in inference |
+| 6 | #05 Query execution II | Velox (VLDB '22) | Read Velox / DuckDB vector code (see expert code) |
+| 7 | #06 Vectorization (SIMD) | Lang et al. (VLDBJ '20) | SIMD filter in Rust (`std::simd`) vs scalar |
+| 8 | #07 Compilation | Neumann, HyPer (VLDB '11) | Optional: hand-fuse the Week 5 pipeline into one loop and compare (operator fusion = what FlashAttention does) |
+| 9 | #08 Scheduling | Morsel-driven parallelism (SIGMOD '14) | Morsel-driven parallel aggregation with a goroutine pool: speedup vs cores |
+| 10 | #09 Hash joins | 13 equi-joins compared (SIGMOD '16) | Naive vs radix-partitioned hash join in Go: time vs table size crossing the cache size |
+| 11 | #13 Optimizer I | Chaudhuri overview (PODS '98) | — |
+| 12 | #16 Cost models (slides only) | How good are query optimizers? (VLDB '15) | Postgres: `EXPLAIN ANALYZE` a 3-way join on correlated columns; estimated vs actual rows |
+| 13 | #17 Dremel + #18 Photon | Dremel decade (VLDB '20), Photon (SIGMOD '22) | — |
+| 14 | #20 DuckDB | DuckDB (SIGMOD '19) | Run TPC-H SF10 in DuckDB, read the profile output |
+
+Optional, only if curious: #10 multi-way joins, #11 UDFs, #12 networking, #14–15 optimizer, #21 Yellowbrick, #22 Redshift.
 
 ### DDIA: learn by doing
 
@@ -102,8 +125,9 @@ After each build, read how experts wrote the same thing.
 | Mini inference engine (Phase 2) | **nano-vllm** (~1.2k lines of vLLM ideas), then **vLLM** itself | nano-vllm `engine/`; vLLM `v1/core/sched/scheduler.py`, `v1/core/kv_cache_manager.py` |
 | Raft 3A–3C | **etcd-io/raft** (the Raft used by etcd, K8s, CockroachDB) | `raft.go`, `log.go`, `node.go` |
 | Mini LSM KV store | **LevelDB** (Jeff Dean & Sanjay Ghemawat, small and clean C++), then **Pebble** (CockroachDB's LSM in Go) | LevelDB `db/db_impl.cc`, `table/`; Pebble `compaction.go` |
-| 15-445 buffer pool | **Postgres** buffer manager (clock-sweep eviction, maps to PagedAttention) | `src/backend/storage/buffer/bufmgr.c`, `freelist.c` |
-| 15-445 B+Tree | **bbolt** (small Go B+tree), **SQLite** (heavily commented) | bbolt `node.go`, `cursor.go`; SQLite `btree.c` |
+| Paged KV cache in the mini engine | **Postgres** buffer manager (clock-sweep eviction, maps to PagedAttention) | `src/backend/storage/buffer/bufmgr.c`, `freelist.c` |
+| LSM vs B+tree benchmark | **bbolt** (small Go B+tree), **SQLite** (heavily commented) | bbolt `node.go`, `cursor.go`; SQLite `btree.c` |
+| 15-721 vectorized executor builds | **DuckDB** (C++, vectorized), **Velox** (Meta) | DuckDB `src/execution/`, `src/common/vector_operations/` |
 | Go services at work | **Go standard library** | `net/http/server.go`, `sync/mutex.go`, `context/` |
 
 **How to read it:** build your own version first, then read theirs and list 3 things they did differently and why. Trace one request or operation end to end instead of reading files top to bottom. Read the tests, which show what the authors were worried about. Use `git blame` and the linked PRs to find out *why* the code is shaped that way. Code reading counts as office reading time.
