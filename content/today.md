@@ -1,32 +1,35 @@
 +++
 title = 'Today'
 date = '2026-10-26T00:00:00+05:30'
-lastmod = '2026-10-26T23:10:00+05:30'
+lastmod = '2026-10-27T00:30:00+05:30'
 draft = false
 description = "What to read and build today: inference engineering, MIT 6.5840, CMU 15-445 and LeetCode."
 +++
 
 # What to read today
 
-*Updated daily. Last update: **Mon, 26 Oct 2026** · Day 1 · Week 1 · **Phase 1 of 4: Resume + proof** (Nov–Dec) · Next checkpoint: **AI-infra resume done by 30 Nov***
+*Updated daily. Last update: **Tue, 27 Oct 2026** · Day 2 · Week 1 · **Phase 1 of 4: Resume + proof** (Nov–Dec) · Next checkpoint: **AI-infra resume done by 30 Nov***
 
-## Today: Day 1, Mon 26 Oct
+## Today: Day 2, Tue 27 Oct
 
-**Theme:** why decode is memory-bound and prefill is compute-bound.
+**Theme:** the read / write / compute arithmetic, made to click. Carried over from Day 1, and that's fine.
 
 ### 🏢 Office
 
-Already over today. From tomorrow, this slot is for reading and watching only.
+Read kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/), only up to the KV cache and flops-vs-bytes part. Slowly, with paper next to you.
 
-### 🌙 Evening (~1 h, it's a late start)
+### 🌙 Evening (~1.5 h)
 
 | Time | Task |
 | --- | --- |
-| 0:00–0:40 | **Read** *Inference Engineering* Ch 2 (models and bottlenecks), up to and including prefill vs decode. Stop there. |
-| 0:40–1:00 | **Code.** A small Python script for Llama-3-8B: FLOPs and bytes moved per token for prefill and for decode, arithmetic intensity (FLOPs ÷ bytes) for each, compared with your machine's compute-to-bandwidth ratio. |
-| 1:00–1:05 | **Notes.** 2–3 lines: the key idea, one question, how it maps to DB / distributed systems ideas. |
+| 0:00–0:30 | **By hand, one matmul only.** `(1 × 4096) @ (4096 × 4096)`: count FLOPs, bytes read, bytes written, then FLOPs ÷ bytes. Then redo it for batch 64: `(64 × 4096) @ (4096 × 4096)`. See the intensity jump from ~1 to ~64. |
+| 0:30–1:00 | **Code it:** a `matmul_cost(M, K, N)` function that prints exactly those numbers. Then the whole Llama-3-8B decode step = 16 GB weights read, 16 GFLOPs per token. |
+| 1:00–1:20 | 1 LeetCode |
+| 1:20–1:25 | **Notes:** what clicked, what's still fuzzy. |
 
-**Done when:** the script prints both intensities and shows decode is memory-bound.
+**Done when:** you can explain to an empty room why batch 1 decode wastes the GPU, using the matmul numbers.
+
+6.5840 check moves to Thursday.
 
 ---
 
@@ -35,9 +38,9 @@ Already over today. From tomorrow, this slot is for reading and watching only.
 | Day | 🏢 Office (read / watch) | 🌙 Evening (build) |
 | --- | --- | --- |
 | Mon 26 | — | Book Ch 2 (first half) + arithmetic-intensity script |
-| Tue 27 | kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/) | 1 LeetCode · 6.5840: check where MapReduce / Raft 3A stand, continue |
+| Tue 27 | kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/) (first half) | Day 1 carry-over: matmul cost by hand + `matmul_cost` script · 1 LeetCode |
 | Wed 28 | [How to Scale Your Model](https://jax-ml.github.io/scaling-book/): the rooflines chapter | 1 LeetCode · Book Ch 2 (rest) · start GPT-2 inference from scratch: load the real weights into your own PyTorch model, check outputs match Hugging Face |
-| Thu 29 | Horace He, [Making Deep Learning Go Brrrr](https://horace.io/brrr_intro.html) | 1 LeetCode · 6.5840 lab |
+| Thu 29 | Horace He, [Making Deep Learning Go Brrrr](https://horace.io/brrr_intro.html) | 1 LeetCode · 6.5840: check where MapReduce / Raft 3A stand, continue |
 | Fri 30 | CMU 15-445 [Lecture 1](https://15445.courses.cs.cmu.edu/) at 1.5x | GPT-2: add a KV cache (15-445 labs wait until Raft is done) |
 | Sat 31 | — | 1 LeetCode · 5–6 h: GPT-2 benchmark: tokens/sec and memory with vs without KV cache, across batch sizes · or 6.5840 catch-up |
 | Sun 1 | Light | Weekly contest · **Resume pass 1:** list every bullet missing a number (p99, throughput, users, hours saved) and collect the numbers from work · first weekly notes post |
@@ -117,7 +120,8 @@ After each build, read how experts wrote the same thing.
 
 | Day | Date | Planned | Done |
 | --- | --- | --- | --- |
-| 1 | Mon 26 Oct | Book Ch 2 (first half) · intensity script | *(pending)* |
+| 1 | Mon 26 Oct | Book Ch 2 (first half) · intensity script | Read Ch 2 · went through ops:byte, S/P matrices, attention read/write/compute. Calculation didn't click yet → redo from one matmul on Day 2 |
+| 2 | Tue 27 Oct | kipply (first half) · matmul cost by hand + script | *(pending)* |
 
 <script>
 (function () {
