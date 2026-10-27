@@ -1,35 +1,35 @@
 +++
 title = 'Today'
 date = '2026-10-26T00:00:00+05:30'
-lastmod = '2026-10-27T00:50:00+05:30'
+lastmod = '2026-10-28T09:00:00+05:30'
 draft = false
 description = "What to read and build today: inference engineering, MIT 6.5840, CMU 15-721 and LeetCode."
 +++
 
 # What to read today
 
-*Updated daily. Last update: **Tue, 27 Oct 2026** · Day 2 · Week 1 · **Phase 1 of 4: Resume + proof** (Nov–Dec) · Next checkpoint: **AI-infra resume done by 30 Nov***
+*Updated daily. Last update: **Wed, 28 Oct 2026** · Day 3 · Week 1 · **Phase 1 of 4: Resume + proof** (Nov–Dec) · Next checkpoint: **AI-infra resume done by 30 Nov***
 
-## Today: Day 2, Tue 27 Oct
+## Today: Day 3, Wed 28 Oct
 
-**Theme:** the read / write / compute arithmetic, made to click. Carried over from Day 1, and that's fine.
+**Theme:** rooflines. kipply is done (whole post); the matmul evening work from Day 2 carries over to tonight.
 
 ### 🏢 Office
 
-Read kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/), only up to the KV cache and flops-vs-bytes part. Slowly, with paper next to you.
+[How to Scale Your Model](https://jax-ml.github.io/scaling-book/): the rooflines chapter. Same idea as kipply's flops-vs-bytes, drawn as a graph: find where the ridge point sits for an A100/H100 and why batch-1 decode lands far left of it.
 
-### 🌙 Evening (~1.5 h)
+### 🌙 Evening (~1.5 h, Day 2 carry-over)
 
 | Time | Task |
 | --- | --- |
 | 0:00–0:30 | **By hand, one matmul only.** `(1 × 4096) @ (4096 × 4096)`: count FLOPs, bytes read, bytes written, then FLOPs ÷ bytes. Then redo it for batch 64: `(64 × 4096) @ (4096 × 4096)`. See the intensity jump from ~1 to ~64. |
-| 0:30–1:00 | **Code it:** a `matmul_cost(M, K, N)` function that prints exactly those numbers. Then the whole Llama-3-8B decode step = 16 GB weights read, 16 GFLOPs per token. |
+| 0:30–1:00 | **Code it:** a `matmul_cost(M, K, N)` function that prints exactly those numbers. Then the whole Llama-3-8B decode step = 16 GB weights read, 16 GFLOPs per token. Check it against kipply's latency numbers. |
 | 1:00–1:20 | 1 LeetCode |
-| 1:20–1:25 | **Notes:** what clicked, what's still fuzzy. |
+| 1:20–1:25 | **Notes:** 2–3 lines on kipply + the rooflines chapter: what clicked, what's still fuzzy. |
 
-**Done when:** you can explain to an empty room why batch 1 decode wastes the GPU, using the matmul numbers.
+**Done when:** you can explain to an empty room why batch 1 decode wastes the GPU, using the matmul numbers, and at what batch size it stops being memory-bound.
 
-6.5840 check moves to Thursday.
+GPT-2 from scratch moves to Thursday, the 6.5840 check to Friday.
 
 ---
 
@@ -38,11 +38,11 @@ Read kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-infe
 | Day | 🏢 Office (read / watch) | 🌙 Evening (build) |
 | --- | --- | --- |
 | Mon 26 | — | Book Ch 2 (first half) + arithmetic-intensity script |
-| Tue 27 | kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/) (first half) | Day 1 carry-over: matmul cost by hand + `matmul_cost` script · 1 LeetCode |
-| Wed 28 | [How to Scale Your Model](https://jax-ml.github.io/scaling-book/): the rooflines chapter | 1 LeetCode · Book Ch 2 (rest) · start GPT-2 inference from scratch: load the real weights into your own PyTorch model, check outputs match Hugging Face |
-| Thu 29 | Horace He, [Making Deep Learning Go Brrrr](https://horace.io/brrr_intro.html) | 1 LeetCode · 6.5840: check where MapReduce / Raft 3A stand, continue |
-| Fri 30 | CMU 15-721 [#01 Modern analytical DBs](https://15721.courses.cs.cmu.edu/spring2024/schedule.html) at 1.5x + skim the Lakehouse paper | GPT-2: add a KV cache |
-| Sat 31 | — | 1 LeetCode · 5–6 h: GPT-2 benchmark: tokens/sec and memory with vs without KV cache, across batch sizes · or 6.5840 catch-up |
+| Tue 27 | kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/) ✅ (whole post) | Matmul cost by hand + `matmul_cost` script · 1 LeetCode → moved to Wed |
+| Wed 28 | [How to Scale Your Model](https://jax-ml.github.io/scaling-book/): the rooflines chapter | Day 2 carry-over: matmul cost by hand + `matmul_cost` script · 1 LeetCode |
+| Thu 29 | Horace He, [Making Deep Learning Go Brrrr](https://horace.io/brrr_intro.html) | 1 LeetCode · Book Ch 2 (rest) · start GPT-2 inference from scratch: load the real weights into your own PyTorch model, check outputs match Hugging Face |
+| Fri 30 | CMU 15-721 [#01 Modern analytical DBs](https://15721.courses.cs.cmu.edu/spring2024/schedule.html) at 1.5x + skim the Lakehouse paper | 6.5840: check where MapReduce / Raft 3A stand, continue |
+| Sat 31 | — | 1 LeetCode · 5–6 h: GPT-2 add a KV cache, then benchmark tokens/sec and memory with vs without it across batch sizes |
 | Sun 1 | Light | Weekly contest · **Resume pass 1:** list every bullet missing a number (p99, throughput, users, hours saved) and collect the numbers from work · first weekly notes post |
 
 ## Roadmap (Oct 2026 – Sep 2027)
@@ -67,7 +67,7 @@ Read kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-infe
 
 ## Reading queue (Phase 1)
 
-- [ ] kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/)
+- [x] kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/)
 - [ ] Horace He, [Making Deep Learning Go Brrrr From First Principles](https://horace.io/brrr_intro.html)
 - [ ] Google, [How to Scale Your Model](https://jax-ml.github.io/scaling-book/) (rooflines, parallelism)
 - [ ] Llama 2 / Llama 3 papers: GQA and what it does to KV cache size
@@ -145,7 +145,8 @@ After each build, read how experts wrote the same thing.
 | Day | Date | Planned | Done |
 | --- | --- | --- | --- |
 | 1 | Mon 26 Oct | Book Ch 2 (first half) · intensity script | Read Ch 2 · went through ops:byte, S/P matrices, attention read/write/compute. Calculation didn't click yet → redo from one matmul on Day 2 |
-| 2 | Tue 27 Oct | kipply (first half) · matmul cost by hand + script | *(pending)* |
+| 2 | Tue 27 Oct | kipply (first half) · matmul cost by hand + script | Read the **whole** kipply post (ahead of plan). Evening tasks not done → Wed |
+| 3 | Wed 28 Oct | Rooflines chapter · matmul by hand + `matmul_cost` script · 1 LeetCode | *(pending)* |
 
 <script>
 (function () {
