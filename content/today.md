@@ -8,61 +8,54 @@ description = "What to read and build today: LLM inference and serving, distribu
 
 # What to read today
 
-*Updated daily. Last update: **Thu, 29 Oct 2026** · Day 4 · Week 1 · **Phase 1 of 4: Resume + proof** (Nov–Dec) · Next checkpoint: **AI-infra resume done by 30 Nov***
+*Updated daily. Last update: **Thu, 29 Oct 2026** · Day 4 · Week 1 · **Stage 1: Foundations** (Nov–Dec)*
 
 ## Today: Day 4, Thu 29 Oct
 
-**Rest day.** Nothing planned. Sleep early.
+Nothing planned today.
 
-**Next (Fri 30, 9:00–10:00 focus hour):** the matmul exercise, done fresh in the morning instead of in a tired evening.
+**Next (Fri 30, morning):** the matmul exercise.
 
-## Daily shape
+## Daily rhythm
 
-| Slot | What | Size |
-| --- | --- | --- |
-| **9:00–10:00 focus hour** | The day's key work: read **and** the hands-on exercise (by-hand math, small script, a number) | 60 min, protected |
-| Commute home (optional) | Watch the next day's video at 1.5x, or nothing | Only if I feel like it |
-| Evening | **One** small task + 1 LeetCode only if energy allows | 30–45 min max |
-| Saturday | Long build block | 5–6 h |
-| Sunday | Light: notes post, optional contest | 1–2 h |
-
-**Slip rule:** if a task slips twice, it moves into the next focus hour or Saturday. It never rolls forward evening after evening.
+- **Morning block (1 h):** read + one hands-on exercise that ends in code or a number
+- **Evening (short):** one small task; LeetCode optional
+- **Saturday:** long build block
+- **Sunday:** light, notes post
+- A task that slips twice moves to the next morning block or Saturday
 
 ---
 
 ## This week (Week 1: 26 Oct – 1 Nov)
 
-| Day | 🎯 Focus hour 9:00–10:00 | 🌙 Evening (30–45 min) |
+| Day | ☀️ Morning block | 🌙 Evening (short) |
 | --- | --- | --- |
 | Mon 26 | — | Book Ch 2 (first half) ✅ (calculation didn't click yet) |
 | Tue 27 | kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/) ✅ (whole post) | Matmul exercise → slipped |
-| Wed 28 | Re-planned the tracks ✅ | Matmul exercise → slipped again → **moved to Fri focus hour** |
-| Thu 29 | Rest | Rest |
-| Fri 30 | **Matmul by hand (25 min):** `(1 × 4096) @ (4096 × 4096)`: FLOPs, bytes read, bytes written, FLOPs ÷ bytes. Redo for batch 64 and see intensity jump from ~1 to ~64. **Then code it (35 min):** `matmul_cost(M, K, N)` printing those numbers; check one Llama-3-8B decode step (16 GB read, 16 GFLOPs/token) against kipply | 2–3 lines of notes on kipply + matmul: what clicked, what's fuzzy · 1 LeetCode if energy |
-| Sat 31 | — | **5–6 h build:** 6.5840 check (30 min: where MapReduce / Raft 3A stand) · GPT-2 from scratch: load the real weights into my own PyTorch model, outputs match Hugging Face (~3 h) · start the KV cache if time (benchmark moves to next Saturday) · 1 LeetCode if energy |
-| Sun 1 | — | Light: first weekly notes post · optional contest · **Resume pass 1:** list bullets missing a number and collect them from work |
+| Wed 28 | — | Matmul exercise → **moved to Fri morning** |
+| Thu 29 | — | — |
+| Fri 30 | **Matmul by hand (25 min):** `(1 × 4096) @ (4096 × 4096)`: FLOPs, bytes read, bytes written, FLOPs ÷ bytes. Redo for batch 64 and see intensity jump from ~1 to ~64. **Then code it (35 min):** `matmul_cost(M, K, N)` printing those numbers; check one Llama-3-8B decode step (16 GB read, 16 GFLOPs/token) against kipply | 2–3 lines of notes on kipply + matmul: what clicked, what's fuzzy · 1 LeetCode (optional) |
+| Sat 31 | — | **5–6 h build:** 6.5840 check (30 min: where MapReduce / Raft 3A stand) · GPT-2 from scratch: load the real weights into my own PyTorch model, outputs match Hugging Face (~3 h) · start the KV cache if time (benchmark moves to next Saturday) · 1 LeetCode (optional) |
+| Sun 1 | — | Light: first weekly notes post · optional contest |
 
-**Next week starts with:** Mon focus hour: Horace He, [Making Deep Learning Go Brrrr](https://horace.io/brrr_intro.html) + classify 3 ops as compute / memory / overhead bound with numbers. Then the rooflines chapter of *How to Scale Your Model*.
+**Next week starts with:** Mon morning: Horace He, [Making Deep Learning Go Brrrr](https://horace.io/brrr_intro.html) + classify 3 ops as compute / memory / overhead bound with numbers. Then the rooflines chapter of *How to Scale Your Model*.
 
-## Roadmap (Oct 2026 – Sep 2027)
+## Roadmap
 
-| Phase | When | Focus |
+| Stage | When | Focus |
 | --- | --- | --- |
-| **1. Resume + proof** | Nov – Dec 2026 | AI-infra resume with numbers · GPT-2 + KV cache benchmark · Narad benchmarks · Raft 3A–3B · LeetCode 5–6/week · distributed systems topics 1–6 |
-| 2. Interview prep | Jan – Mar 2027 | LeetCode daily · system design (classic + ML system design) · project deep-dive stories · behavioral · mock interviews · mini inference engine + multi-GPU router |
-| 3. Applications | Apr – Jun 2027 | Referrals, applications in waves, interviews |
-| 4. Offer + move | Jul – Sep 2027 | Negotiate, paperwork, move |
+| **1. Foundations** | Nov – Dec 2026 | GPT-2 + KV cache benchmark · Narad benchmarks · Raft 3A–3B · distributed systems topics 1–6 · LeetCode 5–6/week |
+| 2. Serving engine | Jan – Mar 2027 | Mini inference engine (paged attention, continuous batching) · multi-GPU router · system design · flagship topic picked 31 Jan |
+| 3. Flagship + open source | Apr 2027 → | Flagship build and write-up · first merged PR in vLLM / SGLang / llm-d |
 
 ### Checkpoints
 
 | By | Checkpoint | Status |
 | --- | --- | --- |
-| 30 Nov 2026 | AI-infra resume variant done, every bullet has a number | ⬜ |
 | 31 Dec 2026 | GPT-2 + KV cache benchmark published · Raft 3B passes | ⬜ |
-| 31 Jan 2027 | 30 LeetCode in Jan · ML system design notes for 3 designs | ⬜ |
-| 28 Feb 2027 | 6 mock interviews · mini inference engine + router runs with benchmarks | ⬜ |
-| 31 Mar 2027 | Deep-dive stories ready · contest rating 2000+ | ⬜ |
-| 30 Jun 2027 | Offer signed | ⬜ |
+| 31 Jan 2027 | Flagship topic picked · ML system design notes for 3 designs | ⬜ |
+| 28 Feb 2027 | Mini inference engine + router runs with benchmarks | ⬜ |
+| 31 Mar 2027 | Flagship write-up drafted | ⬜ |
 
 ## Reading queue (Phase 1)
 
@@ -82,7 +75,7 @@ description = "What to read and build today: LLM inference and serving, distribu
 
 ### Data engineering for ML (topic-wise) — supporting, lower priority
 
-One topic a week: watch the talk at the office (1.5x), read the blog, skim the paper only if needed, then build on Friday evening. Priority order; stop wherever time runs out.
+One topic a week: watch the talk (1.5x), read the blog, skim the paper only if needed, then build on Friday evening. Priority order; stop wherever time runs out.
 
 | # | Topic | Watch | Blog / read | Build (Friday evening) |
 |---|---|---|---|---|
@@ -98,7 +91,7 @@ One topic a week: watch the talk at the office (1.5x), read the blog, skim the p
 
 ### Distributed systems (topic-wise)
 
-Same pattern: watch the lecture at the office (1.5x), read the blog, DDIA or the paper only where it helps, then build. Videos: MIT 6.824 Spring 2020 (Robert Morris) and Kleppmann's Cambridge *Distributed Systems* playlists on YouTube. The 6.5840 labs are the builds for topics 1, 5, 7 and 11.
+Same pattern: watch the lecture (1.5x), read the blog, DDIA or the paper only where it helps, then build. Videos: MIT 6.824 Spring 2020 (Robert Morris) and Kleppmann's Cambridge *Distributed Systems* playlists on YouTube. The 6.5840 labs are the builds for topics 1, 5, 7 and 11.
 
 | # | Topic | Watch | Blog / read | Build |
 |---|---|---|---|---|
@@ -127,26 +120,26 @@ After each build, read how experts wrote the same thing.
 | Paged KV cache in the mini engine | **Postgres** buffer manager (clock-sweep eviction, maps to PagedAttention) | `src/backend/storage/buffer/bufmgr.c`, `freelist.c` |
 | LSM vs B+tree benchmark | **bbolt** (small Go B+tree), **SQLite** (heavily commented) | bbolt `node.go`, `cursor.go`; SQLite `btree.c` |
 | Data topic 6 vectorized build | **DuckDB** (C++, vectorized), **Velox** (Meta) | DuckDB `src/execution/`, `src/common/vector_operations/` |
-| Go services at work | **Go standard library** | `net/http/server.go`, `sync/mutex.go`, `context/` |
+| Go services | **Go standard library** | `net/http/server.go`, `sync/mutex.go`, `context/` |
 
-**How to read it:** build your own version first, then read theirs and list 3 things they did differently and why. Trace one request or operation end to end instead of reading files top to bottom. Read the tests, which show what the authors were worried about. Use `git blame` and the linked PRs to find out *why* the code is shaped that way. Code reading counts as office reading time.
+**How to read it:** build your own version first, then read theirs and list 3 things they did differently and why. Trace one request or operation end to end instead of reading files top to bottom. Read the tests, which show what the authors were worried about. Use `git blame` and the linked PRs to find out *why* the code is shaped that way. Code reading counts as morning reading time.
 
 ## Rules
 
-- Office is for reading and watching. Evenings are for building.
+- Mornings: read + one small exercise. Evenings stay short. Saturday is for building.
 - After every read: 2–3 lines of notes, rolled up into the Sunday post.
 - LeetCode: 5–6 a week in Phase 1, daily from January. Timed, weak topics, explained out loud.
 - Falling behind moves the calendar. It never means doing two days at once.
-- Eight months of showing up beats two weeks of 14-hour days. Sunday stays light.
+- Showing up daily beats long sprints. Sunday stays light.
 
 ## Log
 
 | Day | Date | Planned | Done |
 | --- | --- | --- | --- |
 | 1 | Mon 26 Oct | Book Ch 2 (first half) · intensity script | Read Ch 2 · went through ops:byte, S/P matrices, attention read/write/compute. Calculation didn't click yet → redo from one matmul on Day 2 |
-| 2 | Tue 27 Oct | kipply (first half) · matmul cost by hand + script | Read the **whole** kipply post (ahead of plan). Evening tasks not done → Wed |
-| 3 | Wed 28 Oct | Rooflines chapter · matmul by hand + `matmul_cost` script · 1 LeetCode | Re-planned tracks: data + eval main track, topic-wise data and distributed systems. Matmul → Fri |
-| 4 | Thu 29 Oct | Horace He · GPT-2 start | Rest day (tired). Rebuilt timetable around a 9–10 focus hour + 30–45 min evenings; main track back to serving |
+| 2 | Tue 27 Oct | kipply (first half) · matmul cost by hand + script | Read the **whole** kipply post (ahead of plan). Matmul → Wed |
+| 3 | Wed 28 Oct | Rooflines chapter · matmul by hand + `matmul_cost` script · 1 LeetCode | Study tracks reorganised topic-wise. Matmul → Fri |
+| 4 | Thu 29 Oct | Horace He · GPT-2 start | Off. Schedule reshaped around a morning block |
 
 <script>
 (function () {
