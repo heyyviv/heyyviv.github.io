@@ -1,9 +1,9 @@
 +++
 title = 'Today'
 date = '2026-10-26T00:00:00+05:30'
-lastmod = '2026-10-29T09:00:00+05:30'
+lastmod = '2026-10-29T20:00:00+05:30'
 draft = false
-description = "What to read and build today: inference, ML data + eval, MIT 6.5840 and LeetCode."
+description = "What to read and build today: LLM inference and serving, distributed systems, MIT 6.5840 and LeetCode."
 +++
 
 # What to read today
@@ -14,28 +14,42 @@ description = "What to read and build today: inference, ML data + eval, MIT 6.58
 
 **Rest day.** Nothing planned. Sleep early.
 
-Wednesday went into re-planning the tracks (data + eval main track, topic-wise data and distributed systems). That counts. The matmul-by-hand + `matmul_cost` evening carries over to **Friday evening**; the 6.5840 check moves to Saturday morning before GPT-2.
+**Next (Fri 30, 9:00–10:00 focus hour):** the matmul exercise, done fresh in the morning instead of in a tired evening.
+
+## Daily shape
+
+| Slot | What | Size |
+| --- | --- | --- |
+| **9:00–10:00 focus hour** | The day's key work: read **and** the hands-on exercise (by-hand math, small script, a number) | 60 min, protected |
+| Commute home (optional) | Watch the next day's video at 1.5x, or nothing | Only if I feel like it |
+| Evening | **One** small task + 1 LeetCode only if energy allows | 30–45 min max |
+| Saturday | Long build block | 5–6 h |
+| Sunday | Light: notes post, optional contest | 1–2 h |
+
+**Slip rule:** if a task slips twice, it moves into the next focus hour or Saturday. It never rolls forward evening after evening.
 
 ---
 
 ## This week (Week 1: 26 Oct – 1 Nov)
 
-| Day | 🏢 Office (read / watch) | 🌙 Evening (build) |
+| Day | 🎯 Focus hour 9:00–10:00 | 🌙 Evening (30–45 min) |
 | --- | --- | --- |
-| Mon 26 | — | Book Ch 2 (first half) + arithmetic-intensity script |
-| Tue 27 | kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/) ✅ (whole post) | Matmul cost by hand + `matmul_cost` script · 1 LeetCode → moved to Wed |
-| Wed 28 | [How to Scale Your Model](https://jax-ml.github.io/scaling-book/): the rooflines chapter | Day 2 carry-over: matmul cost by hand + `matmul_cost` script · 1 LeetCode |
-| Thu 29 | Horace He, [Making Deep Learning Go Brrrr](https://horace.io/brrr_intro.html) | 1 LeetCode · Book Ch 2 (rest) · start GPT-2 inference from scratch: load the real weights into your own PyTorch model, check outputs match Hugging Face |
-| Fri 30 | Data topic 1: CMU 15-721 #02 *Data Formats & Encoding* (video, 1.5x) + Arrow blog, *Querying Parquet with Millisecond Latency* | 6.5840: check where MapReduce / Raft 3A stand, continue |
-| Sat 31 | — | 1 LeetCode · 5–6 h: GPT-2 add a KV cache, then benchmark tokens/sec and memory with vs without it across batch sizes |
-| Sun 1 | Light | Weekly contest · **Resume pass 1:** list every bullet missing a number (p99, throughput, users, hours saved) and collect the numbers from work · first weekly notes post |
+| Mon 26 | — | Book Ch 2 (first half) ✅ (calculation didn't click yet) |
+| Tue 27 | kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/) ✅ (whole post) | Matmul exercise → slipped |
+| Wed 28 | Re-planned the tracks ✅ | Matmul exercise → slipped again → **moved to Fri focus hour** |
+| Thu 29 | Rest | Rest |
+| Fri 30 | **Matmul by hand (25 min):** `(1 × 4096) @ (4096 × 4096)`: FLOPs, bytes read, bytes written, FLOPs ÷ bytes. Redo for batch 64 and see intensity jump from ~1 to ~64. **Then code it (35 min):** `matmul_cost(M, K, N)` printing those numbers; check one Llama-3-8B decode step (16 GB read, 16 GFLOPs/token) against kipply | 2–3 lines of notes on kipply + matmul: what clicked, what's fuzzy · 1 LeetCode if energy |
+| Sat 31 | — | **5–6 h build:** 6.5840 check (30 min: where MapReduce / Raft 3A stand) · GPT-2 from scratch: load the real weights into my own PyTorch model, outputs match Hugging Face (~3 h) · start the KV cache if time (benchmark moves to next Saturday) · 1 LeetCode if energy |
+| Sun 1 | — | Light: first weekly notes post · optional contest · **Resume pass 1:** list bullets missing a number and collect them from work |
+
+**Next week starts with:** Mon focus hour: Horace He, [Making Deep Learning Go Brrrr](https://horace.io/brrr_intro.html) + classify 3 ops as compute / memory / overhead bound with numbers. Then the rooflines chapter of *How to Scale Your Model*.
 
 ## Roadmap (Oct 2026 – Sep 2027)
 
 | Phase | When | Focus |
 | --- | --- | --- |
-| **1. Resume + proof** | Nov – Dec 2026 | AI-infra resume with numbers · GPT-2 + KV cache benchmark · Narad benchmarks · Raft 3A–3B · data topics 1–4 · eval set at work · LeetCode 5–6/week · distributed systems topics 1–6 |
-| 2. Interview prep | Jan – Mar 2027 | LeetCode daily · system design (classic + ML system design) · project deep-dive stories · behavioral · mock interviews · LLM data → eval → device pipeline |
+| **1. Resume + proof** | Nov – Dec 2026 | AI-infra resume with numbers · GPT-2 + KV cache benchmark · Narad benchmarks · Raft 3A–3B · LeetCode 5–6/week · distributed systems topics 1–6 |
+| 2. Interview prep | Jan – Mar 2027 | LeetCode daily · system design (classic + ML system design) · project deep-dive stories · behavioral · mock interviews · mini inference engine + multi-GPU router |
 | 3. Applications | Apr – Jun 2027 | Referrals, applications in waves, interviews |
 | 4. Offer + move | Jul – Sep 2027 | Negotiate, paperwork, move |
 
@@ -46,7 +60,7 @@ Wednesday went into re-planning the tracks (data + eval main track, topic-wise d
 | 30 Nov 2026 | AI-infra resume variant done, every bullet has a number | ⬜ |
 | 31 Dec 2026 | GPT-2 + KV cache benchmark published · Raft 3B passes | ⬜ |
 | 31 Jan 2027 | 30 LeetCode in Jan · ML system design notes for 3 designs | ⬜ |
-| 28 Feb 2027 | 6 mock interviews · data → eval → device pipeline runs end to end | ⬜ |
+| 28 Feb 2027 | 6 mock interviews · mini inference engine + router runs with benchmarks | ⬜ |
 | 31 Mar 2027 | Deep-dive stories ready · contest rating 2000+ | ⬜ |
 | 30 Jun 2027 | Offer signed | ⬜ |
 
@@ -66,7 +80,7 @@ Wednesday went into re-planning the tracks (data + eval main track, topic-wise d
 - [ ] *Inference Engineering*: Ch 2 ⬜ · Ch 3 ⬜ · Ch 5 ⬜
 - [ ] Distributed systems topics 1–6 (see table below: video + blog + build, DDIA as reference)
 
-### Data engineering for ML (topic-wise)
+### Data engineering for ML (topic-wise) — supporting, lower priority
 
 One topic a week: watch the talk at the office (1.5x), read the blog, skim the paper only if needed, then build on Friday evening. Priority order; stop wherever time runs out.
 
@@ -132,7 +146,7 @@ After each build, read how experts wrote the same thing.
 | 1 | Mon 26 Oct | Book Ch 2 (first half) · intensity script | Read Ch 2 · went through ops:byte, S/P matrices, attention read/write/compute. Calculation didn't click yet → redo from one matmul on Day 2 |
 | 2 | Tue 27 Oct | kipply (first half) · matmul cost by hand + script | Read the **whole** kipply post (ahead of plan). Evening tasks not done → Wed |
 | 3 | Wed 28 Oct | Rooflines chapter · matmul by hand + `matmul_cost` script · 1 LeetCode | Re-planned tracks: data + eval main track, topic-wise data and distributed systems. Matmul → Fri |
-| 4 | Thu 29 Oct | Horace He · GPT-2 start | Rest day (tired) |
+| 4 | Thu 29 Oct | Horace He · GPT-2 start | Rest day (tired). Rebuilt timetable around a 9–10 focus hour + 30–45 min evenings; main track back to serving |
 
 <script>
 (function () {
