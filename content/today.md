@@ -49,7 +49,7 @@ GPT-2 from scratch moves to Thursday, the 6.5840 check to Friday.
 
 | Phase | When | Focus |
 | --- | --- | --- |
-| **1. Resume + proof** | Nov – Dec 2026 | AI-infra resume with numbers · GPT-2 + KV cache benchmark · Narad benchmarks · Raft 3A–3B · data topics 1–4 · eval set at work · LeetCode 5–6/week · DDIA Ch 5, 8, 9 |
+| **1. Resume + proof** | Nov – Dec 2026 | AI-infra resume with numbers · GPT-2 + KV cache benchmark · Narad benchmarks · Raft 3A–3B · data topics 1–4 · eval set at work · LeetCode 5–6/week · distributed systems topics 1–6 |
 | 2. Interview prep | Jan – Mar 2027 | LeetCode daily · system design (classic + ML system design) · project deep-dive stories · behavioral · mock interviews · LLM data → eval → device pipeline |
 | 3. Applications | Apr – Jun 2027 | Referrals, applications in waves, interviews |
 | 4. Offer + move | Jul – Sep 2027 | Negotiate, paperwork, move |
@@ -73,13 +73,13 @@ GPT-2 from scratch moves to Thursday, the 6.5840 check to Friday.
 - [ ] Llama 2 / Llama 3 papers: GQA and what it does to KV cache size
 - [ ] Lilian Weng, [Large Transformer Model Inference Optimization](https://lilianweng.github.io/posts/2023-01-10-inference-optimization/)
 - [ ] [vLLM / PagedAttention blog post](https://blog.vllm.ai/2023/06/20/vllm.html) + Anyscale, [continuous batching](https://www.anyscale.com/blog/continuous-batching-llm-inference)
-- [ ] Martin Kleppmann, [distributed systems lectures](https://www.youtube.com/playlist?list=PLeKd45zvjcDFUEv_ohr_HdUFe97RItdiB) (pairs with 6.5840)
+- [ ] Martin Kleppmann, [distributed systems lectures](https://www.youtube.com/playlist?list=PLeKd45zvjcDFUEv_ohr_HdUFe97RItdiB) (used per topic in the table below)
 - [ ] [Raft paper](https://raft.github.io/raft.pdf) (before Raft 3A)
 - [ ] Hamel Husain, *Your AI Product Needs Evals*
 - [ ] Chip Huyen, *AI Engineering* Ch 3–4 (evaluation), Ch 8 (dataset engineering)
 - [ ] Stanford CS336 (Spring 2025): data lectures + evaluation lecture
 - [ ] *Inference Engineering*: Ch 2 ⬜ · Ch 3 ⬜ · Ch 5 ⬜
-- [ ] Kleppmann, *Designing Data-Intensive Applications* (1st ed.), one chapter a week from Week 2, office reading: Ch 5 Replication ⬜ · Ch 8 Trouble with distributed systems ⬜ · Ch 9 Consistency and consensus ⬜ (these three go with Raft) · then Ch 3 Storage ⬜ · Ch 7 Transactions ⬜ · Ch 6 Partitioning ⬜ · Ch 10 Batch ⬜ · Ch 11 Streams ⬜ (Ch 3 goes with data topic 1)
+- [ ] Distributed systems topics 1–6 (see table below: video + blog + build, DDIA as reference)
 
 ### Data engineering for ML (topic-wise)
 
@@ -97,18 +97,23 @@ One topic a week: watch the talk at the office (1.5x), read the blog, skim the p
 | 8 | Data quality + lineage | A Data Council / Airflow Summit talk on data quality or OpenLineage | Chip Huyen, *Data Distribution Shifts and Monitoring* · OpenLineage docs | Quality checks + lineage events in an Airflow DAG |
 | 9 | Real systems | CMU 15-721 #19 *Snowflake*, #20 *DuckDB* | Snowflake (SIGMOD '16), Dremel decade (VLDB '20), skim | TPC-H SF10 in DuckDB, read the profile |
 
-### DDIA: learn by doing
+### Distributed systems (topic-wise)
 
-Each chapter read at the office gets one build that week, in the normal evening slots.
+Same pattern: watch the lecture at the office (1.5x), read the blog, DDIA or the paper only where it helps, then build. Videos: MIT 6.824 Spring 2020 (Robert Morris) and Kleppmann's Cambridge *Distributed Systems* playlists on YouTube. The 6.5840 labs are the builds for topics 1, 5, 7 and 11.
 
-| Ch | Read | Build (prove it) | Size |
-|---|---|---|---|
-| 5 | Replication | Postgres primary + async replica in Docker Compose: measure replication lag under load, kill the primary mid-write and count lost writes, show a read-your-writes violation | 1 evening |
-| 8 | Trouble with distributed systems | Last-write-wins with skewed clocks: two Go nodes, one clock +200 ms, show silently lost writes. Then add network partitions with toxiproxy | 1 evening |
-| 9 | Consistency and consensus | Raft 3B/3C is the build. Extra: run 6.5840's porcupine linearizability checker against a deliberately broken KV store and read the failing history | 1 evening |
-| 3 | Storage and retrieval | **Mini LSM-tree KV store in Go**: WAL → memtable → SSTables → compaction → bloom filter. Benchmark against bbolt (B+tree): write amp, read latency | 2–3 Saturdays, after Raft 3B (portfolio piece) |
-| 7 | Transactions | Two psql sessions: reproduce lost update, write skew and phantoms under READ COMMITTED / REPEATABLE READ / SERIALIZABLE, and record which level stops which anomaly | 1 evening |
-| 6 | Partitioning | Consistent-hashing router in Go with virtual nodes: measure keys moved when a node joins/leaves vs mod-N hashing. Connects to llm-d cache-aware routing | 1 evening |
+| # | Topic | Watch | Blog / read | Build |
+|---|---|---|---|---|
+| 1 | MapReduce + GFS (the lab warm-up) | MIT 6.824 (2020, Robert Morris) Lec 1 *Introduction / MapReduce* and Lec 3 *GFS* | MapReduce paper (OSDI '04), GFS paper (SOSP '03): skim | 6.5840 Lab 1 MapReduce |
+| 2 | Replication | Kleppmann, *Distributed Systems* (Cambridge) replication lectures · MIT 6.824 Lec 4 *Primary-Backup (VMware FT)* | DDIA Ch 5 | Postgres primary + async replica in Docker Compose: replication lag under load, kill the primary mid-write and count lost writes, show a read-your-writes violation (1 evening) |
+| 3 | Failures, timeouts, retries | Kleppmann Cambridge lectures on system models + failure detectors | Marc Brooker, *Timeouts, retries and backoff with jitter* (Amazon Builders' Library) · Jeff Hodges, *Notes on Distributed Systems for Young Bloods* · DDIA Ch 8 | Retry storm demo in Go: N clients, naive retries vs exponential backoff + jitter against a flaky server; plot load (1 evening) |
+| 4 | Time and clocks | Kleppmann Cambridge lectures on physical / logical clocks | Justin Sheehy, *There Is No Now* (ACM Queue) · Lamport, *Time, Clocks, and the Ordering of Events* (skim) | Last-write-wins with skewed clocks: two Go nodes, one clock +200 ms, show silently lost writes; then partitions with toxiproxy (1 evening) |
+| 5 | Consensus: Raft | MIT 6.824 Lec 6–7 *Raft* · Diego Ongaro's Raft lecture (YouTube) | Raft paper (extended) · *The Secret Lives of Data* Raft visualization · Eli Bendersky, *Implementing Raft* series | 6.5840 Raft 3A–3D |
+| 6 | Linearizability + consistency models | MIT 6.824 lecture on linearizability (Zookeeper / chain replication weeks) | Kyle Kingsbury (aphyr), *Strong Consistency Models* · Jepsen *Consistency Models* map · DDIA Ch 9 | Run porcupine against a deliberately broken KV store and read the failing history (1 evening) |
+| 7 | Fault-tolerant KV on Raft | MIT 6.824 Lec 8–9 *Zookeeper*, *CRAQ* | Jepsen analysis of etcd (pick one recent report) | 6.5840 Lab 4 fault-tolerant KV |
+| 8 | Partitioning + consistent hashing | Kleppmann Cambridge lecture on partitioning / quorums | Tom White, *Consistent Hashing* (blog) · Werner Vogels, *Amazon's Dynamo* (All Things Distributed) · DDIA Ch 6 | Consistent-hashing router in Go with virtual nodes: keys moved on join/leave vs mod-N. Connects to llm-d cache-aware routing (1 evening) |
+| 9 | Storage engines (LSM vs B-tree) | CMU 15-445 (Fall 2023) storage lectures (pick the LSM / indexes one) | Ben Stopford, *Log Structured Merge Trees* · DDIA Ch 3 | **Mini LSM-tree KV store in Go**: WAL → memtable → SSTables → compaction → bloom filter, vs bbolt: write amp, read latency (2–3 Saturdays, after Raft 3B, portfolio piece) |
+| 10 | Transactions + isolation | Kleppmann, *Transactions: Myths, Surprises and Opportunities* (Strange Loop 2015) | Jepsen consistency models (isolation side) · DDIA Ch 7 | Two psql sessions: lost update, write skew, phantoms under READ COMMITTED / REPEATABLE READ / SERIALIZABLE (1 evening) |
+| 11 | Sharded KV + global systems | MIT 6.824 *Spanner* lecture | Spanner paper (OSDI '12), skim | 6.5840 Lab 5 sharded KV |
 
 ### Reading expert code
 
