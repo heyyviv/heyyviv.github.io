@@ -1,35 +1,20 @@
 +++
 title = 'Today'
 date = '2026-10-26T00:00:00+05:30'
-lastmod = '2026-10-28T21:00:00+05:30'
+lastmod = '2026-10-29T09:00:00+05:30'
 draft = false
 description = "What to read and build today: inference, ML data + eval, MIT 6.5840 and LeetCode."
 +++
 
 # What to read today
 
-*Updated daily. Last update: **Wed, 28 Oct 2026** · Day 3 · Week 1 · **Phase 1 of 4: Resume + proof** (Nov–Dec) · Next checkpoint: **AI-infra resume done by 30 Nov***
+*Updated daily. Last update: **Thu, 29 Oct 2026** · Day 4 · Week 1 · **Phase 1 of 4: Resume + proof** (Nov–Dec) · Next checkpoint: **AI-infra resume done by 30 Nov***
 
-## Today: Day 3, Wed 28 Oct
+## Today: Day 4, Thu 29 Oct
 
-**Theme:** rooflines. kipply is done (whole post); the matmul evening work from Day 2 carries over to tonight.
+**Rest day.** Nothing planned. Sleep early.
 
-### 🏢 Office
-
-[How to Scale Your Model](https://jax-ml.github.io/scaling-book/): the rooflines chapter. Same idea as kipply's flops-vs-bytes, drawn as a graph: find where the ridge point sits for an A100/H100 and why batch-1 decode lands far left of it.
-
-### 🌙 Evening (~1.5 h, Day 2 carry-over)
-
-| Time | Task |
-| --- | --- |
-| 0:00–0:30 | **By hand, one matmul only.** `(1 × 4096) @ (4096 × 4096)`: count FLOPs, bytes read, bytes written, then FLOPs ÷ bytes. Then redo it for batch 64: `(64 × 4096) @ (4096 × 4096)`. See the intensity jump from ~1 to ~64. |
-| 0:30–1:00 | **Code it:** a `matmul_cost(M, K, N)` function that prints exactly those numbers. Then the whole Llama-3-8B decode step = 16 GB weights read, 16 GFLOPs per token. Check it against kipply's latency numbers. |
-| 1:00–1:20 | 1 LeetCode |
-| 1:20–1:25 | **Notes:** 2–3 lines on kipply + the rooflines chapter: what clicked, what's still fuzzy. |
-
-**Done when:** you can explain to an empty room why batch 1 decode wastes the GPU, using the matmul numbers, and at what batch size it stops being memory-bound.
-
-GPT-2 from scratch moves to Thursday, the 6.5840 check to Friday.
+Wednesday went into re-planning the tracks (data + eval main track, topic-wise data and distributed systems). That counts. The matmul-by-hand + `matmul_cost` evening carries over to **Friday evening**; the 6.5840 check moves to Saturday morning before GPT-2.
 
 ---
 
@@ -146,7 +131,8 @@ After each build, read how experts wrote the same thing.
 | --- | --- | --- | --- |
 | 1 | Mon 26 Oct | Book Ch 2 (first half) · intensity script | Read Ch 2 · went through ops:byte, S/P matrices, attention read/write/compute. Calculation didn't click yet → redo from one matmul on Day 2 |
 | 2 | Tue 27 Oct | kipply (first half) · matmul cost by hand + script | Read the **whole** kipply post (ahead of plan). Evening tasks not done → Wed |
-| 3 | Wed 28 Oct | Rooflines chapter · matmul by hand + `matmul_cost` script · 1 LeetCode | *(pending)* |
+| 3 | Wed 28 Oct | Rooflines chapter · matmul by hand + `matmul_cost` script · 1 LeetCode | Re-planned tracks: data + eval main track, topic-wise data and distributed systems. Matmul → Fri |
+| 4 | Thu 29 Oct | Horace He · GPT-2 start | Rest day (tired) |
 
 <script>
 (function () {
