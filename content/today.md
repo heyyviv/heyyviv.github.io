@@ -1,20 +1,22 @@
 +++
 title = 'Today'
 date = '2026-10-26T00:00:00+05:30'
-lastmod = '2026-10-29T20:00:00+05:30'
+lastmod = '2026-10-30T09:00:00+05:30'
 draft = false
 description = "What to read and build today: LLM inference and serving, distributed systems, MIT 6.5840 and LeetCode."
 +++
 
 # What to read today
 
-*Updated daily. Last update: **Thu, 29 Oct 2026** · Day 4 · Week 1 · **Stage 1: Foundations** (Nov–Dec)*
+*Updated daily. Last update: **Fri, 30 Oct 2026** · Day 5 · Week 1 · **Stage 1: Foundations** (Nov–Dec)*
 
-## Today: Day 4, Thu 29 Oct
+## Today: Day 5, Fri 30 Oct
 
-Nothing planned today.
+✅ Horace He, *Making Deep Learning Go Brrrr* (done ahead of Monday).
 
-**Next (Fri 30, morning):** the matmul exercise.
+**Morning:** the matmul exercise (see Fri row below). It's the same compute-vs-memory question as Horace He, now with real numbers.
+
+**Evening:** 2–3 lines of notes on kipply + Horace He + matmul · 1 LeetCode (optional)
 
 ## Daily rhythm
 
@@ -34,11 +36,11 @@ Nothing planned today.
 | Tue 27 | kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/) ✅ (whole post) | Matmul exercise → slipped |
 | Wed 28 | — | Matmul exercise → **moved to Fri morning** |
 | Thu 29 | — | 1 LeetCode ✅ |
-| Fri 30 | **Matmul by hand (25 min):** `(1 × 4096) @ (4096 × 4096)`: FLOPs, bytes read, bytes written, FLOPs ÷ bytes. Redo for batch 64 and see intensity jump from ~1 to ~64. **Then code it (35 min):** `matmul_cost(M, K, N)` printing those numbers; check one Llama-3-8B decode step (16 GB read, 16 GFLOPs/token) against kipply | 2–3 lines of notes on kipply + matmul: what clicked, what's fuzzy · 1 LeetCode (optional) |
+| Fri 30 | Horace He ✅ (ahead) · **Matmul by hand (25 min):** `(1 × 4096) @ (4096 × 4096)`: FLOPs, bytes read, bytes written, FLOPs ÷ bytes. Redo for batch 64 and see intensity jump from ~1 to ~64. **Then code it (35 min):** `matmul_cost(M, K, N)` printing those numbers; check one Llama-3-8B decode step (16 GB read, 16 GFLOPs/token) against kipply | 2–3 lines of notes on kipply + Horace He + matmul: what clicked, what's fuzzy · 1 LeetCode (optional) |
 | Sat 31 | — | **5–6 h build:** 6.5840 check (30 min: where MapReduce / Raft 3A stand) · GPT-2 from scratch: load the real weights into my own PyTorch model, outputs match Hugging Face (~3 h) · start the KV cache if time (benchmark moves to next Saturday) · 1 LeetCode (optional) |
 | Sun 1 | — | Light: first weekly notes post · optional contest |
 
-**Next week starts with:** Mon morning: Horace He, [Making Deep Learning Go Brrrr](https://horace.io/brrr_intro.html) + classify 3 ops as compute / memory / overhead bound with numbers. Then the rooflines chapter of *How to Scale Your Model*.
+**Next week starts with:** Mon morning: classify 3 ops (matmul, softmax, layernorm) as compute / memory / overhead bound with numbers, using Horace He's framing. Then the rooflines chapter of *How to Scale Your Model*.
 
 ## Roadmap
 
@@ -60,7 +62,7 @@ Nothing planned today.
 ## Reading queue (Phase 1)
 
 - [x] kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/)
-- [ ] Horace He, [Making Deep Learning Go Brrrr From First Principles](https://horace.io/brrr_intro.html)
+- [x] Horace He, [Making Deep Learning Go Brrrr From First Principles](https://horace.io/brrr_intro.html)
 - [ ] Google, [How to Scale Your Model](https://jax-ml.github.io/scaling-book/) (rooflines, parallelism)
 - [ ] Llama 2 / Llama 3 papers: GQA and what it does to KV cache size
 - [ ] Lilian Weng, [Large Transformer Model Inference Optimization](https://lilianweng.github.io/posts/2023-01-10-inference-optimization/)
@@ -140,6 +142,7 @@ After each build, read how experts wrote the same thing.
 | 2 | Tue 27 Oct | kipply (first half) · matmul cost by hand + script | Read the **whole** kipply post (ahead of plan). Matmul → Wed |
 | 3 | Wed 28 Oct | Rooflines chapter · matmul by hand + `matmul_cost` script · 1 LeetCode | Study tracks reorganised topic-wise. Matmul → Fri |
 | 4 | Thu 29 Oct | Horace He · GPT-2 start | Schedule reshaped around a morning block · 1 LeetCode |
+| 5 | Fri 30 Oct | Matmul exercise + `matmul_cost` script · notes | Horace He ✅ (ahead of Mon) |
 
 <script>
 (function () {
