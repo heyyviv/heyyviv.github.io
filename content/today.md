@@ -33,7 +33,7 @@ Nothing planned today.
 | Mon 26 | — | Book Ch 2 (first half) ✅ (calculation didn't click yet) |
 | Tue 27 | kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/) ✅ (whole post) | Matmul exercise → slipped |
 | Wed 28 | — | Matmul exercise → **moved to Fri morning** |
-| Thu 29 | — | — |
+| Thu 29 | — | 1 LeetCode ✅ |
 | Fri 30 | **Matmul by hand (25 min):** `(1 × 4096) @ (4096 × 4096)`: FLOPs, bytes read, bytes written, FLOPs ÷ bytes. Redo for batch 64 and see intensity jump from ~1 to ~64. **Then code it (35 min):** `matmul_cost(M, K, N)` printing those numbers; check one Llama-3-8B decode step (16 GB read, 16 GFLOPs/token) against kipply | 2–3 lines of notes on kipply + matmul: what clicked, what's fuzzy · 1 LeetCode (optional) |
 | Sat 31 | — | **5–6 h build:** 6.5840 check (30 min: where MapReduce / Raft 3A stand) · GPT-2 from scratch: load the real weights into my own PyTorch model, outputs match Hugging Face (~3 h) · start the KV cache if time (benchmark moves to next Saturday) · 1 LeetCode (optional) |
 | Sun 1 | — | Light: first weekly notes post · optional contest |
@@ -139,7 +139,7 @@ After each build, read how experts wrote the same thing.
 | 1 | Mon 26 Oct | Book Ch 2 (first half) · intensity script | Read Ch 2 · went through ops:byte, S/P matrices, attention read/write/compute. Calculation didn't click yet → redo from one matmul on Day 2 |
 | 2 | Tue 27 Oct | kipply (first half) · matmul cost by hand + script | Read the **whole** kipply post (ahead of plan). Matmul → Wed |
 | 3 | Wed 28 Oct | Rooflines chapter · matmul by hand + `matmul_cost` script · 1 LeetCode | Study tracks reorganised topic-wise. Matmul → Fri |
-| 4 | Thu 29 Oct | Horace He · GPT-2 start | Off. Schedule reshaped around a morning block |
+| 4 | Thu 29 Oct | Horace He · GPT-2 start | Schedule reshaped around a morning block · 1 LeetCode |
 
 <script>
 (function () {
