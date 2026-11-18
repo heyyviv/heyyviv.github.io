@@ -12,9 +12,7 @@ title = 'Feed'
 - [ ] Attend Tottenham Hotspur match in stadium 
 - [ ] Visit London 
 - [ ] Have a cool car
-- [ ] Go on a date in Durga Puja 
 - [ ] Camping
-- [ ] Garba with girl
 - [ ] Varanasi trip for 1 week
 - [ ] Learn Korean
 - [ ] Learn Japanese
