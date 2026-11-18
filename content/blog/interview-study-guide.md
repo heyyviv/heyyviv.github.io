@@ -1,7 +1,7 @@
 +++
 title = "Interview Study Guide"
 slug = "interview-study-guide"
-date = "2026-11-18T21:00:00+05:30"
+date = "2026-11-18T20:00:00+05:30"
 description = "Everything to study so no backend/infra interview question is a surprise: every resume topic, the concepts to know, and a one-line answer for each."
 tags = ["blog","interview","backend","notes"]
 +++
