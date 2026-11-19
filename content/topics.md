@@ -25,7 +25,7 @@ Everything I'm working through in AI engineering, LLM serving, backend and distr
 - [ ] Quantization at a high level (INT8/FP8: memory vs quality)
 - [ ] Latency + cost optimization: smaller model routing, prompt caching, shorter prompts, batching, rate limits per token, fallback + timeouts, cost per request
 - [ ] Streaming responses: SSE end to end, time to first token, cancelling mid-stream, partial-output errors
-- [ ] **Proof:** GPT-2 decode time per token with vs without KV cache; cache MB vs sequence length
+- [ ] **Proof:** Qwen2.5-0.5B-Instruct: decode time per token with vs without my KV cache; cache MB vs sequence length
 
 ### 2. Continuous batching + paged KV
 *Read:* Huyen Ch 9 (batching) · Orca (OSDI '22) · vLLM / PagedAttention (SOSP '23)
@@ -178,7 +178,7 @@ Everything I'm working through in AI engineering, LLM serving, backend and distr
 
 ## Build: mini inference engine
 
-- [ ] GPT-2 124M + own KV cache → tokens/sec, memory
+- [ ] Qwen2.5-0.5B-Instruct (GQA + RoPE) + own KV cache → tokens/sec, memory
 - [ ] Static batching → padding waste measured
 - [ ] Paged KV cache (block table, free list, copy-on-write)
 - [ ] Continuous batching + preemption/eviction
