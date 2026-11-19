@@ -1,7 +1,7 @@
 +++
 title = 'Today'
 date = '2026-10-26T00:00:00+05:30'
-lastmod = '2026-11-19T22:00:00+05:30'
+lastmod = '2026-11-19T22:15:00+05:30'
 draft = false
 description = "What to read and build today: LLM inference and serving, distributed systems, MIT 6.5840 and LeetCode."
 +++
@@ -16,7 +16,7 @@ description = "What to read and build today: LLM inference and serving, distribu
 
 **Current topic: LLM serving basics.** One topic at a time; the next one starts only when this one ends in a number.
 
-**Evening (30–45 min):** LLM serving basics. Prefill vs decode, and why decode is memory-bound (reuse kipply). Size the KV cache for Llama-3-8B at 4K context: `2 × layers × kv_heads × head_dim × bytes × tokens`. 1 LeetCode (optional).
+**Evening (30–45 min):** Chip Huyen, *AI Engineering* Ch 9 *Inference Optimization*, first half. Prefill vs decode, and why decode is memory-bound (reuse kipply). Size the KV cache for Llama-3-8B at 4K context: `2 × layers × kv_heads × head_dim × bytes × tokens`. 1 LeetCode (optional).
 
 ## Daily rhythm
 
@@ -35,12 +35,28 @@ description = "What to read and build today: LLM inference and serving, distribu
 | Mon 16 | — | — |
 | Tue 17 | — | — |
 | Wed 18 | — | — |
-| Thu 19 | — | Read: prefill vs decode, why decode is memory-bound · KV cache size for Llama-3-8B at 4K context, by hand · 1 LeetCode (optional) |
+| Thu 19 | — | Huyen Ch 9 (first half): prefill vs decode, why decode is memory-bound · KV cache size for Llama-3-8B at 4K context, by hand · 1 LeetCode (optional) |
 | Fri 20 | **Code it:** `kv_cache_bytes(model, tokens, batch)` + decode bytes-per-token vs FLOPs-per-token; check against kipply's numbers | 2–3 lines of notes · 1 LeetCode |
-| Sat 21 | — | **5–6 h build:** measure it on GPT-2: generate 256 tokens with and without a KV cache; time prefill vs decode per token, and cache memory vs sequence length · 1 LeetCode (optional) |
+| Sat 21 | — | **5–6 h build** (guide: Raschka, *Build an LLM from Scratch* Ch 4 + its KV-cache bonus code): measure it on GPT-2: generate 256 tokens with and without a KV cache; time prefill vs decode per token, and cache memory vs sequence length · 1 LeetCode (optional) |
 | Sun 22 | — | Light: notes post with the numbers from Sat. Topic done only if the numbers are in |
 
-**Up next, one at a time:** continuous batching + TTFT/TPOT → Go concurrency (worker pool, `-race`) → Kafka + Narad (idempotent consumer) → SQL + TimescaleDB.
+**Up next, one at a time** (one book chapter each, about a week per topic):
+
+1. Continuous batching + paged KV: Huyen Ch 9 (batching) · Orca + vLLM papers
+2. Go concurrency: Cox-Buday, *Concurrency in Go* Ch 3–4
+3. Kafka + streaming: Kleppmann, *DDIA* Ch 11
+4. Storage, indexes, transactions: *DDIA* Ch 3, Ch 7
+5. Embeddings, RAG, vector search: Huyen Ch 6 · HNSW paper
+6. Agents + MCP: Huyen Ch 6 (agents) · MCP spec
+7. Python concurrency: *Fluent Python* (2nd ed) Ch 19–21
+8. Networking + resilience: *High Performance Browser Networking* Ch 1–4
+9. Containers + Kubernetes: *Kubernetes: Up and Running*
+10. Replication + partitioning: *DDIA* Ch 5–6
+11. Failures, clocks, consensus: *DDIA* Ch 8–9 · Raft 3A–3B
+12. Evaluation: Huyen Ch 3–4
+13. OS + memory: OSTEP (concurrency, virtual memory)
+14. Rust: *The Rust Book* Ch 4, 10, 16
+15. Distributed serving: *How to Scale Your Model* (parallelism, inference)
 
 ## Roadmap
 
