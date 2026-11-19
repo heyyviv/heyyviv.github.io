@@ -25,6 +25,7 @@ Everything I'm working through in AI engineering, LLM serving, backend and distr
 - [ ] Quantization at a high level (INT8/FP8: memory vs quality)
 - [ ] Latency + cost optimization: smaller model routing, prompt caching, shorter prompts, batching, rate limits per token, fallback + timeouts, cost per request
 - [ ] Streaming responses: SSE end to end, time to first token, cancelling mid-stream, partial-output errors
+- [ ] Write the Qwen2.5-0.5B forward pass myself in PyTorch (embedding, RMSNorm, RoPE, GQA attention, SwiGLU MLP, logits), load the real weights, **logits match Hugging Face within 1e-3**
 - [ ] **Proof:** Qwen2.5-0.5B-Instruct: decode time per token with vs without my KV cache; cache MB vs sequence length
 
 ### 2. Continuous batching + paged KV
