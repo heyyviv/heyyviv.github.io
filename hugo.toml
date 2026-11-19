@@ -46,11 +46,6 @@ ignoreErrors = ["error-disable-taxonomy"]
     weight = 2
 
   [[menu.main]]
-    name = "Today"
-    url = "/today/"
-    weight = 4
-
-  [[menu.main]]
     name = "Topics"
     url = "/topics/"
     weight = 5
