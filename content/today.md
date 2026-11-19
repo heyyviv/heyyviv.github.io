@@ -1,7 +1,7 @@
 +++
 title = 'Today'
 date = '2026-10-26T00:00:00+05:30'
-lastmod = '2026-11-19T21:45:00+05:30'
+lastmod = '2026-11-19T22:00:00+05:30'
 draft = false
 description = "What to read and build today: LLM inference and serving, distributed systems, MIT 6.5840 and LeetCode."
 +++
@@ -13,6 +13,8 @@ description = "What to read and build today: LLM inference and serving, distribu
 ## Today: Thu 19 Nov
 
 **Focus is now backend + AI systems.** The data-engineering track is dropped.
+
+**Current topic: LLM serving basics.** One topic at a time; the next one starts only when this one ends in a number.
 
 **Evening (30–45 min):** LLM serving basics. Prefill vs decode, and why decode is memory-bound (reuse kipply). Size the KV cache for Llama-3-8B at 4K context: `2 × layers × kv_heads × head_dim × bytes × tokens`. 1 LeetCode (optional).
 
@@ -33,12 +35,12 @@ description = "What to read and build today: LLM inference and serving, distribu
 | Mon 16 | — | — |
 | Tue 17 | — | — |
 | Wed 18 | — | — |
-| Thu 19 | — | LLM serving basics: prefill/decode, KV cache sizing for Llama-3-8B · 1 LeetCode (optional) |
-| Fri 20 | **Go concurrency:** bounded worker pool vs goroutine-per-task, run with `-race`, measure where throughput stops scaling | 2–3 lines of notes · 1 LeetCode |
-| Sat 21 | — | **5–6 h build:** Kafka + Narad: cause a duplicate delivery, then make the consumer idempotent and prove it · 1 LeetCode (optional) |
-| Sun 22 | — | Light: SQL + TimescaleDB reading (hypertables, indexes, isolation levels) · weekly notes post |
+| Thu 19 | — | Read: prefill vs decode, why decode is memory-bound · KV cache size for Llama-3-8B at 4K context, by hand · 1 LeetCode (optional) |
+| Fri 20 | **Code it:** `kv_cache_bytes(model, tokens, batch)` + decode bytes-per-token vs FLOPs-per-token; check against kipply's numbers | 2–3 lines of notes · 1 LeetCode |
+| Sat 21 | — | **5–6 h build:** measure it on GPT-2: generate 256 tokens with and without a KV cache; time prefill vs decode per token, and cache memory vs sequence length · 1 LeetCode (optional) |
+| Sun 22 | — | Light: notes post with the numbers from Sat. Topic done only if the numbers are in |
 
-**Next week starts with:** Mon morning: continuous batching (Anyscale post in the queue below): why static batching wastes GPU time, and what TTFT / TPOT measure.
+**Up next, one at a time:** continuous batching + TTFT/TPOT → Go concurrency (worker pool, `-race`) → Kafka + Narad (idempotent consumer) → SQL + TimescaleDB.
 
 ## Roadmap
 
