@@ -177,6 +177,17 @@ Everything I'm working through in AI engineering, LLM serving, backend and distr
 - [ ] Routing: round-robin vs least-load vs cache-aware
 - [ ] **Proof:** cache-aware vs round-robin router: hit rate + p99
 
+### 17. RL for LLMs
+*Read:* Nathan Lambert, *RLHF Book* (free, rlhfbook.com) · OpenAI *Spinning Up* (policy gradients, PPO) · InstructGPT, DPO, DeepSeekMath (GRPO) papers
+
+- [ ] RL basics only as far as LLMs need: policy, reward, return, policy gradient (REINFORCE), baselines/advantage
+- [ ] PPO: clipping, value model, KL penalty to the reference model
+- [ ] RLHF pipeline: SFT → reward model from preferences → PPO (InstructGPT)
+- [ ] DPO: preference tuning without a reward model or RL loop
+- [ ] GRPO + verifiable rewards (math/code): how reasoning models are trained (DeepSeekMath, DeepSeek-R1)
+- [ ] Reward hacking, KL drift, why rollouts dominate cost; how training frameworks call an inference engine (verl / OpenRLHF + vLLM)
+- [ ] **Proof:** GRPO on Qwen2.5-0.5B-Instruct (TRL, LoRA) on a small GSM8K subset: accuracy before vs after, reward curve, and % of step time spent generating rollouts
+
 ## Build: mini inference engine
 
 - [ ] Qwen2.5-0.5B-Instruct (GQA + RoPE) + own KV cache → tokens/sec, memory
