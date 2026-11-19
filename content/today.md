@@ -1,7 +1,7 @@
 +++
 title = 'Today'
 date = '2026-10-26T00:00:00+05:30'
-lastmod = '2026-10-30T09:00:00+05:30'
+lastmod = '2026-11-19T21:30:00+05:30'
 draft = false
 description = "What to read and build today: LLM inference and serving, distributed systems, MIT 6.5840 and LeetCode."
 +++
@@ -70,26 +70,10 @@ description = "What to read and build today: LLM inference and serving, distribu
 - [ ] Martin Kleppmann, [distributed systems lectures](https://www.youtube.com/playlist?list=PLeKd45zvjcDFUEv_ohr_HdUFe97RItdiB) (used per topic in the table below)
 - [ ] [Raft paper](https://raft.github.io/raft.pdf) (before Raft 3A)
 - [ ] Hamel Husain, *Your AI Product Needs Evals*
-- [ ] Chip Huyen, *AI Engineering* Ch 3–4 (evaluation), Ch 8 (dataset engineering)
-- [ ] Stanford CS336 (Spring 2025): data lectures + evaluation lecture
+- [ ] Chip Huyen, *AI Engineering* Ch 3–4 (evaluation)
+- [ ] Stanford CS336 (Spring 2025): evaluation lecture
 - [ ] *Inference Engineering*: Ch 2 ⬜ · Ch 3 ⬜ · Ch 5 ⬜
 - [ ] Distributed systems topics 1–6 (see table below: video + blog + build, DDIA as reference)
-
-### Data engineering for ML (topic-wise) — supporting, lower priority
-
-One topic a week: watch the talk (1.5x), read the blog, skim the paper only if needed, then build on Friday evening. Priority order; stop wherever time runs out.
-
-| # | Topic | Watch | Blog / read | Build (Friday evening) |
-|---|---|---|---|---|
-| 1 | Columnar formats (Parquet, encodings) | CMU 15-721 (Spring 2024) #02 *Data Formats & Encoding* | Arrow blog, *Querying Parquet with Millisecond Latency* · Parquet docs | CSV vs Parquet (plain / dictionary / RLE / zstd) with pyarrow + DuckDB: size and scan time |
-| 2 | Partitioning, pruning, skew | CMU 15-445 (Fall 2023) *Parallel Query Execution* | Databricks, *Adaptive Query Execution* · Snowflake docs, *Micro-partitions & Data Clustering* · DDIA Ch 6 | Read real Snowflake query profiles; skewed group-by in DuckDB/Ray, fixed with salting |
-| 3 | Distributed execution (Spark, Ray) | Matei Zaharia, *Resilient Distributed Datasets* (NSDI '12) · a Ray Summit talk on Ray Data | Anyscale blog on Ray Data streaming execution · Ray Data docs | Same dedup job in pandas vs Ray Data: throughput vs workers, memory |
-| 4 | Dedup at scale (shuffle, MinHash) | Stanford CS336 (Spring 2025) data lectures | HuggingFace, *Large-scale Near-deduplication Behind BigCode* · *FineWeb* blog · DDIA Ch 10 | Exact vs near-dedup (MinHash LSH) with Ray: recall, time, shuffle size |
-| 5 | Table formats + data versioning | CMU 15-721 #01 *Modern Analytical DBs* | Dremio, *Apache Iceberg: An Architectural Look Under the Covers* · lakeFS / DVC docs | Iceberg/Delta with DuckDB: write, time-travel, compare with DVC |
-| 6 | Vectorized execution | CMU 15-721 #04 *Query Execution* · CMU DB seminar talk on DuckDB | DuckDB execution engine docs · MonetDB/X100 (skim) | Row-at-a-time vs vectorized (1024-row batches) over 100M ints in Go |
-| 7 | Streaming (Kafka, logs, backpressure) | Kleppmann, *Turning the Database Inside Out* | Jay Kreps, *The Log* · Tyler Akidau, *Streaming 101* · DDIA Ch 11 | Extend Narad: lag + throughput under backpressure |
-| 8 | Data quality + lineage | A Data Council / Airflow Summit talk on data quality or OpenLineage | Chip Huyen, *Data Distribution Shifts and Monitoring* · OpenLineage docs | Quality checks + lineage events in an Airflow DAG |
-| 9 | Real systems | CMU 15-721 #19 *Snowflake*, #20 *DuckDB* | Snowflake (SIGMOD '16), Dremel decade (VLDB '20), skim | TPC-H SF10 in DuckDB, read the profile |
 
 ### Distributed systems (topic-wise)
 
