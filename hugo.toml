@@ -50,6 +50,11 @@ ignoreErrors = ["error-disable-taxonomy"]
     url = "/today/"
     weight = 4
 
+  [[menu.main]]
+    name = "Topics"
+    url = "/topics/"
+    weight = 5
+
 
 [caches]
   [caches.images]
