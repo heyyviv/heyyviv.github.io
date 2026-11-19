@@ -1,22 +1,20 @@
 +++
 title = 'Today'
 date = '2026-10-26T00:00:00+05:30'
-lastmod = '2026-11-19T21:30:00+05:30'
+lastmod = '2026-11-19T21:45:00+05:30'
 draft = false
 description = "What to read and build today: LLM inference and serving, distributed systems, MIT 6.5840 and LeetCode."
 +++
 
 # What to read today
 
-*Updated daily. Last update: **Fri, 30 Oct 2026** · Day 5 · Week 1 · **Stage 1: Foundations** (Nov–Dec)*
+*Updated daily. Last update: **Thu, 19 Nov 2026** · Week 4 · **Stage 1: Foundations** (Nov–Dec)*
 
-## Today: Day 5, Fri 30 Oct
+## Today: Thu 19 Nov
 
-✅ Horace He, *Making Deep Learning Go Brrrr* (done ahead of Monday).
+**Focus is now backend + AI systems.** The data-engineering track is dropped.
 
-**Morning:** the matmul exercise (see Fri row below). It's the same compute-vs-memory question as Horace He, now with real numbers.
-
-**Evening:** 2–3 lines of notes on kipply + Horace He + matmul · 1 LeetCode (optional)
+**Evening (30–45 min):** LLM serving basics. Prefill vs decode, and why decode is memory-bound (reuse kipply). Size the KV cache for Llama-3-8B at 4K context: `2 × layers × kv_heads × head_dim × bytes × tokens`. 1 LeetCode (optional).
 
 ## Daily rhythm
 
@@ -28,19 +26,19 @@ description = "What to read and build today: LLM inference and serving, distribu
 
 ---
 
-## This week (Week 1: 26 Oct – 1 Nov)
+## This week (Week 4: 16 – 22 Nov)
 
 | Day | ☀️ Morning block | 🌙 Evening (short) |
 | --- | --- | --- |
-| Mon 26 | — | Book Ch 2 (first half) ✅ (calculation didn't click yet) |
-| Tue 27 | kipply, [Transformer Inference Arithmetic](https://kipp.ly/transformer-inference-arithmetic/) ✅ (whole post) | Matmul exercise → slipped |
-| Wed 28 | — | Matmul exercise → **moved to Fri morning** |
-| Thu 29 | — | 1 LeetCode ✅ |
-| Fri 30 | Horace He ✅ (ahead) · **Matmul by hand (25 min):** `(1 × 4096) @ (4096 × 4096)`: FLOPs, bytes read, bytes written, FLOPs ÷ bytes. Redo for batch 64 and see intensity jump from ~1 to ~64. **Then code it (35 min):** `matmul_cost(M, K, N)` printing those numbers; check one Llama-3-8B decode step (16 GB read, 16 GFLOPs/token) against kipply | 2–3 lines of notes on kipply + Horace He + matmul: what clicked, what's fuzzy · 1 LeetCode (optional) |
-| Sat 31 | — | **5–6 h build:** 6.5840 check (30 min: where MapReduce / Raft 3A stand) · GPT-2 from scratch: load the real weights into my own PyTorch model, outputs match Hugging Face (~3 h) · start the KV cache if time (benchmark moves to next Saturday) · 1 LeetCode (optional) |
-| Sun 1 | — | Light: first weekly notes post · optional contest |
+| Mon 16 | — | — |
+| Tue 17 | — | — |
+| Wed 18 | — | — |
+| Thu 19 | — | LLM serving basics: prefill/decode, KV cache sizing for Llama-3-8B · 1 LeetCode (optional) |
+| Fri 20 | **Go concurrency:** bounded worker pool vs goroutine-per-task, run with `-race`, measure where throughput stops scaling | 2–3 lines of notes · 1 LeetCode |
+| Sat 21 | — | **5–6 h build:** Kafka + Narad: cause a duplicate delivery, then make the consumer idempotent and prove it · 1 LeetCode (optional) |
+| Sun 22 | — | Light: SQL + TimescaleDB reading (hypertables, indexes, isolation levels) · weekly notes post |
 
-**Next week starts with:** Mon morning: classify 3 ops (matmul, softmax, layernorm) as compute / memory / overhead bound with numbers, using Horace He's framing. Then the rooflines chapter of *How to Scale Your Model*.
+**Next week starts with:** Mon morning: continuous batching (Anyscale post in the queue below): why static batching wastes GPU time, and what TTFT / TPOT measure.
 
 ## Roadmap
 
@@ -127,6 +125,8 @@ After each build, read how experts wrote the same thing.
 | 3 | Wed 28 Oct | Rooflines chapter · matmul by hand + `matmul_cost` script · 1 LeetCode | Study tracks reorganised topic-wise. Matmul → Fri |
 | 4 | Thu 29 Oct | Horace He · GPT-2 start | Schedule reshaped around a morning block · 1 LeetCode |
 | 5 | Fri 30 Oct | Matmul exercise + `matmul_cost` script · notes | Horace He ✅ (ahead of Mon) |
+| — | 31 Oct – 18 Nov | — | Not logged |
+| — | Thu 19 Nov | Refocus | Plan narrowed to backend + AI systems; data-engineering track removed |
 
 <script>
 (function () {
