@@ -18,6 +18,8 @@ body.dark-mode .kf { --ink:#E2E8F0; --muted:#A0AEC0; --line:#4A5568; --card:#2D3
 .kf .wire { stroke:var(--line); stroke-width:2; fill:none; }
 .kf .c1 { fill:var(--s1); } .kf .c2 { fill:var(--s2); } .kf .c3 { fill:var(--s3); }
 .kf .cell { fill:var(--s1); stroke:var(--card); stroke-width:2; }
+.kf .cell.f { fill:var(--s3); }
+.kf .okline { fill:none; stroke:var(--s3); stroke-width:2.5; }
 .kf .done { fill:var(--line); }
 .kf .replay { fill:color-mix(in srgb, var(--s2) 35%, var(--card)); stroke:var(--s2); stroke-width:1.5; }
 .kf .ahead { fill:var(--card); stroke:var(--line); stroke-width:1.5; }
@@ -320,3 +322,333 @@ Lag is how far behind the consumer is.
 - **Lag growing steadily:** consumers are slower than producers. 🚨 Add consumers (up to the partition count), make processing faster, or add partitions.
 
 Lag is the first number to watch on any Kafka dashboard.
+
+## 9. Producer reliability: acks, retries, idempotence
+
+Four producer settings decide whether a message can be lost, duplicated or reordered.
+
+### `acks`: when does the leader say "OK"?
+
+| `acks` | "OK" means | Speed | If the leader dies just after |
+|---|---|---|---|
+| `0` | Nothing. The producer doesn't wait at all | Fastest | The message may never have arrived, and you won't know |
+| `1` | The leader wrote it to its own log | Fast | Lost, because the followers hadn't copied it yet |
+| `all` (same as `-1`) | Every in-sync replica has it | Slower | Safe, as long as one in-sync replica survives (but see [the trap](#the-acksall-trap--mininsyncreplicas)) |
+
+Default: `all` since Kafka 3.0. Whatever the producer picks, consumers only see a message once it is **committed**.
+
+### `retries`: resend on failure?
+
+Failures like "leader is changing" or "network timeout" are **transient**, so resending usually works.
+
+- `retries` is how many times to resend. Default: `2147483647`, which is effectively forever.
+- In practice the limit is **time, not count**. `delivery.timeout.ms` (default 120,000 ms = 2 minutes) is the total time allowed from `send()` to success or failure.
+- The docs say: leave `retries` alone and control retrying with `delivery.timeout.ms`.
+- `retries=0` passes every error straight to your code.
+
+Retries cause two problems.
+
+**Problem A: duplicates.** The broker wrote the batch, but the producer never heard back, so it sent it again.
+
+```text
+Producer sends batch B   ──► Leader writes B ✓
+Producer ◄── "OK" lost on the network ✗
+Producer times out, retries ──► Leader writes B AGAIN ❌ duplicate
+```
+
+**Problem B: reordering.** This only happens with more than one request in flight.
+
+```text
+Send batch 1  ──► fails ✗
+Send batch 2  ──► succeeds ✓  (offset 100)
+Retry batch 1 ──► succeeds ✓  (offset 101)
+Log order: 2, 1 ❌   You sent 1, 2.
+```
+
+### `max.in.flight.requests.per.connection`
+
+"In flight" means sent but not yet acknowledged.
+
+| Value | Behaviour | Trade-off |
+|---|---|---|
+| `1` | Send, wait for "OK", send the next | Order is safe, but you wait a full round trip every time |
+| `5` (default) | Send up to 5 before waiting | Much faster because the pipe stays full, but Problem B can happen |
+
+Think of letters. With 1 in flight you post a letter and wait for the reply before posting the next. With 5 you post five, and if letter 1 gets lost and is re-posted, it arrives after letter 2.
+
+The old trade-off was **fast (5) or ordered (1): pick one**. Idempotence removes it.
+
+### `enable.idempotence`: the fix for both problems
+
+*Idempotent* means doing something twice has the same effect as doing it once. Here is how it works:
+
+1. The broker gives the producer a **Producer ID (PID)**.
+2. The producer tags every batch with a **sequence number per partition**: 0, 1, 2, 3…
+3. The broker remembers the last sequence number it accepted for each PID and partition.
+
+| Broker receives | Broker does |
+|---|---|
+| Sequence = last + 1 | ✅ Writes it |
+| Sequence ≤ last (already seen) | Drops it as a duplicate, **but still replies "OK"**. This fixes Problem A |
+| Sequence > last + 1 (a gap) | Rejects it as "out of order", and the producer resends in the right order. This fixes Problem B |
+
+<div class="kf">
+<svg viewBox="0 0 700 230" role="img" aria-label="Idempotent producer: batch with sequence 3 is written, the OK reply is lost, the producer retries sequence 3, and the broker drops the duplicate but still replies OK.">
+<path id="kfSend" class="wire" d="M150,65 L550,65"/>
+<path id="kfAck" class="wire" d="M550,120 L150,120"/>
+<path id="kfRetry" class="wire" d="M150,175 L550,175"/>
+<rect class="box" x="10" y="35" width="140" height="170" rx="10"/><text class="lbl" x="80" y="115" text-anchor="middle">Producer</text><text class="sub" x="80" y="133" text-anchor="middle">PID 42</text>
+<rect class="box" x="550" y="35" width="140" height="170" rx="10"/><text class="lbl" x="620" y="115" text-anchor="middle">Broker</text><text class="sub" x="620" y="133" text-anchor="middle">remembers last seq</text>
+<g class="sub" text-anchor="middle"><text x="350" y="55">① send batch, seq 3</text><text x="350" y="110">② "OK" on its way back</text><text x="350" y="165">③ retry, seq 3</text></g>
+<text class="lbl c3" x="350" y="88" text-anchor="middle" opacity="0">written, last seq = 3 ✓<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.2;.23;.9;.95;1" dur="9s" repeatCount="indefinite"/></text>
+<text class="lbl c2" x="350" y="143" text-anchor="middle" opacity="0">✗ lost on the network<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.38;.41;.9;.95;1" dur="9s" repeatCount="indefinite"/></text>
+<text class="lbl c3" x="350" y="198" text-anchor="middle" opacity="0">3 ≤ 3 → duplicate dropped, still replies OK<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.7;.73;.9;.95;1" dur="9s" repeatCount="indefinite"/></text>
+<circle class="c1 moving" r="7" opacity="0"><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;.01;.2;.21;1" dur="9s" repeatCount="indefinite"/><animateMotion dur="9s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;.2;1"><mpath href="#kfSend"/></animateMotion></circle>
+<circle class="c3 moving" r="7" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.25;.26;.38;.39;1" dur="9s" repeatCount="indefinite"/><animateMotion dur="9s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;.5;.5" keyTimes="0;.25;.38;1"><mpath href="#kfAck"/></animateMotion></circle>
+<circle class="c1 moving" r="7" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.5;.51;.7;.71;1" dur="9s" repeatCount="indefinite"/><animateMotion dur="9s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;.5;.7;1"><mpath href="#kfRetry"/></animateMotion></circle>
+</svg>
+<div class="cap">The retry carries the same sequence number, so the broker can tell it is a duplicate.</div>
+</div>
+
+Default: `true`. Idempotence requires all three of these:
+
+- `acks=all`
+- `retries > 0`
+- `max.in.flight.requests.per.connection ≤ 5`
+
+**Why ≤ 5?** From the docs: "the broker only retains at most 5 batches for each producer." The broker keeps the last 5 batches per producer for duplicate checking. With more than 5 in flight, it may already have forgotten an older batch and can't tell whether a retry is a duplicate.
+
+## 10. Replication
+
+Every partition is copied to several brokers, for example 3 copies.
+
+- One copy is the **leader**. Producers write to it, and consumers normally read from it too (reading from followers is optional).
+- The others are **followers**. They keep asking the leader "anything new?" (a fetch request) and copy it in order. They pull the same way a normal consumer does, so a follower grabs many messages per fetch and batching comes for free.
+- Every copy has the same messages at the same offsets. The leader may just have a few new ones at the end that haven't been copied yet.
+- The total number of copies is the **replication factor (RF)**. A topic with "no replication" is just RF = 1. Replication isn't an add-on; it's built in from the start.
+- A cluster has thousands of partitions, and leaders are spread evenly across brokers so no single server does all the writing.
+
+<div class="kf">
+<svg viewBox="0 0 700 250" role="img" aria-label="A leader appends messages. Follower b2 copies them right behind. Follower b3 stalls after two messages and is removed from the in-sync replica set.">
+<text class="lbl" x="10" y="52">Leader · b1</text><text class="sub" x="10" y="68">producers write here</text>
+<text class="lbl" x="10" y="117">Follower · b2</text><text class="sub" x="10" y="133">in ISR</text>
+<text class="lbl" x="10" y="182">Follower · b3</text><text class="sub" x="10" y="198">lagging</text>
+<g>
+<rect class="cell" x="150" y="35" width="70" height="40" rx="6" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.04;.06;.9;.95;1" dur="10s" repeatCount="indefinite"/></rect>
+<rect class="cell" x="230" y="35" width="70" height="40" rx="6" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.13;.15;.9;.95;1" dur="10s" repeatCount="indefinite"/></rect>
+<rect class="cell" x="310" y="35" width="70" height="40" rx="6" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.22;.24;.9;.95;1" dur="10s" repeatCount="indefinite"/></rect>
+<rect class="cell" x="390" y="35" width="70" height="40" rx="6" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.31;.33;.9;.95;1" dur="10s" repeatCount="indefinite"/></rect>
+<rect class="cell" x="470" y="35" width="70" height="40" rx="6" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.40;.42;.9;.95;1" dur="10s" repeatCount="indefinite"/></rect>
+<rect class="cell" x="550" y="35" width="70" height="40" rx="6" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.49;.51;.9;.95;1" dur="10s" repeatCount="indefinite"/></rect>
+</g>
+<g>
+<rect class="cell f" x="150" y="100" width="70" height="40" rx="6" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.09;.11;.9;.95;1" dur="10s" repeatCount="indefinite"/></rect>
+<rect class="cell f" x="230" y="100" width="70" height="40" rx="6" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.18;.20;.9;.95;1" dur="10s" repeatCount="indefinite"/></rect>
+<rect class="cell f" x="310" y="100" width="70" height="40" rx="6" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.27;.29;.9;.95;1" dur="10s" repeatCount="indefinite"/></rect>
+<rect class="cell f" x="390" y="100" width="70" height="40" rx="6" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.36;.38;.9;.95;1" dur="10s" repeatCount="indefinite"/></rect>
+<rect class="cell f" x="470" y="100" width="70" height="40" rx="6" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.45;.47;.9;.95;1" dur="10s" repeatCount="indefinite"/></rect>
+<rect class="cell f" x="550" y="100" width="70" height="40" rx="6" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.54;.56;.9;.95;1" dur="10s" repeatCount="indefinite"/></rect>
+</g>
+<g>
+<rect class="cell f" x="150" y="165" width="70" height="40" rx="6" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.12;.14;.9;.95;1" dur="10s" repeatCount="indefinite"/></rect>
+<rect class="cell f" x="230" y="165" width="70" height="40" rx="6" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.24;.26;.9;.95;1" dur="10s" repeatCount="indefinite"/></rect>
+</g>
+<text class="lbl c2" x="320" y="190" opacity="0">✗ stuck too long → removed from ISR<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.68;.71;.9;.95;1" dur="10s" repeatCount="indefinite"/></text>
+<text class="sub" x="385" y="235" text-anchor="middle">ISR = the replicas that are caught up enough to count</text>
+</svg>
+<div class="cap">b2 keeps up and stays in sync. b3 falls behind and gets dropped, so writes stop waiting for it.</div>
+</div>
+
+### ISR: in-sync replicas
+
+The leader keeps a list of followers that are "caught up enough", the **ISR**. It matters for two reasons:
+
+1. A message is **committed** (safe) only when every member of the ISR has it. Only then does an `acks=all` producer get "OK, saved".
+2. If the leader dies, the new leader is picked **only from the ISR**. Every ISR member has every committed message, so nothing is lost.
+
+That creates a tension:
+
+- A slow follower in the ISR slows **every** write, because each commit waits for the slowest member.
+- So slow followers must be kicked out of the ISR quickly.
+- But kicking out a healthy follower by mistake is bad too. You have fewer safe copies, and an "under-replicated partition" alert fires and wakes someone up at 3 a.m.
+
+### Who stays in the ISR?
+
+Today a replica must pass two checks:
+
+| Condition | Checked by | Fails when |
+|---|---|---|
+| Heartbeating the controller (the cluster's manager) | Controller | No heartbeat within `broker.session.timeout.ms`, so the broker counts as offline |
+| Keeping up with the leader | Leader | Not caught up for `replica.lag.time.max.ms` |
+
+### The old rule, and why it was dropped
+
+Kafka 0.8.2 used two settings:
+
+1. `replica.lag.time.max.ms`: "if a follower hasn't asked me for data in X ms, it's stuck. Kick it out." This worked fine, and it is still the rule today.
+2. `replica.lag.max.messages`: "if a follower is more than N messages behind, it's slow. Kick it out." **This was the problem.**
+
+Why is "number of messages behind" a bad rule? To set N correctly you'd have to guess your traffic: how big your batches will be, on every topic, forever. One cluster has many topics with different traffic, and traffic changes over time. A single burst can put a perfectly healthy follower N messages behind for a moment, and it gets kicked out. No single number works for all topics, so the count-based setting was removed and only the time-based rule remains.
+
+### The core guarantee
+
+> A committed message is never lost as long as at least one in-sync replica stays alive.
+
+### Why not majority voting?
+
+**Approach A: majority voting** (Raft, Zab, Paxos)
+
+- With 2f+1 copies, a write is committed once f+1 (a majority) have it.
+- The new leader is chosen by a majority vote.
+- Any two majorities share at least one node, so some voter always has every committed message.
+
+The upside is that latency depends on the **fastest** majority. With 3 copies you wait for the faster follower and can ignore the slow one. The downside is cost: surviving 1 failure needs 3 copies, and surviving 2 needs 5. That is 5× the disk and roughly ⅕ the throughput.
+
+**Approach B: Kafka's ISR**
+
+- A commit needs **every** ISR member, not a majority.
+- Only ISR members can become leader, and every one of them has every committed message.
+- So with f+1 copies, Kafka survives f failures.
+
+| To survive 1 failure | Majority vote | Kafka ISR |
+|---|---|---|
+| Copies needed | 3 | **2** |
+| Acks waited for | 1 follower | 1 follower |
+| Disk cost | 3× | **2×** |
+| Slow follower | Ignored, only the faster majority counts | Slows commits until it's removed from the ISR |
+
+Kafka's reasoning: for large volumes of data, storing 3 to 5 copies of everything costs too much. That's why majority voting is usually kept for small metadata (ZooKeeper, KRaft, the HDFS NameNode journal) while bulk data uses cheaper schemes. The slow-follower downside is limited because slow replicas get removed from the ISR.
+
+The closest academic design to Kafka is **PacificA** (Microsoft Research). You don't need to know it in detail, but mentioning it in an interview is a bonus.
+
+### Bonus: no fsync needed
+
+Many consensus algorithms assume a crashed node comes back with all its data intact, which means calling `fsync` on every write. That can be 100–1000× slower. Kafka doesn't assume this. A replica that crashes must fully catch up again before it rejoins the ISR, even if it lost data that was never flushed to disk. Safety comes from **copies on other servers**, not from forcing every write to disk. This is the replica-based durability from [section 2](#2-why-kafka-is-fast-on-slow-disks).
+
+### Unclean leader election: what if every ISR replica dies?
+
+The guarantee needs at least one in-sync replica alive. When none are left, there are two choices:
+
+| Option | Result | Picks |
+|---|---|---|
+| Wait for an ISR replica to come back | Partition is down until it returns, and down forever if its disk is gone | Consistency (no data loss) |
+| Take any replica that comes back, even one not in the ISR | Partition is back up fast, but messages it never received are lost | Availability |
+
+- Config: `unclean.leader.election.enable`
+- Default: `false` (wait) since Kafka 0.11.
+- This is the CAP trade-off in practice. Majority-vote systems face the same choice when a majority dies for good.
+
+### The `acks=all` trap → `min.insync.replicas`
+
+`acks=all` means every replica **currently in the ISR**, not every replica that exists.
+
+```text
+RF = 2. One broker dies        → ISR = {leader}
+acks=all now means "the leader alone has it" → write succeeds
+Leader dies                    → message lost 💀
+```
+
+Two settings fix this:
+
+1. `unclean.leader.election.enable=false`: never promote a replica that isn't in sync.
+2. `min.insync.replicas=2`: an `acks=all` write succeeds only if the ISR still has at least 2 members. If it shrinks below that, the producer gets a `NotEnoughReplicas` error instead of a false "OK".
+
+The common production setup is **RF = 3, `min.insync.replicas=2`, `acks=all`**. You can lose one broker and keep accepting writes, and every acknowledged write is on at least two machines.
+
+## 11. Exactly once: transactions
+
+Idempotence stops duplicates from a single producer's retries. Real apps do more: they **read** from one topic and **write** to another. Take a payment processor that reads payments from `payments` and writes debits to `ledger`. Three things can go wrong:
+
+| # | Failure | What goes wrong | Fix |
+|---|---|---|---|
+| 1 | Producer retries a send after a lost ack | The debit is written twice | Idempotent producer ([section 9](#enableidempotence-the-fix-for-both-problems)) |
+| 2 | App crashes after writing the debit but before saving its offset | On restart it reads the payment again and writes the debit again | Atomic transactions |
+| 3 | An app is wrongly declared dead and a replacement starts, but the old one is still running (a "zombie") | Two instances write the same debits | Zombie fencing |
+
+Failure 2, step by step:
+
+```text
+read payment ✓  →  write debit ✓  →  💥 crash  →  save offset ✗
+```
+
+On restart the committed offset still points at the payment, so the app reads it again and writes the debit again.
+
+Failure 3: instance #1 freezes, say on a long GC pause or a network blip. The system decides it's dead and starts instance #2. Then #1 wakes up and keeps working. Now two instances are writing the same debits.
+
+Transactions fix failures 2 and 3.
+
+### The key trick: "consumed" is just another write
+
+Kafka records that a message was consumed by writing its offset to an internal topic, `__consumer_offsets`. Committing an offset is therefore **a write to a partition**, just like writing the debit.
+
+So the problem becomes: two writes have to happen together, the debit and the offset. A transaction gives you exactly that. All writes in it become visible together, or none do.
+
+```text
+begin transaction
+   write debit    → ledger
+   write offset   → __consumer_offsets
+commit transaction → both become real at once
+```
+
+<div class="kf">
+<svg viewBox="0 0 700 230" role="img" aria-label="The app reads a payment, then writes a debit to the ledger and an offset to __consumer_offsets inside one transaction. On commit both become visible at the same moment.">
+<path id="kfTxIn" class="wire" d="M140,115 L220,115"/>
+<path id="kfTxA" class="wire" d="M340,115 C410,115 410,52 480,52"/>
+<path id="kfTxB" class="wire" d="M340,115 C410,115 410,177 480,177"/>
+<rect class="box" x="10" y="88" width="130" height="54" rx="10"/><text class="lbl" x="75" y="112" text-anchor="middle">payments</text><text class="sub" x="75" y="128" text-anchor="middle">input · tp0</text>
+<rect class="box" x="220" y="88" width="120" height="54" rx="10"/><text class="lbl" x="280" y="112" text-anchor="middle">App</text><text class="sub" x="280" y="128" text-anchor="middle">read → process</text>
+<rect class="box" x="480" y="25" width="210" height="55" rx="10"/><text class="lbl" x="585" y="48" text-anchor="middle">ledger · tp1</text><text class="sub" x="585" y="65" text-anchor="middle">the debit</text>
+<rect class="box" x="480" y="150" width="210" height="55" rx="10"/><text class="lbl" x="585" y="173" text-anchor="middle">__consumer_offsets</text><text class="sub" x="585" y="190" text-anchor="middle">"payment consumed"</text>
+<rect class="okline" x="480" y="25" width="210" height="55" rx="10" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.6;.63;.9;.95;1" dur="7s" repeatCount="indefinite"/></rect>
+<rect class="okline" x="480" y="150" width="210" height="55" rx="10" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.6;.63;.9;.95;1" dur="7s" repeatCount="indefinite"/></rect>
+<text class="sub" x="585" y="110" text-anchor="middle">one transaction</text>
+<text class="lbl c3" x="585" y="130" text-anchor="middle" opacity="0">COMMIT: both visible ✓<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.6;.63;.9;.95;1" dur="7s" repeatCount="indefinite"/></text>
+<circle class="c2 moving" r="7" opacity="0"><animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;.01;.18;.19;1" dur="7s" repeatCount="indefinite"/><animateMotion dur="7s" repeatCount="indefinite" calcMode="linear" keyPoints="0;1;1" keyTimes="0;.18;1"><mpath href="#kfTxIn"/></animateMotion></circle>
+<circle class="c1 moving" r="7" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.22;.23;.45;.46;1" dur="7s" repeatCount="indefinite"/><animateMotion dur="7s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;.22;.45;1"><mpath href="#kfTxA"/></animateMotion></circle>
+<circle class="c1 moving" r="7" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.22;.23;.45;.46;1" dur="7s" repeatCount="indefinite"/><animateMotion dur="7s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;.22;.45;1"><mpath href="#kfTxB"/></animateMotion></circle>
+</svg>
+<div class="cap">Until the commit, consumers reading with <code>isolation.level=read_committed</code> see neither write.</div>
+</div>
+
+If the app crashes before the commit, both writes are thrown away. On restart it reads the payment again, and that is fine, because the first debit never became visible. Exactly one debit ends up in the ledger.
+
+### Zombie fencing
+
+- Each producer has a stable **`transactional.id`**, the same one across restarts, e.g. `payment-processor-0`. The new instance #2 uses the same id as the "dead" instance #1.
+- On startup it calls `initTransactions()`. The broker finishes or aborts any half-done transaction for that id and **increments an epoch**, a version number for the id, say from 5 to 6.
+- Any write that carries an older epoch is rejected. When zombie #1 wakes up and tries to write with epoch 5, it is cut off.
+
+<div class="kf">
+<svg viewBox="0 0 700 210" role="img" aria-label="Instance 2 with epoch 6 writes successfully. The zombie instance 1 with epoch 5 tries to write and is rejected.">
+<path id="kfZ1" class="wire" d="M180,50 C340,50 340,95 500,95"/>
+<path id="kfZ2" class="wire" d="M180,160 C340,160 340,115 500,115"/>
+<rect class="box user" x="10" y="20" width="170" height="60" rx="10"/><text class="lbl" x="95" y="46" text-anchor="middle">Instance #1 (zombie)</text><text class="sub" x="95" y="63" text-anchor="middle">epoch 5</text>
+<rect class="box" x="10" y="130" width="170" height="60" rx="10"/><text class="lbl" x="95" y="156" text-anchor="middle">Instance #2</text><text class="sub" x="95" y="173" text-anchor="middle">epoch 6</text>
+<rect class="box" x="500" y="70" width="190" height="70" rx="10"/><text class="lbl" x="595" y="98" text-anchor="middle">Broker</text><text class="sub" x="595" y="116" text-anchor="middle">payment-processor-0 → epoch 6</text>
+<text class="lbl c3" x="340" y="190" text-anchor="middle" opacity="0">epoch 6 = current → written ✓<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.35;.38;.9;.95;1" dur="7s" repeatCount="indefinite"/></text>
+<text class="lbl c2" x="340" y="28" text-anchor="middle" opacity="0">epoch 5 &lt; 6 → rejected ✗<animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.72;.75;.9;.95;1" dur="7s" repeatCount="indefinite"/></text>
+<circle class="c3 moving" r="7" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.05;.06;.35;.36;1" dur="7s" repeatCount="indefinite"/><animateMotion dur="7s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;.05;.35;1"><mpath href="#kfZ2"/></animateMotion></circle>
+<circle class="c2 moving" r="7" opacity="0"><animate attributeName="opacity" values="0;0;1;1;0;0" keyTimes="0;.45;.46;.72;.73;1" dur="7s" repeatCount="indefinite"/><animateMotion dur="7s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;.9;.9" keyTimes="0;.45;.72;1"><mpath href="#kfZ1"/></animateMotion></circle>
+</svg>
+<div class="cap">Like a hotel that changes the key-card code for each new guest: the previous guest's card stops working.</div>
+</div>
+
+It's the same idea as a **fencing token**, or a **term number** in Raft. If you know one of them, you know this.
+
+**The catch:** fencing only works if the same input partitions always map to the same `transactional.id`. If `payments` partition 0 was handled by T0 and later moves to T1, Kafka sees two different ids and nothing stops T0 from writing alongside T1. The mapping has to stay fixed, e.g. id = "processor for partition 0". Kafka Streams does this for you by deriving the id from the input partition.
+
+### How it works inside
+
+```text
+Producer ──(1) initTransactions / addPartitions / commit ──► Transaction Coordinator
+                                                               │ (runs inside a broker)
+                                                               ▼
+                                                      __transaction_state topic
+                                                      (stores txn state only, not data)
+Producer ──(2) normal sends ──► tp1, tp2, __consumer_offsets
+Coordinator ──(3) COMMIT / ABORT markers ──► every partition in the txn
+```
+
+1. The producer registers with the **transaction coordinator** and tells it which partitions the transaction touches. The coordinator logs this in `__transaction_state`.
+2. The actual messages go straight to their partitions as usual, offsets included.
+3. On commit, the coordinator writes a **COMMIT marker** into every partition involved. `read_committed` consumers only deliver messages once they see that marker, and skip aborted ones.
