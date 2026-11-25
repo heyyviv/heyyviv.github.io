@@ -51,11 +51,11 @@ Everything I'm working through in AI engineering, LLM serving, backend and distr
 ### 4. Kafka + streaming
 *Read:* Kleppmann, *DDIA* Ch 11
 
-- [ ] Topics, partitions, offsets, retention
-- [ ] Producers: acks, idempotent producer, ordering
-- [ ] Consumer groups, rebalancing, lag
-- [ ] At-most / at-least / exactly-once; transactions
-- [ ] Idempotent consumers, dedup, dead-letter topics, backpressure, schema evolution
+- [x] Topics, partitions, offsets, retention
+- [x] Producers: acks, idempotent producer, ordering
+- [x] Consumer groups, rebalancing, lag
+- [x] At-most / at-least / exactly-once; transactions
+- [x] Idempotent consumers, dedup, dead-letter topics, backpressure, schema evolution
 - [ ] **Proof:** Narad: show a duplicate delivery, then prove the idempotent consumer; lag under backpressure
 
 ### 5. Memory, storage, indexes, transactions

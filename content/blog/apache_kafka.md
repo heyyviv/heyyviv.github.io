@@ -2,7 +2,7 @@
 title = "Apache Kafka"
 slug = "apache-kafka"
 date = "2026-11-21T17:22:50+05:30"
-description = "Kafka from the ground up: why a log, why it is fast on plain disks, how producers pick partitions, how consumers pull, and what offsets, commits and lag really mean."
+description = "Kafka from the ground up: why a log, why it is fast on plain disks, producers and consumers, offsets and lag, replication, exactly-once, backpressure and schema evolution."
 tags = ["blog","kafka","distributed-systems","backend","system-design","notes"]
 +++
 
@@ -652,3 +652,134 @@ Coordinator ──(3) COMMIT / ABORT markers ──► every partition in the tx
 1. The producer registers with the **transaction coordinator** and tells it which partitions the transaction touches. The coordinator logs this in `__transaction_state`.
 2. The actual messages go straight to their partitions as usual, offsets included.
 3. On commit, the coordinator writes a **COMMIT marker** into every partition involved. `read_committed` consumers only deliver messages once they see that marker, and skip aborted ones.
+
+
+## 12. Backpressure: when the consumer is slower than the producer
+
+Producers write 1,000 msg/s, the consumer handles 500 msg/s. A backlog builds up. The good news: the backlog waits safely in Kafka, not in your app. The job is to slow down *without* getting kicked out of the group.
+
+### Symptoms
+
+| Symptom | What's happening |
+|---|---|
+| Lag increasing | The consumer's position falls further behind the newest message |
+| Memory pressure | You fetched too many records at once and they're sitting in RAM |
+| Rebalancing | Processing one batch took longer than `max.poll.interval.ms`, so you're kicked, and the next owner re-reads, causing duplicates |
+| Timeout errors | Heartbeats stopped (the process is frozen or dead) for longer than `session.timeout.ms` |
+
+### Pause and resume, step by step
+
+```java
+while (true) {
+    checkAndResumePartitions();                          // 1
+    records = consumer.poll(Duration.ofMillis(1000));    // 2
+    for (TopicPartition partition : records.partitions()) {
+        int recordCount = records.records(partition).size();
+        partitionBacklog.put(partition, currentBacklog + recordCount);   // 3
+        if (partitionBacklog.get(partition) > backlogThreshold) {
+            pausePartition(partition);                   // 4
+        }
+        for (ConsumerRecord record : records.records(partition)) {
+            try { processRecord(record); }
+            finally { backlog -= 1; }                    // 5
+        }
+    }
+}
+```
+
+1. For each paused partition, if its counter is under 500 (half of 1,000), resume it.
+2. Ask Kafka for records and wait up to 1 s. Paused partitions return nothing, but this call still tells Kafka "I'm alive". That's the point of pausing instead of stopping.
+3. For each partition that returned records, add the count to its counter. Got 100 from partition 0, so `counter[P0] += 100`.
+4. If the counter is over 1,000, pause this partition.
+5. Each finished record lowers the counter again.
+
+Pausing at 1,000 and resuming at 500 (not at 999) stops the partition from flipping on and off every poll. That gap is called **hysteresis**.
+
+### The other tools
+
+- **Batch writes:** write 500 rows to the database in one call instead of 500 calls.
+- **Bound in-flight work:** a fixed number of workers or a semaphore, never "one goroutine per message".
+- **Rate limit** calls to a slow downstream.
+- **Don't** add partitions or consumers when the slow part is the downstream. More consumers just push more load onto the thing that is already slow.
+
+What to watch: **consumer lag**. The real danger is lag growing older than the topic's **retention**: Kafka then deletes messages nobody has read yet.
+
+### Long jobs: pause the container (Spring Kafka example)
+
+Settings: `max.poll.records = 1` (one message per poll), `max.poll.interval.ms = 30s`, `concurrency = 20` (20 consumer threads).
+
+When a message arrives:
+
+1. Pause the container: "give me nothing more".
+2. Hand the message to a background thread (executor), which starts the long job.
+3. The listener function **returns immediately**, so the main thread goes back to polling. It gets nothing, but stays alive.
+4. When the job finishes (success or error), resume the container: "OK, give me the next one".
+
+So each consumer handles one message at a time, in the background, and keeps polling in the foreground so the group knows it's alive. A job can take 10 minutes even though the deadline is 30 s, because polling never stops.
+
+**The weak spot (the offset trap from earlier):** Spring commits the offset when the listener function returns, which is step 3. The job is still running at that point. If the app crashes at minute 5 of the job:
+
+- Kafka already has "this message is done" saved.
+- After restart, the consumer starts at the next message.
+- The crashed message is lost.
+
+**The fix:** turn off auto-commit and commit manually inside the success callback (step 4), after the job really finished.
+
+## 13. Schema evolution
+
+Kafka keeps messages for days and lets you replay them. So one topic always holds data written by **several versions** of the producer code, read by **several versions** of the consumer code. You can't upgrade everything at once. The schema has to change in a way both sides survive.
+
+### Two directions
+
+| Name | Means | Needed when |
+|---|---|---|
+| **Backward** compatible | New code reads old data | You upgrade **consumers first** (and always, for replay) |
+| **Forward** compatible | Old code reads new data | You upgrade **producers first** |
+| **Full** | Both | Either side can deploy first |
+
+### Protobuf: fields are numbers
+
+On the wire, each field is `tag number + type + value`. Field **names are never sent**.
+
+- **Add a field:** safe, with a new tag number. Old code skips tags it doesn't know (forward). New code reading old data gets the default value (backward).
+- **Remove a field:** safe, as long as the tag number is **never reused**. Mark it `reserved 4;` so nobody can.
+- **Rename a field:** safe in binary (the name isn't on the wire). Breaks the JSON mapping, though.
+- **Change a type:** mostly unsafe. A few pairs are wire-compatible (`int32`/`int64`/`bool`), but they can truncate.
+
+### Avro: no tags, two schemas
+
+Avro binary is just the values back to back, in schema order. No tags, no names. You **cannot** decode it without the exact schema it was written with (the **writer's schema**). The reader also has its own schema (the **reader's schema**), and Avro matches fields between the two **by name**:
+
+- **Add a field:** only with a **default**. A new reader reading old data fills in the default.
+- **Remove a field:** only if it **had a default**. An old reader reading new data fills it in.
+- **Rename a field:** rejected by default. Avro sees it as "`msg` deleted, `message` added with no default", so a new consumer reading an old message finds no `message` and nothing to fill in. Only an **alias** in the reader's schema makes it work.
+- **Change a type:** only listed promotions: `int → long → float → double`, `string ↔ bytes`.
+
+The rule for both formats: **add optional fields, never rename or retype, never reuse a field id.**
+
+### Schema Registry: how the consumer finds the writer's schema
+
+Avro needs the writer's schema, but sending the whole schema with each message would be wasteful. The Schema Registry solves that:
+
+```text
+Producer ──register schema──► Schema Registry ──► schema ID 42
+Producer ──► Kafka message = [magic byte 0][4-byte schema ID = 42][payload]
+Consumer ──reads ID 42──► Registry (cached) ──► writer's schema ──► decode
+```
+
+At registration, the registry **checks compatibility** against the previous versions and **rejects** a breaking schema before any bad message is produced. Modes: `BACKWARD` (default), `FORWARD`, `FULL`, `NONE`, plus `_TRANSITIVE` variants that check against *all* past versions, not just the last one. `BACKWARD` means "upgrade consumers first."
+
+### In my project: Narad
+
+[Narad](https://github.com/heyyviv/narad) sends plain JSON events, with no registry. How it copes (`internal/consumer/kafka.go`):
+
+| Change | What happens | |
+|---|---|---|
+| Producer adds a new field | Go's `encoding/json` ignores it | Forward ✅ (field not stored) |
+| Old event has no `id` | ID built from topic/partition/offset, so replay is idempotent | Backward ✅ |
+| No `ts` / `service` / `level` | Kafka time / `"unknown"` / `"INFO"` | Backward ✅ |
+| New business ID | Goes into the `dims` map, no schema change | ✅ |
+| Rename `msg` → `message` | Decodes fine, `msg` stored **empty**, no alert | ❌ silent |
+| `ts` sent as a number | Decode fails → dead-letter topic | ❌ loud, but caught |
+
+The gap: a rename passes silently. The fix is Protobuf or Avro with a Schema Registry in `BACKWARD` mode, so the bad schema is rejected when it's registered, before any message is sent.
